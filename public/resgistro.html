@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="stylesheets/registro.css">
+    <title>Registro</title>
+</head>
+<body>
+  <header class="header">
+    <nav class="nav">
+      <a href="index.html">Inicio</a>
+      <a href="comunidad.html">Comunidad</a>
+      <a href="juegos.html">Juegos</a>
+      <a href="editar.html">Crear</a>
+    </nav>
+    <div class="logo">
+      <a href="index.html"><img src="images/CodePlay_ejemplo_sin_fondo (1).png" alt="Logo del Proyecto" /></a>
+    </div>
+  </header>
+  
+  <form id="register-form" action="/users/register" method="POST">
+      <h2>Registro</h2>
+      <div class="section">
+        <div class="title">Username</div>
+        <div class="field"><input type="text" id="username" name="username"></div>
+      </div>
+      <div class="section">
+        <div class="title">Password</div>
+        <div class="field"><input type="password" id="password" name="password"></div>
+      </div>
+      <div class="section">
+        <div class="button"><input type="submit" value="Registrar Usuario"></div>
+        <br>
+        <br>
+        <p style="text-align: center;">¿Ya tienes una cuenta?</p>
+        <div class="button"><a href="login.html">Inicia Sesión</a></div>
+      </div>
+  </form>
+
+  <script>
+    const registerForm = document.getElementById('register-form');
+
+    registerForm.addEventListener('submit', async (event) => {
+      event.preventDefault(); // Previene el envío por defecto del formulario
+
+      const formData = new FormData(registerForm);
+      const data = {
+        username: formData.get('username'),
+        password: formData.get('password'),
+      };
+
+      try {
+        const response = await fetch(registerForm.action, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(data),
+        });
+
+        if (response.ok) {
+          const result = await response.json();
+          if (result.redirect) {
+            window.location.href = result.redirect; // Redirige al login
+          }
+        } else {
+          const errorMessage = await response.text();
+          alert(`Error: ${errorMessage}`);
+        }
+      } catch (err) {
+        console.error('Error al registrar:', err);
+        alert('Error al registrar. Por favor, inténtalo de nuevo.');
+      }
+    });
+  </script>
+
+  <footer class="footer">
+    <div class="footer-content">
+      <div class="footer-section">
+        <h4>Acerca de Nosotros</h4>
+        <p>Codeplay es una plataforma diseñada para creativos, jugadores y desarrolladores. ¡Explora, aprende y crea con nosotros!</p>
+      </div>
+      <div class="footer-section">
+        <h4>Enlaces Rápidos</h4>
+        <ul>
+          <li><a href="index.html">Inicio</a></li>
+          <li><a href="comunidad.html">Comunidad</a></li>
+          <li><a href="juegos.html">Juegos</a></li>
+          <li><a href="editar.html">Crear</a></li>
+        </ul>
+      </div>
+      <div class="footer-section">
+        <h4>Contáctanos</h4>
+        <p>Email: contacto@proyectoalternativo.com</p>
+        <p>Teléfono: +123 456 789</p>
+        <p>Síguenos en:</p>
+        <div class="social-icons">
+          <a href="#"><img src="images/facebook-icon.png" alt="Facebook"></a>
+          <a href="#"><img src="images/twitter-icon.png" alt="Twitter"></a>
+          <a href="#"><img src="images/instagram-icon.png" alt="Instagram"></a>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>&copy; 2024  CodePlay . Todos los derechos reservados.</p>
+    </div>
+  </footer>
+</body>
+</html>

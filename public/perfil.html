@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="stylesheets/perfil.css">
+    <title>User Profile</title>
+</head>
+<body>
+<header class="header">
+    <nav class="nav">
+        <a href="index.html">Home</a>
+        <a href="comunidad.html">Community</a>
+        <a href="juegos.html">Games</a>
+        <a href="formulario.html">Create</a>
+    </nav>
+    <div class="logo">
+        <a href="index.html"><img src="images/CodePlay_ejemplo_sin_fondo (1).png" alt="Project Logo"></a>
+    </div>
+    <div id="userMenu"></div>
+</header>
+
+<main class="profile-container">
+    <div class="profile-header">
+        <img src="images/perfil.jpg" alt="User profile picture" class="avatar">
+        <h1 id="username-display">Username</h1>
+        <p class="user-bio">"Passionate developer and video game enthusiast. Ready to create and explore new ideas!"</p>
+        <!-- Botón para editar el perfil -->
+        <button onclick="location.href='editarPerfil.html'" class="edit-profile-button">Editar Perfil</button>
+    </div>
+
+    <div class="user-projects">
+        <h2>My Projects</h2>
+        <div id="projects-list" class="project-grid">
+            <!-- Los proyectos del usuario se cargarán aquí -->
+        </div>
+    </div>
+</main>
+
+<footer class="footer">
+    <div class="footer-content">
+        <div class="footer-section">
+            <h4>About Us</h4>
+            <p>Codeplay is a platform designed for creatives, gamers, and developers. Explore, learn, and create with us!</p>
+        </div>
+        <div class="footer-section">
+            <h4>Quick Links</h4>
+            <ul>
+                <li><a href="index.html">Home</a></li>
+                <li><a href="comunidad.html">Community</a></li>
+                <li><a href="juegos.html">Games</a></li>
+                <li><a href="formulario.html">Create</a></li>
+            </ul>
+        </div>
+        <div class="footer-section">
+            <h4>Contact Us</h4>
+            <p>Email: contacto@proyectoalternativo.com</p>
+            <p>Phone: +123 456 789</p>
+        </div>
+    </div>
+    <div class="footer-bottom">
+        <p>&copy; 2024 CodePlay. All rights reserved.</p>
+    </div>
+</footer>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        fetch('/users/session', { method: 'GET', credentials: 'same-origin' })
+            .then(response => response.json())
+            .then(data => {
+                if (data.loggedIn) {
+                    // Actualizar el nombre de usuario en el perfil
+                    document.getElementById('username-display').textContent = data.username;
+    
+                    const userId = data.userId;
+                    fetch(`/api/user/${userId}/projects`)
+                        .then(res => res.json())
+                        .then(projects => {
+                            const container = document.getElementById('projects-list');
+                            container.innerHTML = ''; // Limpiar contenedor
+    
+                            if (projects.length) {
+                                projects.forEach(project => {
+                                    const card = document.createElement('div');
+                                    card.classList.add('project-card');
+    
+                                    // Crear iframe para la vista previa del proyecto
+                                    const iframe = document.createElement('iframe');
+                                    iframe.srcdoc = `
+                                        <!DOCTYPE html>
+                                        <html lang="en">
+                                        <head>
+                                            <style>${project.css}</style>
+                                        </head>
+                                        <body>
+                                            ${project.html}
+                                            <script>${project.js}<\/script>
+                                        </body>
+                                        </html>
+                                    `;
+                                    iframe.width = "100%";
+                                    iframe.height = "200px";
+                                    iframe.style.border = "1px solid #ccc";
+    
+                                    // Agregar contenido a la tarjeta
+                                    card.innerHTML = `
+                                        <h3>${project.title || 'Proyecto Sin Título'}</h3>
+                                        <button onclick="viewProject('${project._id}')">Ver Proyecto</button>
+                                    `;
+                                    card.appendChild(iframe);
+                                    container.appendChild(card);
+                                });
+                            } else {
+                                container.innerHTML = '<p>No se encontraron proyectos</p>';
+                            }
+                        })
+                        .catch(err => {
+                            console.error('Error al cargar los proyectos:', err);
+                            document.getElementById('projects-list').innerHTML = '<p>Error al cargar los proyectos.</p>';
+                        });
+                } else {
+                    window.location.href = '/login.html'; // Redirigir al login si no está logueado
+                }
+            })
+            .catch(err => console.error('Error verificando la sesión:', err));
+    });
+    
+    // Función para ver un proyecto individual
+    function viewProject(projectId) {
+        window.location.href = `/project.html?id=${projectId}`;
+    }
+    </script>
+    
+
+</body>
+</html>

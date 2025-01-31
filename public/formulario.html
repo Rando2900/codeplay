@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Alternative Project</title>
+  <link rel="stylesheet" href="stylesheets/formulario.css">
+</head>
+
+<body>
+  <header class="header">
+    <nav class="nav">
+      <a href="index.html">Home</a>
+      <a href="comunidad.html">Community</a>
+      <a href="juegos.html">Games</a>
+      <a href="formulario.html">Crear</a>
+    </nav>
+    <div class="logo">
+      <a href="index.html"><img src="images/CodePlay_ejemplo_sin_fondo (1).png" alt="Project Logo"></a>
+    </div>
+    <div id="userMenu" class="buttons">
+      <a href="login.html"><button>Sign In</button></a>
+      <a href="registro.html"><button>Register</button></a>
+    </div>
+  </header>
+
+  <main class="main-content">
+    <h1>Select the type of content you want to create</h1>
+    <div class="button-container">
+      <a href="anotaciones.html"><button class="styled-button">Annotation</button></a>
+      <a href="Proyecto.html"><button class="styled-button">Project</button></a>
+      <a href="editarjuegos.html"><button class="styled-button">Game</button></a>
+    </div>
+  </main>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const userMenu = document.getElementById('userMenu'); // Obtén el contenedor de los botones
+  
+        // Verificar si la cookie de sesión existe
+        fetch('/users/session', { method: 'GET', credentials: 'same-origin' })
+            .then(response => response.json())
+            .then(data => {
+                if (!data.loggedIn) {
+                    // Redirige al login si no está logueado
+                    window.location.href = 'login.html';
+                } else {
+                    // Reemplaza los botones con el menú de perfil si está logueado
+                    userMenu.innerHTML = `
+                        <div class="profile-menu">
+                            <img src="images/profile-icon.png" alt="Perfil" style="cursor: pointer; width: 30px; height: 30px; border-radius: 50%;">
+                            <span>Hola, ${data.username}</span>
+                            <button onclick="logout()">Cerrar Sesión</button>
+                        </div>
+                    `;
+                }
+            })
+            .catch(err => console.error('Error verificando la sesión:', err));
+    });
+  
+    function logout() {
+    fetch('/users/logout', { method: 'POST', credentials: 'same-origin' })
+        .then(response => {
+            if (response.ok) {
+                window.location.href = 'login.html'; // Redirige al login
+            } else {
+                alert('Error al cerrar sesión.');
+            }
+        })
+        .catch(err => console.error('Error cerrando sesión:', err));
+}
+
+
+  </script>
+
+</body>
+</html>

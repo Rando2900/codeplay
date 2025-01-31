@@ -1,0 +1,337 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    margin: 0;
+    padding: 0;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 30px;
+    background-color: #f9f9f9;
+    border-bottom: 1px solid #ddd;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    height: 80px;
+}
+
+.header nav {
+    display: flex;
+    gap: 20px;
+}
+
+.header nav a {
+    text-decoration: none;
+    color: #000;
+    font-size: 16px;
+    font-weight: bold;
+    transition: color 0.3s ease;
+}
+
+.header nav a:hover {
+    color: #0056b3;
+}
+
+.header .logo img {
+    height: 60px;
+}
+
+.header .buttons {
+    display: flex;
+    gap: 15px;
+}
+
+.header .buttons button {
+    background-color: #0056b3;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.header .buttons button:hover {
+    background-color: #003d80;
+    transform: scale(1.05);
+}
+
+main {
+    padding: 20px 30px;
+}
+
+main h1 {
+    text-align: center;
+    color: #333;
+    font-size: 28px;
+    margin-bottom: 20px;
+}
+
+.project-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 30px; /* Aumentamos el espacio entre las tarjetas */
+    padding: 30px; /* Aumentamos el padding del contenedor */
+}
+
+.project-card {
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    padding: 25px; /* Aumentamos el padding interno */
+    text-align: center;
+    width: 100%;
+    max-width: 350px;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    margin-bottom: 30px; /* Aumentamos la separación entre las filas */
+}
+
+.project-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 10px rgba(0, 0, 0, 0.2);
+}
+
+.project-card h2 {
+    font-size: 20px;
+    color: #0056b3;
+    margin-bottom: 10px;
+}
+
+.project-card p {
+    font-size: 14px;
+    color: #666;
+    margin: 5px 0;
+}
+
+.project-card button {
+    background-color: #0056b3;
+    color: white;
+    border: none;
+    padding: 10px;
+    border-radius: 5px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    width: 100%;
+}
+
+.project-card button:hover {
+    background-color: #003d80;
+}
+
+.footer {
+    background-color: #001a57;
+    color: #ffffff;
+    padding: 20px 30px;
+}
+
+.footer-content {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+.footer-section {
+    flex: 1 1 calc(33% - 20px);
+    min-width: 200px;
+}
+
+.footer-section h4 {
+    color: #ffcc00;
+    margin-bottom: 10px;
+}
+
+.footer-section p,
+.footer-section ul li a {
+    font-size: 14px;
+    line-height: 1.6;
+    color: #ffffff;
+    text-decoration: none;
+}
+
+.footer-section ul li a:hover {
+    color: #ffcc00;
+}
+
+.footer-bottom {
+    text-align: center;
+    margin-top: 20px;
+    font-size: 12px;
+    border-top: 1px solid #ffffff;
+    padding-top: 10px;
+}body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    margin: 0;
+    padding: 0;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 30px;
+    background-color: #f9f9f9;
+    border-bottom: 1px solid #ddd;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    height: 80px;
+}
+
+.header nav {
+    display: flex;
+    gap: 20px;
+}
+
+.header nav a {
+    text-decoration: none;
+    color: #000;
+    font-size: 16px;
+    font-weight: bold;
+    transition: color 0.3s ease;
+}
+
+.header nav a:hover {
+    color: #0056b3;
+}
+
+.header .logo img {
+    height: 60px;
+}
+
+.header .buttons {
+    display: flex;
+    gap: 15px;
+}
+
+.header .buttons button {
+    background-color: #0056b3;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.header .buttons button:hover {
+    background-color: #003d80;
+    transform: scale(1.05);
+}
+
+main {
+    padding: 20px 30px;
+}
+
+main h1 {
+    text-align: center;
+    color: #333;
+    font-size: 28px;
+    margin-bottom: 20px;
+}
+
+.project-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 30px; /* Aumentamos el espacio entre las tarjetas */
+    padding: 30px; /* Aumentamos el padding del contenedor */
+}
+
+.project-card {
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    padding: 7px; /* Aumentamos el padding interno */
+    text-align: center;
+    width: 100%;
+    max-width: 350px;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    margin-bottom: 30px; /* Aumentamos la separación entre las filas */
+}
+
+.project-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 10px rgba(0, 0, 0, 0.2);
+}
+
+.project-card h2 {
+    font-size: 20px;
+    color: #0056b3;
+    margin-bottom: 10px;
+}
+
+.project-card p {
+    font-size: 14px;
+    color: #666;
+    margin: 5px 0;
+}
+
+
+
+.footer {
+    background-color: #001a57;
+    color: #ffffff;
+    padding: 20px 30px;
+}
+
+.footer-content {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+.footer-section {
+    flex: 1 1 calc(33% - 20px);
+    min-width: 200px;
+}
+
+.footer-section h4 {
+    color: #ffcc00;
+    margin-bottom: 10px;
+}
+
+.footer-section p,
+.footer-section ul li a {
+    font-size: 14px;
+    line-height: 1.6;
+    color: #ffffff;
+    text-decoration: none;
+}
+
+.footer-section ul li a:hover {
+    color: #ffcc00;
+}
+
+.footer-bottom {
+    text-align: center;
+    margin-top: 20px;
+    font-size: 12px;
+    border-top: 1px solid #ffffff;
+    padding-top: 10px;
+}
+.project-creator {
+    font-size: 14px;
+    color: #555;
+    margin-top: 10px;
+    text-align: center;
+    font-weight: bold;
+}
+.like-button {
+    background: none;
+    border: none;
+    font-size: 18px;
+    cursor: pointer;
+    transition: transform 0.2s ease, opacity 0.2s ease;
+    color: #e63946; /* Rojo */
+}
+
+.like-button:hover {
+    transform: scale(1.2);
+    opacity: 0.8;
+}

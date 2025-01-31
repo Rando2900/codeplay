@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Proyecto Alternativo</title>
+  <link rel="stylesheet" href="stylesheets/style.css">
+  <style>
+    /* Contenedor del video de introducción */
+    #video-intro {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: black;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+    }
+
+    /* Ocultar el contenido principal al inicio */
+    #main-content {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <!-- Contenedor del video de introducción -->
+  <div id="video-intro">
+    <video id="intro-video" autoplay muted>
+      <source src="images/El texto del párrafo.mp4" type="video/mp4">
+      Tu navegador no soporta videos.
+    </video>
+  </div>
+
+  <!-- Contenido principal de la página -->
+  <div id="main-content">
+    <header class="header">
+      <nav class="nav">
+        <a href="index.html">Inicio</a>
+        <a href="comunidad.html">Comunidad</a>
+        <a href="juegos.html">Juegos</a>
+        <a href="formulario.html">Crear</a>
+      </nav>
+      <div class="logo">
+        <a href="index.html"><img src="images/CodePlay_ejemplo_sin_fondo (1).png" alt="Logo del Proyecto" /></a>
+      </div>
+      <div class="buttons">
+        <a href="login.html"><button>Iniciar Sesión</button></a>
+        <a href="resgistro.html"><button>Registrarse</button></a>
+      </div>
+    </header>
+  <!-- Barra verde -->
+    <div id="notification-bar"></div>
+
+  
+    <section class="hero">
+        <div>
+            <h1>CodePlay</h1>
+            <p>Que comienze el juego.</p>
+            <button onclick="scrollToFeatures()">Descubrir más</button>
+        </div>
+    </section>
+
+
+  
+
+<section class="features" id="features">
+  <h2>Características Destacadas</h2>
+  <div class="grid">
+      <div class="card">
+          <h3>Crea Tus Propios Proyectos</h3>
+          <p>Con nuestro editor ONLINE puedes crear proyectos y publicarlos para que todos los usuarios puedan verlos.</p>
+          <a href="editar.html"><button class="card-button">Button</button></a>
+      </div>
+      <div class="card">
+          <h3>Juega</h3>
+          <p>Prueba, disfruta y crea juegos.</p>
+          <a href="juegos.html"><button class="card-button">Button</button></a>
+      </div>
+      <div class="card">
+          <h3>Guarda Trozos de Código</h3>
+          <p>Con nuestro sistema de anotaciones puedes guardar trozos de código para que jamás se te olviden.</p>
+          <a href="anotaciones"><button class="card-button">Button</button></a>
+      </div>
+  </div>
+  <br>
+  <br> 
+  <div class="unique-container">
+    <a class="codepen-button" href="editar.html"><span>Start Coding</span></a>
+  </div>
+  <br><br>
+
+  <div id="custom-section" style="display: flex; justify-content: space-between; padding: 20px; background-color: #f9f9f9; border-top: 1px solid #ddd;">
+    <div style="width: 48%; text-align: center;">
+      <h1>Guarda tus Anotaciones </h1>
+      <p>Guarda tus trozos de codigo , para no perderlos jamas.</p>
+      
+    </div>
+    <div style="width: 32%; text-align: right;">
+      
+<div class="vcard">
+  <div class="titlebar">
+    <span class="buttons">
+    <button class="minimize">
+			<svg x="0px" y="0px" viewBox="0 0 10.2 1"><rect x="0" y="50%" width="10.2" height="1"></rect></svg>
+		</button>
+    <button class="maximize">
+			<svg viewBox="0 0 10 10"><path d="M0,0v10h10V0H0z M9,9H1V1h8V9z"></path></svg>
+		</button>
+    <button class="close">
+			<svg viewBox="0 0 10 10"><polygon points="10.2,0.7 9.5,0 5.1,4.4 0.7,0 0,0.7 4.4,5.1 0,9.5 0.7,10.2 5.1,5.8 9.5,10.2 10.2,9.5 5.8,5.1"></polygon></svg>
+		</button>
+    </span>
+  </div>
+  <div class="cppcode">
+    <pre id="pre"><code><span class="s1">#include</span> <span class="s2">&lt;iostream&gt;</span>
+using<span class="s3"> namespace </span>std<span class="sc">;</span>
+
+<span class="s3">int</span> <span class="s2">main()</span> <span class="curlies">{</span>
+
+  <span class="s3">int</span> <span class="s4">a</span> <span class="operator">=</span> 12<span class="sc">;</span>
+  <span class="s3">int</span> <span class="s4">b</span> <span class="operator">=</span> 5<span class="sc">;</span>
+
+  <span class="s4">cout</span> <span class="s5">&lt;&lt;</span> <span class="s1">"Sum of the numbers
+    is: "</span> <span class="s5">&lt;&lt;</span> <span class="rounds">(</span><span class="s4">a </span><span class="operator">+</span><span class="s4"> b</span><span class="rounds">)</span><span class="sc">;</span>
+
+  <span class="s6">return</span> 0<span class="sc">;</span>
+
+<span class="curlies">}</span>
+    </code></pre>
+  </div>
+</div>
+
+    </div>
+  </div>
+  
+ 
+</section>
+<div class="redes" id="custom-section" style="display: flex; justify-content: space-between; padding: 20px; background-color: #ffffff; border-top: 1px solid #ffffff;">
+  <div style="width: 48%; display: flex; justify-content: center; align-items: center; text-align: center;">
+    <div class="rcard">
+      <ul>
+        <li class="iso-pro">
+          <span></span>
+          <span></span>
+          <span></span>
+          <a href="">
+            <svg
+              viewBox="0 0 320 512"
+              xmlns="http://www.w3.org/2000/svg"
+              class="svg"
+            >
+              <path
+                d="M279.14 288l14.22-92.66h-88.91v-60.13c0-25.35 12.42-50.06 52.24-50.06h40.42V6.26S260.43 0 225.36 0c-73.22 0-121.08 44.38-121.08 124.72v70.62H22.89V288h81.39v224h100.17V288z"
+              ></path></svg
+          ></a>
+          <div class="text">Facebook</div>
+        </li>
+        <li class="iso-pro">
+          <span></span>
+          <span></span>
+          <span></span>
+          <a href="">
+            <svg
+              class="svg"
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 512 512"
+            >
+              <path
+                d="M459.37 151.716c.325 4.548.325 9.097.325 13.645 0 138.72-105.583 298.558-298.558 298.558-59.452 0-114.68-17.219-161.137-47.106 8.447.974 16.568 1.299 25.34 1.299 49.055 0 94.213-16.568 130.274-44.832-46.132-.975-84.792-31.188-98.112-72.772 6.498.974 12.995 1.624 19.818 1.624 9.421 0 18.843-1.3 27.614-3.573-48.081-9.747-84.143-51.98-84.143-102.985v-1.299c13.969 7.797 30.214 12.67 47.431 13.319-28.264-18.843-46.781-51.005-46.781-87.391 0-19.492 5.197-37.36 14.294-52.954 51.655 63.675 129.3 105.258 216.365 109.807-1.624-7.797-2.599-15.918-2.599-24.04 0-57.828 46.782-104.934 104.934-104.934 30.213 0 57.502 12.67 76.67 33.137 23.715-4.548 46.456-13.32 66.599-25.34-7.798 24.366-24.366 44.833-46.132 57.827 21.117-2.273 41.584-8.122 60.426-16.243-14.292 20.791-32.161 39.308-52.628 54.253z"
+              ></path>
+            </svg>
+          </a>
+          <div class="text">Twitter</div>
+        </li>
+        <li class="iso-pro">
+          <span></span>
+          <span></span>
+          <span></span>
+          <a href="">
+            <svg
+              class="svg"
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 448 512"
+            >
+              <path
+                d="M224.1 141c-63.6 0-114.9 51.3-114.9 114.9s51.3 114.9 114.9 114.9S339 319.5 339 255.9 287.7 141 224.1 141zm0 189.6c-41.1 0-74.7-33.5-74.7-74.7s33.5-74.7 74.7-74.7 74.7 33.5 74.7 74.7-33.6 74.7-74.7 74.7zm146.4-194.3c0 14.9-12 26.8-26.8 26.8-14.9 0-26.8-12-26.8-26.8s12-26.8 26.8-26.8 26.8 12 26.8 26.8zm76.1 27.2c-1.7-35.9-9.9-67.7-36.2-93.9-26.2-26.2-58-34.4-93.9-36.2-37-2.1-147.9-2.1-184.9 0-35.8 1.7-67.6 9.9-93.9 36.1s-34.4 58-36.2 93.9c-2.1 37-2.1 147.9 0 184.9 1.7 35.9 9.9 67.7 36.2 93.9s58 34.4 93.9 36.2c37 2.1 147.9 2.1 184.9 0 35.9-1.7 67.7-9.9 93.9-36.2 26.2-26.2 34.4-58 36.2-93.9 2.1-37 2.1-147.8 0-184.8zM398.8 388c-7.8 19.6-22.9 34.7-42.6 42.6-29.5 11.7-99.5 9-132.1 9s-102.7 2.6-132.1-9c-19.6-7.8-34.7-22.9-42.6-42.6-11.7-29.5-9-99.5-9-132.1s-2.6-102.7 9-132.1c7.8-19.6 22.9-34.7 42.6-42.6 29.5-11.7 99.5-9 132.1-9s102.7-2.6 132.1 9c19.6-7.8 34.7-22.9 42.6 42.6 11.7-29.5 9-99.5 9-132.1z"
+              ></path>
+            </svg>
+          </a>
+          <div class="text">Instagram</div>
+        </li>
+      </ul>
+    </div>    
+  </div>
+  <div style="width: 48%; ">
+    <div class="cardtext">
+      <div class="loader">
+        <h4>siguenos en </h4>
+        <div class="words">
+          <span class="word">Prnhub</span>
+          <span class="word">Instagram</span>
+          <span class="word">Facebook</span>
+          <span class="word">Onlyfans</span>
+          <span class="word">X</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+    
+</main>
+    <div style="text-align: center;">
+    </div>
+    <footer class="footer">
+      <div class="footer-content">
+        <div class="footer-section">
+          <h4>Acerca de Nosotros</h4>
+          <p>Codeplay es una plataforma diseñada para creativos, jugadores y desarrolladores. ¡Explora, aprende y crea con nosotros!</p>
+        </div>
+        <div class="footer-section">
+          <h4>Enlaces Rápidos</h4>
+          <ul>
+            <li><a href="index.html">Inicio</a></li>
+            <li><a href="comunidad.html">Comunidad</a></li>
+            <li><a href="juegos.html">Juegos</a></li>
+            <li><a href="editar.html">Crear</a></li>
+          </ul>
+        </div>
+        <div class="footer-section">
+          <h4>Contáctanos</h4>
+          <p>Email: contacto@proyectoalternativo.com</p>
+          <p>Teléfono: +123 456 789</p>
+          <p>Síguenos en:</p>
+          <div class="social-icons">
+            <a href="#"><img src="images/facebook-icon.png" alt="Facebook"></a>
+            <a href="#"><img src="images/twitter-icon.png" alt="Twitter"></a>
+            <a href="#"><img src="images/instagram-icon.png" alt="Instagram"></a>
+          </div>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>&copy; 2024  CodePlay . Todos los derechos reservados.</p>
+      </div>
+    </footer>
+  </div>
+
+  <script>
+    // Detectar el final del video o esperar 3 segundos
+    const videoIntro = document.getElementById('video-intro');
+    const mainContent = document.getElementById('main-content');
+
+    setTimeout(() => {
+      videoIntro.style.display = 'none'; // Ocultar el video
+      mainContent.style.display = 'block'; // Mostrar el contenido principal
+    }, 4000); // Esperar 3 segundos
+  </script>
+
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        // Verificar si la cookie de sesión existe
+        fetch('/users/session', { method: 'GET', credentials: 'same-origin' })
+            .then(response => response.json())
+            .then(data => {
+                const videoIntro = document.getElementById('video-intro');
+                const mainContent = document.getElementById('main-content');
+
+                if (data.loggedIn) {
+                    // Ocultar el video si el usuario ha iniciado sesión
+                    videoIntro.style.display = 'none';
+                    mainContent.style.display = 'block';
+                } else {
+                    // Si no ha iniciado sesión, esperar a que el video termine o pasar 4 segundos
+                    setTimeout(() => {
+                        videoIntro.style.display = 'none';
+                        mainContent.style.display = 'block';
+                    }, 4000);
+                }
+            })
+            .catch(err => console.error('Error verificando la sesión:', err));
+    });
+
+    function logout() {
+        fetch('/users/logout', { method: 'POST', credentials: 'same-origin' })
+            .then(() => {
+                window.location.reload();
+            })
+            .catch(err => console.error('Error cerrando sesión:', err));
+    }
+</script>
+
+
+<!-- Script barra Verde -->
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+      fetch('/users/session', { method: 'GET', credentials: 'same-origin' })
+          .then(response => response.json())
+          .then(data => {
+              const userMenu = document.querySelector('.buttons');
+              if (data.loggedIn) {
+                  userMenu.innerHTML = `
+                      <div class="profile-menu">
+                          <img src="images/profile-icon.png" alt="Perfil" style="cursor: pointer; width: 30px; height: 30px; border-radius: 50%;">
+                          <span>Hola, ${data.username}</span>
+                          <button onclick="logout()">Cerrar Sesión</button>
+                      </div>
+                  `;
+                  // Mostrar la barra de notificación
+                  showNotification('Inicio de sesión exitoso');
+              }
+          })
+          .catch(err => console.error('Error verificando la sesión:', err));
+  });
+
+  function showNotification(message) {
+      const notificationBar = document.getElementById('notification-bar');
+      notificationBar.textContent = message;
+      notificationBar.style.display = 'block';
+
+      // Ocultar automáticamente después de 5 segundos
+      setTimeout(() => {
+          notificationBar.style.display = 'none';
+      }, 5000);
+  }
+
+  function logout() {
+      fetch('/users/logout', { method: 'POST', credentials: 'same-origin' })
+          .then(() => {
+              window.location.reload();
+          })
+          .catch(err => console.error('Error cerrando sesión:', err));
+  }
+  
+        function scrollToFeatures() {
+            document.getElementById('features').scrollIntoView({ behavior: 'smooth' });
+        }
+</script>
+
+
+</body>
+</html>

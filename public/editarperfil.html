@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="stylesheets/editarPerfil.css">
+    <title>Editar Perfil</title>
+</head>
+<body>
+<header class="header">
+    <nav class="nav">
+        <a href="index.html">Home</a>
+        <a href="comunidad.html">Community</a>
+        <a href="juegos.html">Games</a>
+        <a href="formulario.html">Create</a>
+    </nav>
+    <div class="logo">
+        <a href="index.html"><img src="images/CodePlay_ejemplo_sin_fondo.png" alt="Project Logo"></a>
+    </div>
+</header>
+
+<main class="profile-edit-container">
+    <h1>Editar Perfil</h1>
+    <form id="edit-profile-form" action="/users/updateProfile" method="POST">
+        <div class="form-section">
+            <label for="username">Usuario</label>
+            <input type="text" id="username" name="username" placeholder="Ingresa tu nuevo usuario" required>
+        </div>
+        <div class="form-section">
+            <label for="password">Contraseña</label>
+            <input type="password" id="password" name="password" placeholder="Ingresa tu nueva contraseña" required>
+        </div>
+        <div class="form-buttons">
+            <button type="submit">Guardar Cambios</button>
+            <button type="button" onclick="window.location.href='perfil.html'">Cancelar</button>
+        </div>
+    </form>
+</main>
+
+<footer class="footer">
+    <div class="footer-content">
+        <div class="footer-section">
+            <h4>About Us</h4>
+            <p>Codeplay es una plataforma diseñada para creativos, gamers y desarrolladores. ¡Explora, aprende y crea con nosotros!</p>
+        </div>
+        <div class="footer-section">
+            <h4>Quick Links</h4>
+            <ul>
+                <li><a href="index.html">Home</a></li>
+                <li><a href="comunidad.html">Community</a></li>
+                <li><a href="juegos.html">Games</a></li>
+                <li><a href="formulario.html">Create</a></li>
+            </ul>
+        </div>
+        <div class="footer-section">
+            <h4>Contact Us</h4>
+            <p>Email: contacto@proyectoalternativo.com</p>
+            <p>Phone: +123 456 789</p>
+        </div>
+    </div>
+    <div class="footer-bottom">
+        <p>&copy; 2024 CodePlay. All rights reserved.</p>
+    </div>
+</footer>
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        fetch('/users/session', { method: 'GET', credentials: 'same-origin' })
+            .then(response => response.json())
+            .then(data => {
+                if (!data.loggedIn) {
+                    window.location.href = 'login.html';
+                }
+            })
+            .catch(err => console.error('Error verificando la sesión:', err));
+    });
+</script>
+</body>
+</html>
