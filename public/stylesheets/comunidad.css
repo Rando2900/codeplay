@@ -123,47 +123,112 @@ main h1 {
 }
 
 .footer {
-    background-color: #001a57;
-    color: #ffffff;
+    background-color: #001a57; /* Color principal del footer */
+    color: #ffffff; /* Texto blanco */
     padding: 20px 30px;
-}
-
-.footer-content {
+    border-top: 2px solid #0056b3; /* Línea superior */
+  }
+  
+  .footer-content {
     display: flex;
     justify-content: space-between;
     flex-wrap: wrap;
     gap: 20px;
-}
-
-.footer-section {
-    flex: 1 1 calc(33% - 20px);
+  }
+  
+  .footer-section {
+    flex: 1 1 calc(33% - 20px); /* Tres columnas ajustables */
     min-width: 200px;
-}
-
-.footer-section h4 {
-    color: #ffcc00;
+  }
+  
+  .footer-section h4 {
     margin-bottom: 10px;
-}
-
-.footer-section p,
-.footer-section ul li a {
+    font-size: 18px;
+    color: #ffcc00; /* Color destacado */
+  }
+  
+  .footer-section p,
+  .footer-section ul,
+  .footer-section a {
     font-size: 14px;
     line-height: 1.6;
     color: #ffffff;
+  }
+  
+  .footer-section ul {
+    list-style: none;
+    padding: 0;
+  }
+  
+  .footer-section ul li {
+    margin-bottom: 5px;
+  }
+  
+  .footer-section ul li a {
     text-decoration: none;
-}
-
-.footer-section ul li a:hover {
-    color: #ffcc00;
-}
-
-.footer-bottom {
+    color: #ffcc00; /* Color de enlace */
+    transition: color 0.3s ease;
+  }
+  
+  .footer-section ul li a:hover {
+    color: #ffffff;
+  }
+  
+  .social-icons a {
+    display: inline-block;
+    margin-right: 10px;
+    transition: transform 0.3s ease;
+  }
+  
+  .social-icons a:hover {
+    transform: scale(1.2);
+  }
+  
+  .social-icons img {
+    width: 24px;
+    height: 24px;
+  }
+  
+  .footer-bottom {
     text-align: center;
     margin-top: 20px;
     font-size: 12px;
     border-top: 1px solid #ffffff;
     padding-top: 10px;
-}body {
+  }
+  
+  
+  .profile-menu {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+  }
+  
+  .profile-menu img {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+  }
+  
+  .profile-menu span {
+      font-size: 16px;
+      color: #333;
+  }
+  
+  .profile-menu button {
+      padding: 5px 10px;
+      background-color: #000080;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-weight: bold;
+  }
+  
+  .profile-menu button:hover {
+      background-color: #000066;
+  }
+  body {
     font-family: Arial, sans-serif;
     background-color: #f4f4f4;
     margin: 0;

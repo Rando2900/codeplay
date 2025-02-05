@@ -11,27 +11,98 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 15px 30px;
-    background-color: #282c34;
-    color: white;
-}
-
-.nav a {
-    color: white;
+    padding: 10px 30px; /* Espacio mayor para una cabecera más grande */
+    background-color: #f9f9f9;
+    border-bottom: 1px solid #ddd;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Sombra sutil */
+    height: 100px; /* Altura aumentada */
+  }
+  
+  .header nav {
+    display: flex;
+    gap: 20px; /* Espacio entre los enlaces */
+  }
+  
+  .header nav a {
     text-decoration: none;
-    margin-right: 15px;
-    font-size: 16px;
-    transition: color 0.3s ease;
-}
-
-.nav a:hover {
-    color: #61dafb;
-}
-
-.logo img {
-    height: 50px;
-}
-
+    color: #000;
+    font-size: 18px; /* Tamaño más grande */
+    transition: color 0.3s ease; /* Transición suave */
+  }
+  
+  .header nav a:hover {
+    color: #000080; /* Cambia el color del texto al pasar el cursor */
+  }
+  
+  .header nav a::after {
+    content: "";
+    position: absolute;
+    width: 0;
+    height: 2px;
+    background-color: #000080;
+    left: 0;
+    bottom: -3px;
+    transition: width 0.3s ease; /* Subrayado animado */
+  }
+    ç
+  .header nav a:hover::after {
+    width: 100%; /* Expande la línea al pasar el cursor */
+  }
+  
+  /* Logo centrado */
+  .header .logo {
+    text-align: center;
+  }
+  
+  .header .logo img {
+    height: 70px; /* Tamaño del logo */
+    object-fit: contain; /* Ajuste del tamaño para mantener proporciones */
+  }
+  
+  /* Botones a la derecha */
+  .header .buttons {
+    display: flex;
+    gap: 15px; /* Espacio entre botones */
+  }
+  
+  .header .buttons button {
+    background-color: #001a57;
+    color: white;
+    border: none;
+    padding: 10px 20px; /* Botones más grandes */
+    border-radius: 5px;
+    font-size: 16px; /* Tamaño de texto aumentado */
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease; /* Transición suave */
+  }
+  
+  .header .buttons button:hover {
+    background-color: #0056b3;
+    transform: scale(1.05); /* Efecto de agrandamiento */
+  }
+  .hero {
+    text-align: center;
+    padding: 5rem 2rem;
+    background: #0047AB;
+    color: #fff;
+  }
+  
+  .features {
+    background: #fff;
+    color: #000;
+    padding: 2rem 0;
+  }
+  
+  .features h2 {
+    text-align: center;
+    margin-bottom: 2rem;
+  }
+  
+  .feature {
+    text-align: center;
+    padding: 1rem;
+  }
+  
 /* Main Container */
 .profile-edit-container {
     max-width: 800px;
@@ -119,51 +190,111 @@ textarea {
     background-color: #d12d27;
 }
 
-/* Footer Styling */
+/* Footer */
 .footer {
-    background-color: #282c34;
-    color: white;
+    background-color: #001a57; /* Color principal del footer */
+    color: #ffffff; /* Texto blanco */
     padding: 20px 30px;
-}
-
-.footer-content {
+    border-top: 2px solid #0056b3; /* Línea superior */
+  }
+  
+  .footer-content {
     display: flex;
     justify-content: space-between;
-    gap: 20px;
     flex-wrap: wrap;
-}
-
-.footer-section h4 {
+    gap: 20px;
+  }
+  
+  .footer-section {
+    flex: 1 1 calc(33% - 20px); /* Tres columnas ajustables */
+    min-width: 200px;
+  }
+  
+  .footer-section h4 {
     margin-bottom: 10px;
     font-size: 18px;
-}
-
-.footer-section p,
-.footer-section ul {
+    color: #ffcc00; /* Color destacado */
+  }
+  
+  .footer-section p,
+  .footer-section ul,
+  .footer-section a {
     font-size: 14px;
-    color: #ccc;
-}
-
-.footer-section ul {
+    line-height: 1.6;
+    color: #ffffff;
+  }
+  
+  .footer-section ul {
     list-style: none;
-}
-
-.footer-section ul li {
+    padding: 0;
+  }
+  
+  .footer-section ul li {
     margin-bottom: 5px;
-}
-
-.footer-section ul li a {
-    color: #61dafb;
+  }
+  
+  .footer-section ul li a {
     text-decoration: none;
-}
-
-.footer-section ul li a:hover {
-    text-decoration: underline;
-}
-
-.footer-bottom {
+    color: #ffcc00; /* Color de enlace */
+    transition: color 0.3s ease;
+  }
+  
+  .footer-section ul li a:hover {
+    color: #ffffff;
+  }
+  
+  .social-icons a {
+    display: inline-block;
+    margin-right: 10px;
+    transition: transform 0.3s ease;
+  }
+  
+  .social-icons a:hover {
+    transform: scale(1.2);
+  }
+  
+  .social-icons img {
+    width: 24px;
+    height: 24px;
+  }
+  
+  .footer-bottom {
     text-align: center;
-    margin-top: 10px;
+    margin-top: 20px;
     font-size: 12px;
-    color: #aaa;
-}
+    border-top: 1px solid #ffffff;
+    padding-top: 10px;
+  }
+  
+  
+  .profile-menu {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+  }
+  
+  .profile-menu img {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+  }
+  
+  .profile-menu span {
+      font-size: 16px;
+      color: #333;
+  }
+  
+  .profile-menu button {
+      padding: 5px 10px;
+      background-color: #000080;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-weight: bold;
+  }
+  
+  .profile-menu button:hover {
+      background-color: #000066;
+  }
+  
