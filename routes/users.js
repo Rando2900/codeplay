@@ -11,5 +11,7 @@
 
     router.post('/updateProfile', userControllers.updateProfile);
 
+    router.get('/verificar-cookie', userControllers.verificarCookie);
+
     module.exports = router;
 

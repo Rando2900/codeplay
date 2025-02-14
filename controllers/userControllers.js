@@ -34,56 +34,50 @@ const registerUser = async (req, res) => {
 };
 
 
+
+// 🔹 Inicio de sesión
 const loginUser = async (req, res) => {
     const { usuario, contraseña } = req.body;
 
-    console.log('Datos recibidos del cliente:', { usuario, contraseña });
-
     if (!usuario || !contraseña) {
-        console.log('Faltan datos en la solicitud');
         return res.status(400).send('El nombre de usuario y la contraseña son obligatorios.');
     }
 
     try {
-        const user = await User.findOne({ usuario }); // Busca en la base de datos
-        console.log('Usuario encontrado en la base de datos:', user);
+        const user = await User.findOne({ usuario });
 
-        if (!user) {
-            console.log('Usuario no encontrado.');
-            return res.status(401).send('Usuario no encontrado.');
+        if (!user || user.contraseña !== contraseña) {
+            return res.status(401).send('Credenciales incorrectas.');
         }
 
-        if (user.contraseña !== contraseña) {
-            console.log('Contraseña incorrecta.');
-            return res.status(401).send('Contraseña incorrecta.');
-        }
+        req.session.userId = user._id; // Guardamos solo el ID del usuario en la sesión
+        req.session.username = user.usuario; // Guardamos el nombre
+        // 🔹 Establecer cookie segura y firmada
+        res.cookie('loggedInUser', user._id, {  
+            httpOnly: true,  
+            secure: process.env.NODE_ENV === 'production',  
+            signed: true,  
+            sameSite: 'Strict',  
+            maxAge: 1000 * 60 * 60 * 24  
+        });
 
-        console.log('Inicio de sesión exitoso para el usuario:', usuario);
-
-        // Guardar el ID del usuario en la sesión
-        req.session.userId = user._id;
-
-        // Opcional: Si decides mantener la cookie, actualiza su valor si es necesario
-        res.cookie('loggedInUser', usuario, { httpOnly: true });
-
-        res.status(200).json({ message: 'Login exitoso', redirect: 'index.html', userId: user._id });
+        res.status(200).json({ message: 'Login exitoso', redirect: 'index.html' });
     } catch (err) {
-        console.error('Error al iniciar sesión:', err);
         res.status(500).send('Error interno del servidor.');
     }
 };
 
-
+// 🔹 Verificar sesión
 const checkSession = (req, res) => {
-    const loggedInUser = req.cookies.loggedInUser;
-    const userId = req.session.userId; // ID del usuario en la sesión
+    const userId = req.session.userId;
+    const username = req.session.username; // Obtener el nombre de usuario
+
     if (userId) {
-        res.status(200).json({ loggedIn: true, username: loggedInUser, userId });
+        res.status(200).json({ loggedIn: true, userId, username });
     } else {
         res.status(200).json({ loggedIn: false });
     }
 };
-
 const logoutUser = (req, res) => {
     req.session.destroy((err) => {
         if (err) {
@@ -138,6 +132,14 @@ const updateProfile = async (req, res) => {
     }
 };
 
+const verificarCookie = (req, res) => {
+    const miCookie = req.signedCookies.mi_cookie; // Accede a cookies firmadas
+    if (!miCookie) {
+        return res.status(400).send('Cookie inválida o ausente');
+    }
+    res.status(200).send(`Cookie válida: ${miCookie}`);
+};
+
 module.exports = {
     getUsers,
     registerUser,
@@ -145,5 +147,6 @@ module.exports = {
     checkSession,
     publicarProyecto,
     updateProfile,
-    logoutUser
+    logoutUser,
+    verificarCookie
 };

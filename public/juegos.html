@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Proyecto Alternativo</title>
-  <link rel="stylesheet" href="stylesheets/style.css">
+  <link rel="stylesheet" href="stylesheets/comunidad.css">
   <style>
     /* Estilo adicional para la galería */
     #gameContainer {
@@ -61,99 +61,116 @@
   </style>
 </head>
 <body>
-
-  <!-- Contenido principal de la página -->
-  <div id="main-content">
-    <header class="header">
-      <nav class="nav">
-        <a href="index.html">Inicio</a>
-        <a href="comunidad.html">Comunidad</a>
-        <a href="juegos.html">Juegos</a>
-        <a href="formulario.html">Crear</a>
-      </nav>
-      <div class="logo">
-        <a href="index.html"><img src="images/CodePlay_ejemplo_sin_fondo (1).png" alt="Logo del Proyecto" /></a>
-      </div>
-      <div id="userMenu" class="buttons">
-        <a href="login.html"><button>Iniciar Sesión</button></a>
-        <a href="resgistro.html"><button>Registrarse</button></a>
-      </div>
-    </header>
-
-    <div style="text-align: center;">
-      <h2>Juegos populares</h2>
+<!-- Contenido principal de la página -->
+<div id="main-content">
+  <header class="header">
+    <nav class="nav">
+      <a href="index.html">Inicio</a>
+      <a href="comunidad.html">Comunidad</a>
+      <a href="juegos.html">Juegos</a>
+      <a href="formulario.html">Crear</a>
+    </nav>
+    <div class="logo">
+      <a href="index.html"><img src="images/CodePlay_ejemplo_sin_fondo (1).png" alt="Logo del Proyecto" /></a>
     </div>
-    <!-- Contenedor de juegos -->
-    <div id="gameContainer"></div>
+    <div id="userMenu" class="buttons">
+      <a href="login.html"><button>Iniciar Sesión</button></a>
+      <a href="resgistro.html"><button>Registrarse</button></a>
+    </div>
+  </header>
 
-    <footer class="footer">
-      <div class="footer-content">
-        <div class="footer-section">
-          <h4>Acerca de Nosotros</h4>
-          <p>Codeplay es una plataforma diseñada para creativos, jugadores y desarrolladores. ¡Explora, aprende y crea con nosotros!</p>
-        </div>
-        <div class="footer-section">
-          <h4>Enlaces Rápidos</h4>
-          <ul>
-            <li><a href="index.html">Inicio</a></li>
-            <li><a href="comunidad.html">Comunidad</a></li>
-            <li><a href="juegos.html">Juegos</a></li>
-            <li><a href="editar.html">Crear</a></li>
-          </ul>
-        </div>
-        <div class="footer-section">
-          <h4>Contáctanos</h4>
-          <p>Email: contacto@proyectoalternativo.com</p>
-          <p>Teléfono: +123 456 789</p>
-          <p>Síguenos en:</p>
-          <div class="social-icons">
-            <a href="#"><img src="images/facebook-icon.png" alt="Facebook"></a>
-            <a href="#"><img src="images/twitter-icon.png" alt="Twitter"></a>
-            <a href="#"><img src="images/instagram-icon.png" alt="Instagram"></a>
-          </div>
-        </div>
-      </div>
-      <div class="footer-bottom">
-        <p>&copy; 2024  CodePlay . Todos los derechos reservados.</p>
-      </div>
-    </footer>
+
+  <div style="text-align: center;">
+    <h2>Juegos Populares</h2>
   </div>
+  <div id="gameContainer"></div>
 
   <script>
-    // Función para cargar los juegos dinámicamente
-    async function cargarJuegos() {
-      const gameContainer = document.getElementById('gameContainer');
+async function cargarJuegos() {
+    const gameContainer = document.getElementById('gameContainer');
 
-      try {
-        // Llama a la API para obtener los juegos
+    try {
         const response = await fetch('/api/juegos');
         const juegos = await response.json();
 
-        // Renderiza cada juego como una tarjeta
+        gameContainer.innerHTML = '';
+        juegos.sort((a, b) => b.likes - a.likes);
+
         juegos.forEach(juego => {
-          const card = document.createElement('div');
-          card.classList.add('game-card');
+            const card = document.createElement('div');
+            card.classList.add('game-card');
 
-          card.innerHTML = `
-            <img src="images/default-thumbnail.png" alt="${juego.nombre}">
-            <div class="card-content">
-              <h3>${juego.nombre}</h3>
-              <p>${juego.descripcion}</p>
-              <button onclick="location.href='/juego.html?id=${juego._id}'">Jugar</button>
-            </div>
-          `;
+            const iframe = document.createElement('iframe');
+            iframe.srcdoc = `
+                <!DOCTYPE html>
+                <html lang='es'>
+                <head><style>${juego.css}</style></head>
+                <body>
+                    ${juego.html}
+                    <script>
+                        window.alert = function() {}; // 🔹 Bloquea alert()
+                        window.confirm = function() { return false; }; // 🔹 Bloquea confirm()
+                        window.prompt = function() { return null; }; // 🔹 Bloquea prompt()
+                        ${juego.javascript}
+                    <\\/script>
+                </body>
+                </html>
+            `;
 
-          gameContainer.appendChild(card);
+            const titleElement = document.createElement('h3');
+            titleElement.textContent = juego.nombre;
+
+            const playButton = document.createElement('button');
+            playButton.textContent = 'Jugar';
+            playButton.onclick = () => window.location.href = `/juego.html?id=${juego._id}`;
+
+            card.appendChild(titleElement);
+            card.appendChild(iframe);
+            card.appendChild(playButton);
+            gameContainer.appendChild(card);
         });
-      } catch (error) {
+    } catch (error) {
         console.error('Error al cargar los juegos:', error);
-        gameContainer.innerHTML = '<p>Error al cargar los juegos. Intenta más tarde.</p>';
-      }
+        gameContainer.innerHTML = '<p>Error al cargar los juegos.</p>';
     }
+}
 
-    // Llama a la función de carga al iniciar la página
     cargarJuegos();
   </script>
+  <footer class="footer">
+    <div class="footer-content">
+      <div class="footer-section">
+        <h4>Acerca de Nosotros</h4>
+        <p>Codeplay es una plataforma diseñada para creativos, jugadores y desarrolladores. ¡Explora, aprende y crea con nosotros!</p>
+      </div>
+      <div class="footer-section">
+        <h4>Enlaces Rápidos</h4>
+        <ul>
+          <li><a href="index.html">Inicio</a></li>
+          <li><a href="comunidad.html">Comunidad</a></li>
+          <li><a href="juegos.html">Juegos</a></li>
+          <li><a href="editar.html">Crear</a></li>
+          <li><a href="politica_privacidad.html">Politica de privacidad</a></li>
+          <li><a href="terminos_condiciones.html">Terminos y Condiciones</a></li>
+        </ul>
+      </div>
+      <div class="footer-section">
+        <h4>Contáctanos</h4>
+        <p>Email: contacto@proyectoalternativo.com</p>
+        <p>Teléfono: +123 456 789</p>
+        <p>Síguenos en:</p>
+        <div class="social-icons">
+          <a href="#"><img src="images/facebook-icon.png" alt="Facebook"></a>
+          <a href="#"><img src="images/twitter-icon.png" alt="Twitter"></a>
+          <a href="#"><img src="images/instagram-icon.png" alt="Instagram"></a>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>&copy; 2024  CodePlay . Todos los derechos reservados.</p>
+    </div>
+  </footer>
+</body>
 
 <script>
   document.addEventListener('DOMContentLoaded', () => {
@@ -190,5 +207,5 @@
 </script>
 
 
-</body>
+
 </html>
