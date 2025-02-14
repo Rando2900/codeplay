@@ -6,9 +6,14 @@ var logger = require('morgan');
 const mongoose = require('mongoose'); // Import mongoose
 const Proyecto = require('./models/Project'); // Modelo para los proyectos
 const session = require('express-session');
-const MongoStore = require('connect-mongo');
+const cors = require('cors');
 
 var app = express();
+
+app.use(cors({
+  origin: 'https://codeplay-ue5b.onrender.com', // URL de tu frontend en Render
+  credentials: true // Permite el envío de cookies
+}));
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -21,36 +26,21 @@ app.use(cookieParser('mi_clave_secreta_firmada'));
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.static(path.join(__dirname, 'node_modules/@emmetio/codemirror-plugin/dist')));
 
-// 🔹 Conexión a MongoDB
 mongoose.connect('mongodb+srv://CODEPLAY:1234@cluster0.ieneu.mongodb.net/codeplay')
-  .then(() => console.log('✅ Conectado a MongoDB'))
-  .catch(err => console.error('❌ Error conectando a MongoDB:', err));
+  .then(() => { console.log('Connected to MongoDB...') });
 
-// 🔹 Configuración de sesión con almacenamiento en MongoDB
+// Middleware de sesión
 app.use(session({
-    secret: 'mi_secreto_seguro', // Usa una clave segura y única
-    resave: false,
-    saveUninitialized: false,
-    store: MongoStore.create({
-        mongoUrl: 'mongodb+srv://CODEPLAY:1234@cluster0.ieneu.mongodb.net/codeplay',
-        collectionName: 'sessions'
-    }),
-    cookie: {
-        secure: true, // Debe ser true en producción con HTTPS
-        httpOnly: true, // Bloquea acceso desde JavaScript
-        sameSite: 'None', // Permite compartir entre dominios distintos
-        maxAge: 1000 * 60 * 60 * 24 // Expira en 1 día
-    }
+  secret: 'mi_secreto_seguro',
+  resave: false,
+  saveUninitialized: false,
+  cookie: {
+      secure: true, // Solo en HTTPS, Render usa HTTPS
+      httpOnly: true, // No accesible desde JavaScript
+      sameSite: 'None', // 🔹 Permite compartir cookies entre frontend y backend en Render
+      maxAge: 1000 * 60 * 60 * 24 // 1 día de duración
+  }
 }));
-
-// 🔹 Middleware para verificar autenticación (excluyendo login, registro y sesión)
-app.use((req, res, next) => {
-    const rutasPermitidas = ['/users/login', '/users/register', '/users/session'];
-    if (!req.session.userId && !rutasPermitidas.includes(req.path)) {
-        return res.status(401).send('No autorizado');
-    }
-    next();
-});
 
 // pagina principal
 const indexRouter = require('./routes/index');

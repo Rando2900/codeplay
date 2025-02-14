@@ -69,6 +69,7 @@ const loginUser = async (req, res) => {
 
 // 🔹 Verificar sesión
 const checkSession = (req, res) => {
+    console.log('🔍 Verificando sesión:', req.session); // Debugging en servidor
     const userId = req.session.userId;
     const username = req.session.username; // Obtener el nombre de usuario
 
@@ -78,6 +79,7 @@ const checkSession = (req, res) => {
         res.status(200).json({ loggedIn: false });
     }
 };
+
 const logoutUser = (req, res) => {
     req.session.destroy((err) => {
         if (err) {
