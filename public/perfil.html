@@ -35,6 +35,10 @@
         </div>
     </div>
 </main>
+<div class="user-anotaciones">
+    <h2>Mis Anotaciones</h2>
+    <div id="anotaciones-list" class="anotaciones-grid"></div>
+</div>
 
 <footer class="footer">
     <div class="footer-content">
@@ -137,7 +141,56 @@
         window.location.href = `/project.html?id=${projectId}`;
     }
     </script>
+
     
 
+      <script>
+    document.addEventListener('DOMContentLoaded', () => {
+        fetch('/users/session', { method: 'GET', credentials: 'same-origin' })
+            .then(response => response.json())
+            .then(data => {
+                if (data.loggedIn) {
+                    // Actualizar el nombre de usuario en el perfil
+                    document.getElementById('username-display').textContent = data.username;
+
+                    const userId = data.userId;
+                    
+                    // Obtener las anotaciones y colocarlas en su propio contenedor
+                    fetch(`/api/anotaciones/user/${userId}`)
+                        .then(res => res.json())
+                        .then(anotaciones => {
+                            const container = document.getElementById('anotaciones-list'); // Usamos el contenedor correcto
+                            container.innerHTML = ''; // Limpiar contenedor
+
+                            if (anotaciones.length) {
+                                anotaciones.forEach(anotacion => {
+                                    const card = document.createElement('div');
+                                    card.classList.add('anotacion-card');
+
+                                    // Agregar contenido a la tarjeta con las anotaciones
+                                    card.innerHTML = `
+                                        <h3>${anotacion.language || 'Sin título'}</h3>
+                                        <pre>${anotacion.code}</pre>
+                                    `;
+
+                                    container.appendChild(card);
+                                });
+                            } else {
+                                container.innerHTML = '<p>No se encontraron anotaciones</p>';
+                            }
+                        })
+                        .catch(err => {
+                            console.error('Error al cargar las anotaciones:', err);
+                            document.getElementById('anotaciones-list').innerHTML = '<p>Error al cargar las anotaciones.</p>';
+                        });
+                } else {
+                    window.location.href = '/login.html'; // Redirigir al login si no está logueado
+                }
+            })
+            .catch(err => console.error('Error verificando la sesión:', err));
+    });
+</script>
+
+    
 </body>
 </html>

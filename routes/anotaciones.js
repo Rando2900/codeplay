@@ -33,5 +33,16 @@ router.post('/', async (req, res) => {
         res.status(500).send('Error al guardar la anotación');
     }
 });
+// Obtener las anotaciones del usuario autenticado
+router.get('/user/:userId', async (req, res) => {
+    try {
+        const userId = req.params.userId;
+        const anotaciones = await Anotacion.find({ user: userId });
+        res.json(anotaciones);
+    } catch (error) {
+        console.error('Error al obtener las anotaciones:', error);
+        res.status(500).send('Error al obtener anotaciones');
+    }
+});
 module.exports = router;
 
