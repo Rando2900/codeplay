@@ -26,42 +26,30 @@ mongoose.connect('mongodb+srv://CODEPLAY:1234@cluster0.ieneu.mongodb.net/codepla
   .then(() => console.log('✅ Conectado a MongoDB'))
   .catch(err => console.error('❌ Error conectando a MongoDB:', err));
 
-// 🔹 Configuración de sesión segura
+// 🔹 Configuración de sesión con almacenamiento en MongoDB
 app.use(session({
-  secret: 'mi_secreto_seguro',
-  resave: false,
-  saveUninitialized: false,
-  store: MongoStore.create({
-    mongoUrl: 'mongodb+srv://CODEPLAY:1234@cluster0.ieneu.mongodb.net/codeplay',
-    collectionName: 'sessions'
-  }),
-  cookie: {
-      secure: process.env.NODE_ENV === 'production',
-      httpOnly: true, // Bloquea acceso desde JS
-      sameSite: 'Strict',
-      maxAge: 1000 * 60 * 60 * 24 // Expira en 1 día
-  }
+    secret: 'mi_secreto_seguro', // Usa una clave segura y única
+    resave: false,
+    saveUninitialized: false,
+    store: MongoStore.create({
+        mongoUrl: 'mongodb+srv://CODEPLAY:1234@cluster0.ieneu.mongodb.net/codeplay',
+        collectionName: 'sessions'
+    }),
+    cookie: {
+        secure: true, // Debe ser true en producción con HTTPS
+        httpOnly: true, // Bloquea acceso desde JavaScript
+        sameSite: 'None', // Permite compartir entre dominios distintos
+        maxAge: 1000 * 60 * 60 * 24 // Expira en 1 día
+    }
 }));
 
-// 🔹 Middleware para verificar cookies alteradas
+// 🔹 Middleware para verificar autenticación (excluyendo login, registro y sesión)
 app.use((req, res, next) => {
-  if (req.signedCookies.loggedInUser) {
-      console.log("✅ Cookie firmada válida:", req.signedCookies.loggedInUser);
-  } else if (req.cookies.loggedInUser) {
-      console.warn("⚠ Cookie sin firmar detectada. Posible manipulación.");
-      res.clearCookie('loggedInUser');  // Borra la cookie modificada
-      return res.status(401).send('No autorizado: cookie alterada');
-  }
-  next();
-});
-
-// 🔹 Middleware para verificar autenticación (excluyendo login y registro)
-app.use((req, res, next) => {
-  const rutasPermitidas = ['/users/login', '/users/register'];
-  if (!req.session.userId && !rutasPermitidas.includes(req.path)) {
-      return res.status(401).send('No autorizado');
-  }
-  next();
+    const rutasPermitidas = ['/users/login', '/users/register', '/users/session'];
+    if (!req.session.userId && !rutasPermitidas.includes(req.path)) {
+        return res.status(401).send('No autorizado');
+    }
+    next();
 });
 
 // pagina principal
