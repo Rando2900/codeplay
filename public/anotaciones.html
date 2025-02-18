@@ -35,6 +35,9 @@
         <section class="anotaciones">
             <h1>Crear una Anotación</h1>
             <form id="anotacionForm">
+                <label for="title">Título de la Anotación:</label>
+                <input type="text" id="title" name="title" required>
+            
                 <label for="language">Lenguaje de Programación:</label>
                 <select id="language" name="language" required>
                     <option value="javascript">JavaScript</option>
@@ -43,15 +46,14 @@
                     <option value="java">Java</option>
                     <option value="html">HTML/XML</option>
                 </select>
-
+            
                 <label for="code">Escribe tu Código:</label>
                 <textarea id="code" name="code"></textarea>
-                <br>
-                <br> 
+                <br><br> 
                 <button class="buttons2" type="submit">Publicar</button>
-                <br>
-                <br>
+                <br><br>
             </form>
+            
         </section>
     </main>
 
@@ -125,28 +127,32 @@
 
         // Manejo del formulario
         document.getElementById('anotacionForm').addEventListener('submit', async (event) => {
-            event.preventDefault();
+    event.preventDefault();
 
-            const language = document.getElementById('language').value;
-            const code = codeEditor.getValue();
+    const title = document.getElementById('title').value.trim();
+    const language = document.getElementById('language').value;
+    const code = codeEditor.getValue();
 
-            // Enviar datos al servidor
-            const response = await fetch('/api/anotaciones', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ language, code }),
-            });
+    if (!title || !code) {
+        alert("El título y el código son obligatorios.");
+        return;
+    }
 
-            if (response.ok) {
-                alert('Anotación guardada con éxito');
-                document.getElementById('anotacionForm').reset();
-                codeEditor.setValue('');
-            } else {
-                alert('Error al guardar la anotación');
-            }
-        });
+    const response = await fetch('/api/anotaciones', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ title, language, code }),
+    });
+
+    if (response.ok) {
+        alert('Anotación guardada con éxito');
+        document.getElementById('anotacionForm').reset();
+        codeEditor.setValue('');
+    } else {
+        alert('Error al guardar la anotación');
+    }
+});
+;
 
 
         

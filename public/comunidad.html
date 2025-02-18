@@ -5,9 +5,23 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="stylesheets/comunidad.css">
     <title>Comunidad</title>
+    <style>
+        .search-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            margin: 20px 0;
+        }
+        .search-label {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+    </style>
 </head>
 <body>
-<!-- Contenido principal de la página -->
 <div id="main-content">
     <header class="header">
       <nav class="nav">
@@ -28,140 +42,116 @@
     <main>
         <section class="projects-section">
             <h1>Proyectos de la Comunidad</h1>
+            <div class="search-container">
+                <p class="search-label">Busca un proyecto</p>
+                <div class="group">
+                    <svg class="icon" aria-hidden="true" viewBox="0 0 24 24">
+                        <g>
+                            <path d="M21.53 20.47l-3.66-3.66C19.195 15.24 20 13.214 20 11c0-4.97-4.03-9-9-9s-9 4.03-9 9 4.03 9 9 9c2.215 0 4.24-.804 5.808-2.13l3.66 3.66c.147.146.34.22.53.22s.385-.073.53-.22c.295-.293.295-.767.002-1.06zM3.5 11c0-4.135 3.365-7.5 7.5-7.5s7.5 3.365 7.5 7.5-3.365 7.5-7.5 7.5-7.5-3.365-7.5-7.5z"></path>
+                        </g>
+                    </svg>
+                    <input placeholder="Search" type="search" id="search-bar" class="input" onkeyup="buscarProyectos()">
+                </div>
+            </div>
             <div class="project-grid" id="projects-container">
-                <!-- Los proyectos serán cargados aquí dinámicamente -->
                 <p>Cargando proyectos...</p>
             </div>
         </section>
     </main>
 
-    <footer class="footer">
-      <div class="footer-content">
-        <div class="footer-section">
-          <h4>Acerca de Nosotros</h4>
-          <p>Codeplay es una plataforma diseñada para creativos, jugadores y desarrolladores. ¡Explora, aprende y crea con nosotros!</p>
-        </div>
-        <div class="footer-section">
-          <h4>Enlaces Rápidos</h4>
-          <ul>
-            <li><a href="index.html">Inicio</a></li>
-            <li><a href="comunidad.html">Comunidad</a></li>
-            <li><a href="juegos.html">Juegos</a></li>
-            <li><a href="editar.html">Crear</a></li>
-            <li><a href="politica_privacidad.html">Politica de privacidad</a></li>
-            <li><a href="terminos_condiciones.html">Terminos y Condiciones</a></li>
-          </ul>
-        </div>
-        <div class="footer-section">
-          <h4>Contáctanos</h4>
-          <p>Email: contacto@proyectoalternativo.com</p>
-          <p>Teléfono: +123 456 789</p>
-          <p>Síguenos en:</p>
-          <div class="social-icons">
-            <a href="#"><img src="images/facebook-icon.png" alt="Facebook"></a>
-            <a href="#"><img src="images/twitter-icon.png" alt="Twitter"></a>
-            <a href="#"><img src="images/instagram-icon.png" alt="Instagram"></a>
-          </div>
-        </div>
-      </div>
-      <div class="footer-bottom">
-        <p>&copy; 2024  CodePlay . Todos los derechos reservados.</p>
-      </div>
-    </footer>
-
     <script>
+       let allProjects = [];
+
        document.addEventListener('DOMContentLoaded', async () => {
-    try {
-        const response = await fetch('/api/projects');
-        if (!response.ok) {
-            throw new Error(`Error en la solicitud: ${response.status}`);
-        }
+           try {
+               const response = await fetch('/api/projects');
+               if (!response.ok) {
+                   throw new Error(`Error en la solicitud: ${response.status}`);
+               }
+               allProjects = await response.json();
+               sortAndRenderProjects();
+           } catch (error) {
+               console.error('Error al cargar los proyectos:', error);
+               document.getElementById('projects-container').innerHTML = '<p>Error al cargar los proyectos.</p>';
+           }
+       });
 
-        let projects = await response.json();
-        const container = document.getElementById('projects-container');
-        container.innerHTML = '';
+       function sortAndRenderProjects() {
+           allProjects.sort((a, b) => b.likes - a.likes);
+           renderProjects(allProjects);
+       }
 
-        function renderProjects() {
-            container.innerHTML = '';
-            projects.sort((a, b) => b.likes - a.likes); // Ordenar por más likes
+       function renderProjects(projects) {
+           const container = document.getElementById('projects-container');
+           container.innerHTML = '';
+           projects.forEach(project => {
+               const card = document.createElement('div');
+               card.classList.add('project-card');
 
-            projects.forEach(project => {
-                const card = document.createElement('div');
-                card.classList.add('project-card');
+               const iframe = document.createElement('iframe');
+               iframe.srcdoc = `
+                   <!DOCTYPE html>
+                   <html lang="en">
+                   <head>
+                       <style>${project.css}</style>
+                   </head>
+                   <body>
+                       ${project.html}
+                       <script> ${project.js.replace(/<\/script>/g, "<\\/script>")} <\/script>
+                   </body>
+                   </html>
+               `;
+               iframe.width = "100%";
+               iframe.height = "200px";
+               iframe.style.border = "1px solid #ccc";
 
-                const iframe = document.createElement('iframe');
-                iframe.srcdoc = `
-                    <!DOCTYPE html>
-                    <html lang="en">
-                    <head>
-                        <style>${project.css}</style>
-                    </head>
-                    <body>
-                        ${project.html}
-                        <script>${project.js}<\\/script>
-                    </body>
-                    </html>
-                `;
-                iframe.width = "100%";
-                iframe.height = "200px";
-                iframe.style.border = "1px solid #ccc";
+               const titleElement = document.createElement('h2');
+               titleElement.textContent = project.title || 'Proyecto Sin Título';
 
-                const titleElement = document.createElement('h2');
-                titleElement.textContent = project.title || 'Proyecto Sin Título';
+               const viewButton = document.createElement('button');
+               viewButton.textContent = 'Ver Proyecto';
+               viewButton.addEventListener('click', () => viewProject(project._id));
 
-                const viewButton = document.createElement('button');
-                viewButton.classList.add('view-project-button');
-                viewButton.textContent = 'Ver Proyecto';
-                viewButton.addEventListener('click', () => viewProject(project._id));
+               const likeButton = document.createElement('button');
+               likeButton.classList.add('heart-button');
+               likeButton.textContent = project.liked ? `❤️ ${project.likes}` : `🤍 ${project.likes}`;
+               likeButton.addEventListener('click', async () => {
+                   try {
+                       const response = await fetch(`/api/projects/${project._id}/like`, { method: 'POST', credentials: 'include' });
+                       if (!response.ok) throw new Error('Error al actualizar like');
+                       const data = await response.json();
+                       project.likes = data.likes;
+                       project.liked = data.liked;
+                       likeButton.textContent = data.liked ? `❤️ ${data.likes}` : `🤍 ${data.likes}`;
+                       sortAndRenderProjects();
+                   } catch (error) {
+                       console.error('Error:', error);
+                   }
+               });
 
-                const likeButton = document.createElement('button');
-                likeButton.classList.add('heart-button');
-                likeButton.textContent = `❤️ ${project.likes || 0}`;
+               card.appendChild(titleElement);
+               card.appendChild(viewButton);
+               card.appendChild(iframe);
+               card.appendChild(likeButton);
+               container.appendChild(card);
+           });
+       }
 
-                likeButton.addEventListener('click', async () => {
-                    try {
-                        const response = await fetch(`/api/projects/${project._id}/like`, { method: 'POST', credentials: 'include' });
-                        if (!response.ok) throw new Error('Error al actualizar like');
-                        const data = await response.json();
-                        project.likes = data.likes;
-                        likeButton.textContent = data.liked ? `❤️ ${data.likes}` : `🤍 ${data.likes}`;
-                        renderProjects(); // Reordenar los proyectos
-                    } catch (error) {
-                        console.error('Error:', error);
-                    }
-                });
+       function buscarProyectos() {
+           const query = document.getElementById('search-bar').value.toLowerCase();
+           const filteredProjects = allProjects.filter(project => project.title.toLowerCase().includes(query));
+           renderProjects(filteredProjects);
+       }
 
-                const creatorContainer = document.createElement('div');
-                creatorContainer.classList.add('creator-container');
+       function viewProject(projectId) {
+           window.location.href = `/project.html?id=${projectId}`;
+       }
 
-                const creatorName = document.createElement('p');
-                creatorName.classList.add('project-creator');
-                creatorName.textContent = `Creado por: ${project.userId?.usuario || 'Anónimo'}`;
 
-                creatorContainer.appendChild(creatorName);
-                creatorContainer.appendChild(likeButton);
-                card.appendChild(titleElement);
-                card.appendChild(viewButton);
-                card.appendChild(iframe);
-                card.appendChild(creatorContainer);
-
-                container.appendChild(card);
-            });
-        }
-        renderProjects();
-    } catch (error) {
-        console.error('Error al cargar los proyectos:', error);
-        document.getElementById('projects-container').innerHTML = '<p>Error al cargar los proyectos.</p>';
-    }
-});
-
-function viewProject(projectId) {
-    window.location.href = `/project.html?id=${projectId}`;
-}
-//usuario
-        document.addEventListener('DOMContentLoaded', () => {
+       //usuario
+       document.addEventListener('DOMContentLoaded', () => {
       const userMenu = document.getElementById('userMenu'); // Obtén el contenedor de los botones
-
+ 
       // Verificar si la cookie de sesión existe
       fetch('/users/session', { method: 'GET', credentials: 'same-origin' })
           .then(response => response.json())
@@ -182,7 +172,7 @@ function viewProject(projectId) {
           })
           .catch(err => console.error('Error verificando la sesión:', err));
   });
-
+ 
   function logout() {
       fetch('/users/logout', { method: 'POST', credentials: 'same-origin' })
           .then(() => {

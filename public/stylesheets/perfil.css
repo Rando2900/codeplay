@@ -363,3 +363,22 @@ body {
     border-radius: 5px;
     overflow-x: auto;
 }
+
+.toggle-button {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    margin-top: 10px;
+    cursor: pointer;
+    font-size: 16px;
+    border-radius: 5px;
+    display: block;
+    width: 150px;
+    text-align: center;
+}
+
+.toggle-button:hover {
+    background-color: #0056b3;
+}
+

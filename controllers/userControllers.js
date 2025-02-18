@@ -52,14 +52,6 @@ const loginUser = async (req, res) => {
 
         req.session.userId = user._id; // Guardamos solo el ID del usuario en la sesión
         req.session.username = user.usuario; // Guardamos el nombre
-        // 🔹 Establecer cookie segura y firmada
-        res.cookie('loggedInUser', user._id, {  
-            httpOnly: true,  
-            secure: process.env.NODE_ENV === 'production',  
-            signed: true,  
-            sameSite: 'Strict',  
-            maxAge: 1000 * 60 * 60 * 24  
-        });
 
         res.status(200).json({ message: 'Login exitoso', redirect: 'index.html' });
     } catch (err) {

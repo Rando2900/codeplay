@@ -24,173 +24,117 @@
     <div class="profile-header">
         <h1 id="username-display">Username</h1>
         <p class="user-bio">"Passionate developer and video game enthusiast. Ready to create and explore new ideas!"</p>
-        <!-- Botón para editar el perfil -->
         <button onclick="location.href='editarPerfil.html'" class="edit-profile-button">Editar Perfil</button>
     </div>
 
     <div class="user-projects">
         <h2>My Projects</h2>
-        <div id="projects-list" class="project-grid">
-            <!-- Los proyectos del usuario se cargarán aquí -->
-        </div>
+        <div id="projects-list" class="project-grid"></div>
+        <button id="toggle-projects" class="toggle-button" style="display: none;">Mostrar más</button>
     </div>
 </main>
+
 <div class="user-anotaciones">
     <h2>Mis Anotaciones</h2>
     <div id="anotaciones-list" class="anotaciones-grid"></div>
 </div>
 
-<footer class="footer">
-    <div class="footer-content">
-      <div class="footer-section">
-        <h4>Acerca de Nosotros</h4>
-        <p>Codeplay es una plataforma diseñada para creativos, jugadores y desarrolladores. ¡Explora, aprende y crea con nosotros!</p>
-      </div>
-      <div class="footer-section">
-        <h4>Enlaces Rápidos</h4>
-        <ul>
-          <li><a href="index.html">Inicio</a></li>
-          <li><a href="comunidad.html">Comunidad</a></li>
-          <li><a href="juegos.html">Juegos</a></li>
-          <li><a href="editar.html">Crear</a></li>
-          <li><a href="politica_privacidad.html">Politica de privacidad</a></li>
-          <li><a href="terminos_condiciones.html">Terminos y Condiciones</a></li>
-        </ul>
-      </div>
-      <div class="footer-section">
-        <h4>Contáctanos</h4>
-        <p>Email: contacto@proyectoalternativo.com</p>
-        <p>Teléfono: +123 456 789</p>
-        <p>Síguenos en:</p>
-        <div class="social-icons">
-          <a href="#"><img src="images/facebook-icon.png" alt="Facebook"></a>
-          <a href="#"><img src="images/twitter-icon.png" alt="Twitter"></a>
-          <a href="#"><img src="images/instagram-icon.png" alt="Instagram"></a>
-        </div>
-      </div>
-    </div>
-    <div class="footer-bottom">
-      <p>&copy; 2024  CodePlay . Todos los derechos reservados.</p>
-    </div>
-  </footer>
-
 <script>
-    document.addEventListener('DOMContentLoaded', () => {
-        fetch('/users/session', { method: 'GET', credentials: 'same-origin' })
-            .then(response => response.json())
-            .then(data => {
-                if (data.loggedIn) {
-                    // Actualizar el nombre de usuario en el perfil
-                    document.getElementById('username-display').textContent = data.username;
-    
-                    const userId = data.userId;
-                    fetch(`/api/user/${userId}/projects`)
-                        .then(res => res.json())
-                        .then(projects => {
-                            const container = document.getElementById('projects-list');
-                            container.innerHTML = ''; // Limpiar contenedor
-    
-                            if (projects.length) {
-                                projects.forEach(project => {
-                                    const card = document.createElement('div');
-                                    card.classList.add('project-card');
-    
-                                    // Crear iframe para la vista previa del proyecto
-                                    const iframe = document.createElement('iframe');
-                                    iframe.srcdoc = `
-                                        <!DOCTYPE html>
-                                        <html lang="en">
-                                        <head>
-                                            <style>${project.css}</style>
-                                        </head>
-                                        <body>
-                                            ${project.html}
-                                            <script>${project.js}<\/script>
-                                        </body>
-                                        </html>
-                                    `;
-                                    iframe.width = "100%";
-                                    iframe.height = "200px";
-                                    iframe.style.border = "1px solid #ccc";
-    
-                                    // Agregar contenido a la tarjeta
-                                    card.innerHTML = `
-                                        <h3>${project.title || 'Proyecto Sin Título'}</h3>
-                                        <button onclick="viewProject('${project._id}')">Ver Proyecto</button>
-                                    `;
-                                    card.appendChild(iframe);
-                                    container.appendChild(card);
-                                });
+   document.addEventListener('DOMContentLoaded', () => {
+    fetch('/users/session', { method: 'GET', credentials: 'same-origin' })
+        .then(response => response.json())
+        .then(data => {
+            if (data.loggedIn) {
+                document.getElementById('username-display').textContent = data.username;
+                const userId = data.userId;
+                
+                // Cargar proyectos
+                fetch(`/api/user/${userId}/projects`)
+                    .then(res => res.json())
+                    .then(projects => {
+                        const container = document.getElementById('projects-list');
+                        const toggleButton = document.getElementById('toggle-projects');
+                        let projectsToShow = 3;
+                        let isExpanded = false;
+
+                        function renderProjects() {
+                            container.innerHTML = '';
+                            const visibleProjects = isExpanded ? projects : projects.slice(0, projectsToShow);
+                            
+                            visibleProjects.forEach(project => {
+                                const card = document.createElement('div');
+                                card.classList.add('project-card');
+
+                                const iframe = document.createElement('iframe');
+                                iframe.srcdoc = `
+                                    <!DOCTYPE html>
+                                    <html lang="en">
+                                    <head>
+                                        <style>${project.css}</style>
+                                    </head>
+                                    <body>
+                                        ${project.html}
+                                        <script>${project.js}<\/script>
+                                    </body>
+                                    </html>
+                                `;
+                                iframe.width = "100%";
+                                iframe.height = "200px";
+                                iframe.style.border = "1px solid #ccc";
+
+                                card.innerHTML = `
+                                    <h3>${project.title || 'Proyecto Sin Título'}</h3>
+                                    <button onclick="viewProject('${project._id}')">Ver Proyecto</button>
+                                `;
+                                card.appendChild(iframe);
+                                container.appendChild(card);
+                            });
+
+                            if (projects.length > projectsToShow) {
+                                toggleButton.style.display = "block";
+                                toggleButton.textContent = isExpanded ? "Mostrar menos" : "Mostrar más";
                             } else {
-                                container.innerHTML = '<p>No se encontraron proyectos</p>';
+                                toggleButton.style.display = "none";
                             }
-                        })
-                        .catch(err => {
-                            console.error('Error al cargar los proyectos:', err);
-                            document.getElementById('projects-list').innerHTML = '<p>Error al cargar los proyectos.</p>';
+                        }
+
+                        toggleButton.addEventListener('click', () => {
+                            isExpanded = !isExpanded;
+                            renderProjects();
                         });
-                } else {
-                    window.location.href = '/login.html'; // Redirigir al login si no está logueado
-                }
-            })
-            .catch(err => console.error('Error verificando la sesión:', err));
-    });
-    
-    // Función para ver un proyecto individual
-    function viewProject(projectId) {
-        window.location.href = `/project.html?id=${projectId}`;
-    }
-    </script>
 
-    
+                        renderProjects();
+                    });
+                
+                // Cargar anotaciones
+                fetch(`/api/anotaciones/user/${userId}`)
+                    .then(res => res.json())
+                    .then(anotaciones => {
+                        const container = document.getElementById('anotaciones-list');
+                        container.innerHTML = '';
 
-      <script>
-    document.addEventListener('DOMContentLoaded', () => {
-        fetch('/users/session', { method: 'GET', credentials: 'same-origin' })
-            .then(response => response.json())
-            .then(data => {
-                if (data.loggedIn) {
-                    // Actualizar el nombre de usuario en el perfil
-                    document.getElementById('username-display').textContent = data.username;
+                        if (anotaciones.length) {
+                            anotaciones.forEach(anotacion => {
+                                const card = document.createElement('div');
+                                card.classList.add('anotacion-card');
 
-                    const userId = data.userId;
-                    
-                    // Obtener las anotaciones y colocarlas en su propio contenedor
-                    fetch(`/api/anotaciones/user/${userId}`)
-                        .then(res => res.json())
-                        .then(anotaciones => {
-                            const container = document.getElementById('anotaciones-list'); // Usamos el contenedor correcto
-                            container.innerHTML = ''; // Limpiar contenedor
+                                card.innerHTML = `
+                                    <h3>${anotacion.title || 'Sin título'}</h3>
+                                    <p style="font-size: 14px; color: gray;">${anotacion.language}</p>
+                                    <pre>${anotacion.code}</pre>
+                                `;
+                                container.appendChild(card);
+                            });
+                        } else {
+                            container.innerHTML = '<p>No se encontraron anotaciones</p>';
+                        }
+                    });
+            } else {
+                window.location.href = '/login.html'; // Redirigir si no está logueado
+            }
+        });
+});
 
-                            if (anotaciones.length) {
-                                anotaciones.forEach(anotacion => {
-                                    const card = document.createElement('div');
-                                    card.classList.add('anotacion-card');
-
-                                    // Agregar contenido a la tarjeta con las anotaciones
-                                    card.innerHTML = `
-                                        <h3>${anotacion.language || 'Sin título'}</h3>
-                                        <pre>${anotacion.code}</pre>
-                                    `;
-
-                                    container.appendChild(card);
-                                });
-                            } else {
-                                container.innerHTML = '<p>No se encontraron anotaciones</p>';
-                            }
-                        })
-                        .catch(err => {
-                            console.error('Error al cargar las anotaciones:', err);
-                            document.getElementById('anotaciones-list').innerHTML = '<p>Error al cargar las anotaciones.</p>';
-                        });
-                } else {
-                    window.location.href = '/login.html'; // Redirigir al login si no está logueado
-                }
-            })
-            .catch(err => console.error('Error verificando la sesión:', err));
-    });
 </script>
-
-    
 </body>
 </html>
