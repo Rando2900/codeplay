@@ -46,7 +46,6 @@ app.use(session({
       maxAge: 1000 * 60 * 60 * 24 // 1 día
   }
 }));
-
 // pagina principal
 const indexRouter = require('./routes/index');
 app.use('/', indexRouter);
