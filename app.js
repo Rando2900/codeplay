@@ -38,12 +38,12 @@ app.use(session({
       mongoUrl: mongoUri,
       ttl: 14 * 24 * 60 * 60 // Tiempo de vida de la sesión (14 días)
   }),
-  cookie: {
+ /* cookie: {
       secure: process.env.NODE_ENV === 'production',
       httpOnly: true,
       sameSite: process.env.NODE_ENV === 'production' ? 'None' : 'Lax',
       maxAge: 1000 * 60 * 60 * 24 // 1 día
-  }
+  }*/
 } ));
 // pagina principal
 const indexRouter = require('./routes/index');
