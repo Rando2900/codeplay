@@ -1,24 +1,50 @@
 const express = require('express');
-const { createProject, getProjects, getProjectById, getUserProjects } = require('../controllers/projectController');
+const { createProject, getProjects, getProjectById, getUserProjects, getProjectsByQuery} = require('../controllers/projectController');
 const router = express.Router();
 const Project = require('../models/Project');
+const mongoose = require('mongoose');
+
+
+
 
 // Ruta para crear un proyecto
 router.post('/', createProject);
 
-// Ruta para obtener todos los proyectos
+// Ruta para obtener todos los proyectos (permite filtrar por usuario si se pasa userId en la consulta)
 router.get('/', getProjects);
 
 // Ruta para obtener un proyecto por ID
 router.get('/:id', getProjectById);
 
-// Ruta para obtener los proyectos de un usuario específico
-router.get('/user/:id/projects', getUserProjects);
+// ✅ Ruta corregida para obtener los proyectos de un usuario específico
+router.get('/user/:id', getUserProjects);
+
+router.get('/proyectos', getProjectsByQuery);
+
+
+router.get('/', async (req, res) => {
+    try {
+        const { userId } = req.query; // 📌 Obtener el ID del usuario desde la URL
+
+        let query = {};
+        if (userId) {
+            query.userId = new mongoose.Types.ObjectId(userId); // 📌 Convertimos userId en ObjectId
+        }
+
+        const projects = await Project.find(query);
+        res.json(projects);
+    } catch (error) {
+        console.error('Error al obtener proyectos:', error);
+        res.status(500).json({ error: 'Error al obtener proyectos' });
+    }
+});
+
+
 
 //Ruta para los megustas
 router.post('/:id/like', async (req, res) => {
     try {
-        const userId = req.session.userId; // ID del usuario autenticado
+        const userId = req.session.userId;
         if (!userId) {
             return res.status(401).json({ error: 'Debes estar autenticado para dar like.' });
         }
@@ -31,11 +57,9 @@ router.post('/:id/like', async (req, res) => {
         const userIndex = project.likedBy.indexOf(userId);
 
         if (userIndex === -1) {
-            // Si el usuario NO ha dado like, se añade
             project.likes += 1;
             project.likedBy.push(userId);
         } else {
-            // Si el usuario ya dio like, se quita
             project.likes -= 1;
             project.likedBy.splice(userIndex, 1);
         }
@@ -47,6 +71,7 @@ router.post('/:id/like', async (req, res) => {
         res.status(500).json({ error: 'Error al actualizar like' });
     }
 });
+
 
 
 module.exports = router;

@@ -25,6 +25,57 @@
       display: none;
     }
   </style>
+   <style>
+    /* Estilo para el hero */
+    .hero {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 60vh;
+        background: linear-gradient(to right, #007bff, #6a11cb);
+        text-align: center;
+        color: white;
+        padding: 20px;
+    }
+
+    .hero h1 {
+        font-size: 50px;
+        margin-bottom: 10px;
+    }
+
+    .hero p {
+        font-size: 20px;
+        margin-bottom: 20px;
+    }
+
+    .hero-buttons {
+        display: flex;
+        gap: 15px;
+        margin-top: 20px;
+    }
+
+    .hero-buttons a {
+        text-decoration: none;
+    }
+
+    .hero-buttons button {
+        background: white;
+        color: #007bff;
+        padding: 12px 20px;
+        font-size: 16px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-weight: bold;
+        transition: 0.3s;
+    }
+
+    .hero-buttons button:hover {
+        background: #f1f1f1;
+    }
+
+</style>
 </head>
 <body>
   <!-- Contenedor del video de introducción -->
@@ -57,12 +108,31 @@
 
   
     <section class="hero">
-        <div>
-            <h1>CodePlay</h1>
-            <p>Que comienze el juego.</p>
-            <button onclick="scrollToFeatures()">Descubrir más</button>
-        </div>
-    </section>
+      <h1>CodePlay</h1>
+      <p>Explora, crea y comparte tus proyectos.</p>
+
+      <!-- Botones -->
+      <div class="hero-buttons">
+          <a href="login.html"><button>Iniciar Sesión</button></a>
+          <a href="registro.html"><button>Registrarse</button></a>
+      </div>
+
+      <!-- Buscador -->
+    <!-- Buscador en index.html -->
+    <div class="search-container">
+      <p class="search-label">Busca un proyecto</p>
+      <a href="buscador.html">
+      <div class="group">
+          <svg class="icon" aria-hidden="true" viewBox="0 0 24 24">
+              <g>
+                  <path d="M21.53 20.47l-3.66-3.66C19.195 15.24 20 13.214 20 11c0-4.97-4.03-9-9-9s-9 4.03-9 9 4.03 9 9 9c2.215 0 4.24-.804 5.808-2.13l3.66 3.66c.147.146.34.22.53.22s.385-.073.53-.22c.295-.293.295-.767.002-1.06zM3.5 11c0-4.135 3.365-7.5 7.5-7.5s7.5 3.365 7.5 7.5-3.365 7.5-7.5 7.5-7.5-3.365-7.5-7.5z"></path>
+              </g>
+          </svg>
+          <input placeholder="Search" type="search" id="search-bar" class="input" onkeyup="buscarProyectos()">
+      </div>
+    </a>
+  </div>
+  </section>
 
 
   

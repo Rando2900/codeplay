@@ -1,3 +1,4 @@
+const mongoose = require('mongoose'); // ✅ Asegura que mongoose está importado
 const userServices = require('../services/userService');
 const User = require('../models/User'); // Importar el modelo User
 const getUsers = async (req, res) => {
@@ -37,50 +38,27 @@ const registerUser = async (req, res) => {
 
 // 🔹 Inicio de sesión
 const loginUser = async (req, res) => {
+    const { usuario, contraseña } = req.body;
+
+    if (!usuario || !contraseña) {
+        return res.status(400).send('El nombre de usuario y la contraseña son obligatorios.');
+    }
+
     try {
-        console.log('🔍 Datos recibidos:', req.body);
-
-        let { usuario, contraseña } = req.body;
-
-        // Verifica que usuario y contraseña sean strings
-        if (typeof usuario !== 'string' || typeof contraseña !== 'string') {
-            console.error('❌ Error: usuario o contraseña no son strings.');
-            return res.status(400).send('Datos de inicio de sesión inválidos.');
-        }
-
-        usuario = usuario.trim();
-        contraseña = contraseña.trim();
-
-        if (!usuario || !contraseña) {
-            console.error('❌ Error: usuario o contraseña vacíos.');
-            return res.status(400).send('El nombre de usuario y la contraseña son obligatorios.');
-        }
-
         const user = await User.findOne({ usuario });
 
-        if (!user) {
-            console.error('❌ Usuario no encontrado');
+        if (!user || user.contraseña !== contraseña) {
             return res.status(401).send('Credenciales incorrectas.');
         }
 
-        if (user.contraseña !== contraseña) {
-            console.error('❌ Contraseña incorrecta');
-            return res.status(401).send('Credenciales incorrectas.');
-        }
-
-        req.session.userId = user._id;
-        req.session.username = user.usuario;
-
-        console.log('✅ Login exitoso:', req.session);
+        req.session.userId = user._id; // Guardamos solo el ID del usuario en la sesión
+        req.session.username = user.usuario; // Guardamos el nombre
 
         res.status(200).json({ message: 'Login exitoso', redirect: 'index.html' });
     } catch (err) {
-        console.error('❌ Error en loginUser:', err);
         res.status(500).send('Error interno del servidor.');
     }
 };
-
-
 
 // 🔹 Verificar sesión
 const checkSession = (req, res) => {
@@ -123,43 +101,29 @@ const publicarProyecto = async (req, res) => {
         res.status(500).json({ error: 'Error interno al guardar el proyecto' });
     }
 };
+
 const updateProfile = async (req, res) => {
     try {
-        console.log("🔍 Datos de sesión antes de actualizar:", req.session);
-        const userId = req.session.userId;
+        const userId = req.session.userId; // Asegúrate de tener la sesión configurada correctamente
         const { username, password } = req.body;
 
         if (!userId) {
-            console.error("❌ No hay userId en la sesión");
-            return res.status(401).json({ error: 'No autorizado' });
+            return res.status(401).send('No autorizado');
         }
 
         const user = await User.findById(userId);
         if (!user) {
-            console.error("❌ Usuario no encontrado en la BD");
-            return res.status(404).json({ error: 'Usuario no encontrado' });
+            return res.status(404).send('Usuario no encontrado');
         }
 
-        console.log("🛠️ Actualizando usuario...");
-        user.usuario = username || user.usuario;
-        user.contraseña = password || user.contraseña; // 🔴 Guardar en texto plano (NO SEGURO)
+        user.username = username || user.username;
+        user.password = password || user.password; // Asegúrate de manejar el cifrado de contraseñas aquí
 
         await user.save();
-        console.log("✅ Usuario actualizado correctamente:", user);
-
-        // 🔴 Cierra la sesión después de actualizar
-        req.session.destroy((err) => {
-            if (err) {
-                console.error('❌ Error al cerrar sesión:', err);
-                return res.status(500).json({ error: 'Error al cerrar sesión' });
-            }
-            res.clearCookie('connect.sid'); // Borra la cookie de sesión
-            res.status(200).json({ message: 'Perfil actualizado y sesión cerrada', redirect: 'login.html' });
-        });
-
+        res.status(200).send('Perfil actualizado exitosamente');
     } catch (error) {
-        console.error('❌ Error en updateProfile:', error);
-        res.status(500).json({ error: 'Error interno del servidor' });
+        console.error('Error al actualizar perfil:', error);
+        res.status(500).send('Error interno del servidor');
     }
 };
 
@@ -171,6 +135,46 @@ const verificarCookie = (req, res) => {
     res.status(200).send(`Cookie válida: ${miCookie}`);
 };
 
+const getUserById = async (req, res) => {
+    try {
+        const userId = req.params.id;
+
+        // Verificar si el ID es válido en MongoDB
+        if (!mongoose.Types.ObjectId.isValid(userId)) {
+            return res.status(400).json({ error: 'ID de usuario inválido' });
+        }
+
+        const user = await User.findById(userId);
+        if (!user) {
+            return res.status(404).json({ error: 'Usuario no encontrado' });
+        }
+
+        res.json(user);
+    } catch (error) {
+        console.error('Error al obtener usuario:', error);
+        res.status(500).json({ error: 'Error del servidor' });
+    }
+};
+
+
+exports.getUsersByQuery = async (req, res) => {
+    try {
+        const query = req.query.query;
+        if (!query) {
+            return res.status(400).json({ error: 'No se proporcionó un término de búsqueda' });
+        }
+
+        const users = await User.find({ usuario: { $regex: query, $options: 'i' } });
+
+        res.json(users);
+    } catch (error) {
+        console.error('Error al obtener usuarios:', error);
+        res.status(500).json({ error: 'Error del servidor' });
+    }
+};
+
+
+
 module.exports = {
     getUsers,
     registerUser,
@@ -179,5 +183,6 @@ module.exports = {
     publicarProyecto,
     updateProfile,
     logoutUser,
-    verificarCookie
+    verificarCookie,
+    getUserById
 };

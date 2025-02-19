@@ -1,45 +1,46 @@
+const mongoose = require('mongoose');
 const Project = require('../models/Project');
 
-const createProject = async (req, res) => {
-    try {
-        const { title, html, css, js } = req.body;
-
-        // Verifica si el usuario está autenticado (suponiendo que tienes el ID del usuario en la sesión)
-        const userId = req.session.userId; // Obtén el ID del usuario desde la sesión
-        if (!userId) {
-            return res.status(403).send('No estás autorizado para realizar esta acción.');
-        }
-
-        // Crear un nuevo proyecto con el ID del usuario
-        const project = new Project({
-            title,
-            html,
-            css,
-            js,
-            userId, // Asociar el ID del usuario logueado
-        });
-
-        // Guardar el proyecto en la base de datos
-        await project.save();
-
-        console.log('Proyecto guardado con éxito:', project._id);
-        res.status(200).send('Proyecto guardado con éxito.');
-    } catch (err) {
-        console.error('Error al guardar el proyecto:', err);
-        res.status(500).send('Error interno al guardar el proyecto.');
-    }
-};
-
+// Obtener todos los proyectos (opcionalmente filtrando por userId)
 const getProjects = async (req, res) => {
     try {
-        const projects = await Project.find().populate('userId', 'usuario').sort({ likes: -1 }); // 🔥 Ordenar por likes de mayor a menor
+        const { userId } = req.query;
+        let query = {};
 
-        console.log("Proyectos con usuario ordenados por likes:", projects); // Log para verificar si ahora se muestra bien
+        if (userId && mongoose.Types.ObjectId.isValid(userId)) {
+            query.userId = new mongoose.Types.ObjectId(userId);
+        }
 
-        res.status(200).json(projects);
+        // ✅ Agregamos `.populate('userId', 'usuario')` para obtener el nombre del usuario
+        const projects = await Project.find(query).populate('userId', 'usuario');
+
+        res.json(projects);
     } catch (error) {
         console.error('Error al obtener proyectos:', error);
         res.status(500).json({ error: 'Error al obtener proyectos' });
+    }
+};
+
+
+// Obtener los proyectos de un usuario específico
+const getUserProjects = async (req, res) => {  
+    try {
+        const userId = req.params.id;
+
+        if (!mongoose.Types.ObjectId.isValid(userId)) {
+            return res.status(400).json({ error: 'ID de usuario inválido' });
+        }
+
+        const projects = await Project.find({ userId: new mongoose.Types.ObjectId(userId) }).populate('userId', 'username');
+
+        if (projects.length === 0) {
+            return res.status(404).json({ message: 'No hay proyectos para este usuario.' });
+        }
+
+        res.status(200).json(projects);
+    } catch (err) {
+        console.error('Error al obtener proyectos del usuario:', err);
+        res.status(500).json({ error: 'Error al obtener proyectos del usuario' });
     }
 };
 
@@ -57,23 +58,53 @@ const getProjectById = async (req, res) => {
     }
 };
 
-const getUserProjects = async (req, res) => {
-    const userId = req.params.id; // Obtén el ID del usuario de los parámetros
+// Crear un proyecto
+const createProject = async (req, res) => {
     try {
-        const projects = await Project.find({ userId }).populate('userId', 'username'); // Busca proyectos por userId e incluye el username
-        if (projects.length === 0) {
-            return res.status(404).json({ message: 'No projects found for this user.' });
+        const { title, html, css, js } = req.body;
+
+        // Verificar si el usuario está autenticado
+        const userId = req.session.userId;
+        if (!userId) {
+            return res.status(403).send('No estás autorizado para realizar esta acción.');
         }
-        res.status(200).json(projects); // Devuelve los proyectos encontrados
+
+        // Crear un nuevo proyecto asociado al usuario
+        const project = new Project({
+            title,
+            html,
+            css,
+            js,
+            userId,
+        });
+
+        await project.save();
+
+        console.log('Proyecto guardado con éxito:', project._id);
+        res.status(200).send('Proyecto guardado con éxito.');
     } catch (err) {
-        console.error('Error retrieving user projects:', err);
-        res.status(500).json({ error: 'Error retrieving user projects' });
+        console.error('Error al guardar el proyecto:', err);
+        res.status(500).send('Error interno al guardar el proyecto.');
     }
 };
+
+
+// Obtener proyectos filtrados por nombre
+async function getProjectsByQuery(req, res) {
+    try {
+        const searchQuery = req.query.query;
+        const projects = await Project.find({ title: { $regex: searchQuery, $options: 'i' } });
+        res.json(projects);
+    } catch (error) {
+        console.error("Error al obtener proyectos:", error);
+        res.status(500).json({ error: "Error en el servidor" });
+    }
+}
 
 module.exports = {
     createProject,
     getProjects,
     getProjectById,
-    getUserProjects
+    getUserProjects,
+    getProjectsByQuery
 };

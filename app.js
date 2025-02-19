@@ -7,7 +7,6 @@ const Proyecto = require('./models/Project'); // Modelo para los proyectos
 const session = require('express-session');
 const MongoStore = require('connect-mongo');
 
-
 var app = express();
 
 // view engine setup
@@ -38,19 +37,14 @@ app.use(session({
       mongoUrl: mongoUri,
       ttl: 14 * 24 * 60 * 60 // Tiempo de vida de la sesión (14 días)
   }),
- /* cookie: {
-      secure: process.env.NODE_ENV === 'production',
-      httpOnly: true,
-      sameSite: process.env.NODE_ENV === 'production' ? 'None' : 'Lax',
-      maxAge: 1000 * 60 * 60 * 24 // 1 día
-  }*/
 } ));
+
 // pagina principal
 const indexRouter = require('./routes/index');
 app.use('/', indexRouter);
 
 const userRoutes = require('./routes/users');
-app.use('/users', userRoutes);
+app.use('/api/users', userRoutes);
 const userControllers = require('./controllers/userControllers');
 app.post('/users/login', userControllers.loginUser);
 app.get('/users/session', userControllers.checkSession);

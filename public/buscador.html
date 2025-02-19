@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Buscador</title>
+    <link rel="stylesheet" href="stylesheets/buscador.css">
+</head>
+<body>
+    <div id="main-content">
+        <header class="header">
+          <nav class="nav">
+            <a href="index.html">Inicio</a>
+            <a href="comunidad.html">Comunidad</a>
+            <a href="juegos.html">Juegos</a>
+            <a href="formulario.html">Crear</a>
+          </nav>
+          <div class="logo">
+            <a href="index.html"><img src="images/CodePlay_ejemplo_sin_fondo (1).png" alt="Logo del Proyecto" /></a>
+          </div>
+          <div class="buttons">
+            <a href="login.html"><button>Iniciar Sesión</button></a>
+            <a href="registro.html"><button>Registrarse</button></a>
+          </div>
+        </header>
+    </div>
+    
+    <!-- Sidebar -->
+    <div class="result">
+        <div class="sidebar">
+            <h2>Filtrar por</h2>
+            <a href="#" onclick="setFilter('proyectos')">Proyectos</a>
+            <a href="#" onclick="setFilter('usuarios')">Usuarios</a>
+            <a href="#" onclick="setFilter('juegos')">Juegos</a>
+            <a href="#" onclick="setFilter('anotaciones')">Anotaciones</a>
+        </div>
+        
+        <!-- Contenido de búsqueda -->
+        <div class="main-content">
+            <div class="search-bar">
+                <input type="text" id="searchInput" placeholder="Buscar..." oninput="searchData()">
+            </div>
+            
+            <div class="results" id="results-container">
+                <p>Introduce un término de búsqueda...</p>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+       let currentFilter = "proyectos";
+
+       document.querySelectorAll(".sidebar a").forEach(link => {
+    link.addEventListener("click", function(event) {
+        event.preventDefault(); // Evita que la página se recargue
+        currentFilter = this.getAttribute("data-filter"); // Asigna el nuevo filtro
+        console.log("Filtro cambiado a:", currentFilter);
+    });
+});
+
+        function setFilter(type) {
+            currentFilter = type;
+            document.getElementById('results-container').innerHTML = `<p>Mostrando resultados de ${type}...</p>`;
+            searchData(); // Actualizar resultados al cambiar de filtro
+        }
+        
+                async function searchData() {
+            const searchTerm = document.getElementById('searchInput').value.trim();
+            if (searchTerm.length === 0) {
+                document.getElementById('results-container').innerHTML = '<p>Introduce un término de búsqueda...</p>';
+                return;
+            }
+
+            console.log("Filtro actual:", currentFilter); // 👉 Verifica el filtro antes de la solicitud
+
+            if (!currentFilter) {
+                console.error('Error: currentFilter no está definido');
+                document.getElementById('results-container').innerHTML = '<p>Error en la búsqueda.</p>';    
+                return;
+            }
+
+            try {
+                const response = await fetch(`/api/${currentFilter}?query=${encodeURIComponent(searchTerm)}`);
+                if (!response.ok) throw new Error('Error en la API');
+                
+                const data = await response.json();
+                displayResults(data);
+            } catch (error) {
+                console.error('Error al obtener resultados:', error);
+                document.getElementById('results-container').innerHTML = '<p>Error al cargar los resultados.</p>';
+            }
+        }
+
+
+        
+        function displayResults(results) {
+            const container = document.getElementById('results-container');
+            container.innerHTML = '';
+            
+            if (!results || results.length === 0) {
+                container.innerHTML = '<p>No se encontraron resultados.</p>';
+                return;
+            }
+            
+            results.forEach(result => {
+                const resultElement = document.createElement('div');
+                resultElement.classList.add('result-item');
+                
+                let content = '';
+                if (currentFilter === 'proyectos') {
+                    content = `<h3>${result.title}</h3><p>Creado por: ${result.user || 'Anónimo'}</p>`;
+                } else if (currentFilter === 'usuarios') {
+                    content = `<h3>${result.username}</h3>`;
+                } else if (currentFilter === 'juegos') {
+                    content = `<h3>${result.name}</h3>`;
+                } else if (currentFilter === 'anotaciones') {
+                    content = `<h3>${result.title}</h3><p>Lenguaje: ${result.language}</p>`;
+                }
+                
+                resultElement.innerHTML = content;
+                container.appendChild(resultElement);
+            });
+        }
+
+        document.getElementById('searchInput').addEventListener('input', async function() {
+        const query = this.value.trim();
+        let endpoint = '/api/proyectos'; // Por defecto buscará proyectos
+
+        if (document.getElementById('filter-usuarios').classList.contains('active')) {
+            endpoint = '/api/usuarios';
+        } else if (document.getElementById('filter-anotaciones').classList.contains('active')) {
+            endpoint = '/api/anotaciones';
+        }
+
+        try {
+            const response = await fetch(`${endpoint}?query=${query}`);
+            const data = await response.json();
+            renderResults(data);
+        } catch (error) {
+            console.error('Error al obtener los resultados:', error);
+        }
+});
+
+function renderResults(data) {
+    const resultsContainer = document.getElementById('results');
+    resultsContainer.innerHTML = '';
+
+    if (data.length === 0) {
+        resultsContainer.innerHTML = '<p>No se encontraron resultados.</p>';
+        return;
+    }
+
+    data.forEach(item => {
+        const div = document.createElement('div');
+        div.classList.add('result-item');
+        div.innerHTML = `<h3>${item.title || item.usuario || item.nombre}</h3>`;
+        resultsContainer.appendChild(div);
+    });
+}
+
+
+    </script>
+
+    <footer class="footer">
+        <div class="footer-content">
+          <div class="footer-section">
+            <h4>Acerca de Nosotros</h4>
+            <p>Codeplay es una plataforma diseñada para creativos, jugadores y desarrolladores. ¡Explora, aprende y crea con nosotros!</p>
+          </div>
+          <div class="footer-section">
+            <h4>Enlaces Rápidos</h4>
+            <ul>
+              <li><a href="index.html">Inicio</a></li>
+              <li><a href="comunidad.html">Comunidad</a></li>
+              <li><a href="juegos.html">Juegos</a></li>
+              <li><a href="editar.html">Crear</a></li>
+            </ul>
+          </div>
+          <div class="footer-section">
+            <h4>Contáctanos</h4>
+            <p>Email: contacto@proyectoalternativo.com</p>
+            <p>Teléfono: +123 456 789</p>
+            <p>Síguenos en:</p>
+            <div class="social-icons">
+              <a href="#"><img src="images/facebook-icon.png" alt="Facebook"></a>
+              <a href="#"><img src="images/twitter-icon.png" alt="Twitter"></a>
+              <a href="#"><img src="images/instagram-icon.png" alt="Instagram"></a>
+            </div>
+          </div>
+        </div>
+        <div class="footer-bottom">
+          <p>&copy; 2024 CodePlay. Todos los derechos reservados.</p>
+        </div>
+      </footer>
+</body>
+</html>

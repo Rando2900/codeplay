@@ -73,48 +73,16 @@
   </div>
 </footer>
 <script>
-  document.addEventListener('DOMContentLoaded', () => {
-      fetch('/users/session', { method: 'GET', credentials: 'same-origin' })
-          .then(response => response.json())
-          .then(data => {
-              if (!data.loggedIn) {
-                  window.location.href = 'login.html';
-              } else {
-                  document.getElementById('username').value = data.username;
-              }
-          })
-          .catch(err => console.error('Error verificando la sesión:', err));
-
-      document.getElementById('edit-profile-form').addEventListener('submit', async (event) => {
-          event.preventDefault();
-
-          const username = document.getElementById('username').value;
-          const password = document.getElementById('password').value;
-
-          try {
-              const response = await fetch('/users/updateProfile', {
-                  method: 'POST',
-                  headers: { 'Content-Type': 'application/json' },
-                  body: JSON.stringify({ username, password }),
-                  credentials: 'same-origin'
-              });
-
-              const result = await response.json();
-
-              if (response.ok) {
-                  alert(result.message); 
-                  window.location.href = result.redirect;  // 🔴 Redirige al login
-              } else {
-                  alert('Error al actualizar el perfil');
-              }
-          } catch (error) {
-              console.error('Error en la solicitud:', error);
-              alert('Error en la actualización del perfil');
-          }
-      });
-  });
+    document.addEventListener('DOMContentLoaded', () => {
+        fetch('/users/session', { method: 'GET', credentials: 'same-origin' })
+            .then(response => response.json())
+            .then(data => {
+                if (!data.loggedIn) {
+                    window.location.href = 'login.html';
+                }
+            })
+            .catch(err => console.error('Error verificando la sesión:', err));
+    });
 </script>
-
-
 </body>
 </html>
