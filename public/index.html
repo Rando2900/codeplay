@@ -300,6 +300,7 @@ using<span class="s3"> namespace </span>std<span class="sc">;</span>
           .then(response => response.json())
           .then(data => {
               const userMenu = document.querySelector('.buttons');
+              const heroButtons = document.querySelector('.hero-buttons');
               if (data.loggedIn) {
                   userMenu.innerHTML = `
                       <div class="profile-menu">
@@ -308,6 +309,9 @@ using<span class="s3"> namespace </span>std<span class="sc">;</span>
                           <button onclick="logout()">Cerrar Sesión</button>
                       </div>
                   `;
+                  if (heroButtons) {
+                    heroButtons.style.display = 'none'; // 🟢 Oculta los botones si el usuario está logueado
+                }
                   // Mostrar la barra de notificación
                   showNotification('Inicio de sesión exitoso');
               }

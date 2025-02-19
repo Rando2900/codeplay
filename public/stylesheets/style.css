@@ -51,7 +51,7 @@ body {
 }
 
 .header .logo img {
-  height: 70px; /* Tamaño del logo */
+  height: 110px; /* Tamaño del logo */
   object-fit: contain; /* Ajuste del tamaño para mantener proporciones */
 }
 
