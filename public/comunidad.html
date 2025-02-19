@@ -38,7 +38,7 @@
         <a href="resgistro.html"><button>Registrarse</button></a>
       </div>
     </header>
-
+ 
     <main>
         <section class="projects-section">
             <h1>Proyectos de la Comunidad</h1>
@@ -58,10 +58,42 @@
             </div>
         </section>
     </main>
-
     <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const userMenu = document.getElementById('userMenu'); // Obtén el contenedor de los botones
+      
+            // Verificar si la cookie de sesión existe
+            fetch('/users/session', { method: 'GET', credentials: 'same-origin' })
+                .then(response => response.json())
+                .then(data => {
+                    if (!data.loggedIn) {
+                        // Redirige al login si no está logueado
+                        window.location.href = 'login.html';
+                    } else {
+                        // Reemplaza los botones con el menú de perfil si está logueado
+                        userMenu.innerHTML = `
+                            <div class="profile-menu">
+                                <a href="perfil.html" style="text-decoration: none; color: inherit; cursor: pointer;">
+                                <span>Hola, ${data.username}</span>
+                                <button onclick="logout()">Cerrar Sesión</button>
+                            </div>
+                        `;
+                    }
+                })
+                .catch(err => console.error('Error verificando la sesión:', err));
+        });
+      
+        function logout() {
+            fetch('/users/logout', { method: 'POST', credentials: 'same-origin' })
+                .then(() => {
+                    window.location.reload(); // Recargar la página después de cerrar sesión
+                })
+                .catch(err => console.error('Error cerrando sesión:', err));
+        }
+    
+    
        let allProjects = [];
-
+ 
        document.addEventListener('DOMContentLoaded', async () => {
            try {
                const response = await fetch('/api/projects');
@@ -75,19 +107,19 @@
                document.getElementById('projects-container').innerHTML = '<p>Error al cargar los proyectos.</p>';
            }
        });
-
+ 
        function sortAndRenderProjects() {
            allProjects.sort((a, b) => b.likes - a.likes);
            renderProjects(allProjects);
        }
-
+ 
        function renderProjects(projects) {
            const container = document.getElementById('projects-container');
            container.innerHTML = '';
            projects.forEach(project => {
                const card = document.createElement('div');
                card.classList.add('project-card');
-
+ 
                const iframe = document.createElement('iframe');
                iframe.srcdoc = `
                    <!DOCTYPE html>
@@ -104,14 +136,14 @@
                iframe.width = "100%";
                iframe.height = "200px";
                iframe.style.border = "1px solid #ccc";
-
+ 
                const titleElement = document.createElement('h2');
                titleElement.textContent = project.title || 'Proyecto Sin Título';
-
+ 
                const viewButton = document.createElement('button');
                viewButton.textContent = 'Ver Proyecto';
                viewButton.addEventListener('click', () => viewProject(project._id));
-
+ 
                const likeButton = document.createElement('button');
                likeButton.classList.add('heart-button');
                likeButton.textContent = project.liked ? `❤️ ${project.likes}` : `🤍 ${project.likes}`;
@@ -128,58 +160,34 @@
                        console.error('Error:', error);
                    }
                });
-
+ 
                card.appendChild(titleElement);
                card.appendChild(viewButton);
                card.appendChild(iframe);
                card.appendChild(likeButton);
+                              const creatorContainer = document.createElement('div');
+               creatorContainer.classList.add('creator-container');
+               
+               const creatorName = document.createElement('p');
+               creatorName.classList.add('project-creator');
+               creatorName.innerHTML = `Creado por: <button class='creator-button' onclick="window.location.href='perfil_usuario.html?id=${project.userId?._id}'">${project.userId?.usuario || 'Anónimo'}</button>`;
+               
+               creatorContainer.appendChild(creatorName);
+               card.appendChild(creatorContainer);
+               
                container.appendChild(card);
            });
        }
-
+ 
        function buscarProyectos() {
            const query = document.getElementById('search-bar').value.toLowerCase();
            const filteredProjects = allProjects.filter(project => project.title.toLowerCase().includes(query));
            renderProjects(filteredProjects);
        }
-
+ 
        function viewProject(projectId) {
            window.location.href = `/project.html?id=${projectId}`;
        }
-
-
-       //usuario
-       document.addEventListener('DOMContentLoaded', () => {
-      const userMenu = document.getElementById('userMenu'); // Obtén el contenedor de los botones
- 
-      // Verificar si la cookie de sesión existe
-      fetch('/users/session', { method: 'GET', credentials: 'same-origin' })
-          .then(response => response.json())
-          .then(data => {
-              if (!data.loggedIn) {
-                  // Redirige al login si no está logueado
-                  window.location.href = 'login.html';
-              } else {
-                  // Reemplaza los botones con el menú de perfil si está logueado
-                  userMenu.innerHTML = `
-                      <div class="profile-menu">
-                          <a href="perfil.html" style="text-decoration: none; color: inherit; cursor: pointer;">
-                          <span>Hola, ${data.username}</span>
-                          <button onclick="logout()">Cerrar Sesión</button>
-                      </div>
-                  `;
-              }
-          })
-          .catch(err => console.error('Error verificando la sesión:', err));
-  });
- 
-  function logout() {
-      fetch('/users/logout', { method: 'POST', credentials: 'same-origin' })
-          .then(() => {
-              window.location.reload(); // Recargar la página después de cerrar sesión
-          })
-          .catch(err => console.error('Error cerrando sesión:', err));
-  }
     </script>
 </body>
 </html>

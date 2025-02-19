@@ -100,29 +100,43 @@ const publicarProyecto = async (req, res) => {
         res.status(500).json({ error: 'Error interno al guardar el proyecto' });
     }
 };
-
 const updateProfile = async (req, res) => {
     try {
-        const userId = req.session.userId; // Asegúrate de tener la sesión configurada correctamente
+        console.log("🔍 Datos de sesión antes de actualizar:", req.session);
+        const userId = req.session.userId;
         const { username, password } = req.body;
 
         if (!userId) {
-            return res.status(401).send('No autorizado');
+            console.error("❌ No hay userId en la sesión");
+            return res.status(401).json({ error: 'No autorizado' });
         }
 
         const user = await User.findById(userId);
         if (!user) {
-            return res.status(404).send('Usuario no encontrado');
+            console.error("❌ Usuario no encontrado en la BD");
+            return res.status(404).json({ error: 'Usuario no encontrado' });
         }
 
-        user.username = username || user.username;
-        user.password = password || user.password; // Asegúrate de manejar el cifrado de contraseñas aquí
+        console.log("🛠️ Actualizando usuario...");
+        user.usuario = username || user.usuario;
+        user.contraseña = password || user.contraseña; // 🔴 Guardar en texto plano (NO SEGURO)
 
         await user.save();
-        res.status(200).send('Perfil actualizado exitosamente');
+        console.log("✅ Usuario actualizado correctamente:", user);
+
+        // 🔴 Cierra la sesión después de actualizar
+        req.session.destroy((err) => {
+            if (err) {
+                console.error('❌ Error al cerrar sesión:', err);
+                return res.status(500).json({ error: 'Error al cerrar sesión' });
+            }
+            res.clearCookie('connect.sid'); // Borra la cookie de sesión
+            res.status(200).json({ message: 'Perfil actualizado y sesión cerrada', redirect: 'login.html' });
+        });
+
     } catch (error) {
-        console.error('Error al actualizar perfil:', error);
-        res.status(500).send('Error interno del servidor');
+        console.error('❌ Error en updateProfile:', error);
+        res.status(500).json({ error: 'Error interno del servidor' });
     }
 };
 

@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Perfil de Usuario</title>
+    <link rel="stylesheet" href="stylesheets/perfil.css">
+</head>
+<body>
+    <header>
+        <nav>
+            <a href="index.html">Inicio</a>
+            <a href="comunidad.html">Comunidad</a>
+            <a href="juegos.html">Juegos</a>
+        </nav>
+    </header>
+    
+    <main>
+        <section id="perfil-info">
+            <h1 id="username">Cargando usuario...</h1>
+            <p id="user-id"></p>
+        </section>
+        
+        <section id="proyectos">
+            <h2>Proyectos de este usuario</h2>
+            <div id="projects-container">Cargando proyectos...</div>
+        </section>
+    </main>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", async () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const userId = urlParams.get("id");
+
+            if (!userId) {
+                document.getElementById("username").textContent = "Usuario no encontrado";
+                return;
+            }
+
+            try {
+                const userResponse = await fetch(`/users/${userId}`);
+                const userData = await userResponse.json();
+                
+                document.getElementById("username").textContent = userData.usuario || "Usuario Anónimo";
+                document.getElementById("user-id").textContent = `ID: ${userId}`;
+            } catch (error) {
+                console.error("Error obteniendo usuario:", error);
+            }
+
+            try {
+                const projectsResponse = await fetch(`/api/projects/user/${userId}/projects`);
+                const projects = await projectsResponse.json();
+                
+                const container = document.getElementById("projects-container");
+                container.innerHTML = "";
+                
+                projects.forEach(project => {
+                    const projectDiv = document.createElement("div");
+                    projectDiv.classList.add("project-card");
+                    projectDiv.innerHTML = `<h3>${project.title}</h3>
+                        <p>Creado por: <a href='perfil_usuario.html?id=${project.userId}'>${project.userId}</a></p>`;
+                    container.appendChild(projectDiv);
+                });
+            } catch (error) {
+                console.error("Error obteniendo proyectos:", error);
+            }
+        });
+    </script>
+</body>
+</html>

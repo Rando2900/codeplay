@@ -6,6 +6,7 @@ var logger = require('morgan');
 const mongoose = require('mongoose'); // Import mongoose
 const Proyecto = require('./models/Project'); // Modelo para los proyectos
 const session = require('express-session');
+const MongoStore = require('connect-mongo');
 
 var app = express();
 
@@ -23,16 +24,24 @@ mongoose.connect('mongodb+srv://CODEPLAY:1234@cluster0.ieneu.mongodb.net/codepla
   .then(() => { console.log('Connected to MongoDB...') });
 
 // Middleware de sesión
+const mongoUrl = process.env.MONGO_URI || 'mongodb+srv://CODEPLAY:1234@cluster0.ieneu.mongodb.net/codeplay';
+
 app.use(session({
-  secret: 'mi_secreto_seguro', // Cambia esto por algo seguro
-  resave: false,
-  saveUninitialized: false,
-  cookie: {
-      secure: process.env.NODE_ENV === 'production', // Solo para HTTPS en producción
-      httpOnly: true, // Protege contra XSS
-      maxAge: 1000 * 60 * 60 * 24 // Sesión válida por 1 día
-  }
+    secret: 'mi_secreto_seguro',
+    resave: false,
+    saveUninitialized: false,
+    store: MongoStore.create({
+        mongoUrl: mongoUrl, // Asegura que siempre haya un valor
+        ttl: 14 * 24 * 60 * 60 // Tiempo de vida de la sesión (14 días)
+    }),
+    cookie: {
+        secure: process.env.NODE_ENV === 'production', // true en producción
+        httpOnly: true,
+        sameSite: 'None',
+        maxAge: 1000 * 60 * 60 * 24
+    }
 }));
+
 
 // pagina principal
 const indexRouter = require('./routes/index');
