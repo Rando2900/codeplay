@@ -37,27 +37,50 @@ const registerUser = async (req, res) => {
 
 // 🔹 Inicio de sesión
 const loginUser = async (req, res) => {
-    const { usuario, contraseña } = req.body;
-
-    if (!usuario || !contraseña) {
-        return res.status(400).send('El nombre de usuario y la contraseña son obligatorios.');
-    }
-
     try {
+        console.log('🔍 Datos recibidos:', req.body);
+
+        let { usuario, contraseña } = req.body;
+
+        // Verifica que usuario y contraseña sean strings
+        if (typeof usuario !== 'string' || typeof contraseña !== 'string') {
+            console.error('❌ Error: usuario o contraseña no son strings.');
+            return res.status(400).send('Datos de inicio de sesión inválidos.');
+        }
+
+        usuario = usuario.trim();
+        contraseña = contraseña.trim();
+
+        if (!usuario || !contraseña) {
+            console.error('❌ Error: usuario o contraseña vacíos.');
+            return res.status(400).send('El nombre de usuario y la contraseña son obligatorios.');
+        }
+
         const user = await User.findOne({ usuario });
 
-        if (!user || user.contraseña !== contraseña) {
+        if (!user) {
+            console.error('❌ Usuario no encontrado');
             return res.status(401).send('Credenciales incorrectas.');
         }
 
-        req.session.userId = user._id; // Guardamos solo el ID del usuario en la sesión
-        req.session.username = user.usuario; // Guardamos el nombre
+        if (user.contraseña !== contraseña) {
+            console.error('❌ Contraseña incorrecta');
+            return res.status(401).send('Credenciales incorrectas.');
+        }
+
+        req.session.userId = user._id;
+        req.session.username = user.usuario;
+
+        console.log('✅ Login exitoso:', req.session);
 
         res.status(200).json({ message: 'Login exitoso', redirect: 'index.html' });
     } catch (err) {
+        console.error('❌ Error en loginUser:', err);
         res.status(500).send('Error interno del servidor.');
     }
 };
+
+
 
 // 🔹 Verificar sesión
 const checkSession = (req, res) => {

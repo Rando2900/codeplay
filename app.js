@@ -21,9 +21,14 @@ app.use(express.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.static(path.join(__dirname, 'node_modules/@emmetio/codemirror-plugin/dist')));
 
-mongoose.connect(process.env.MONGO_URI || 'mongodb+srv://CODEPLAY:1234@cluster0.ieneu.mongodb.net/codeplay')
-  .then(() => { console.log('Connected to MongoDB...') })
-  .catch(err => console.error('Error connecting to MongoDB:', err));
+const mongoUri = process.env.MONGO_URI || 'mongodb+srv://CODEPLAY:1234@cluster0.ieneu.mongodb.net/codeplay';
+
+mongoose.connect(mongoUri, { useNewUrlParser: true, useUnifiedTopology: true })
+  .then(() => console.log('✅ Conectado a MongoDB en la nube'))
+  .catch(err => {
+      console.error('❌ Error conectando a MongoDB:', err.message);
+      process.exit(1);
+  });
 
 // Middleware de sesión
 app.use(session({
@@ -31,14 +36,14 @@ app.use(session({
   resave: false,
   saveUninitialized: false,
   store: MongoStore.create({
-      mongoUrl: process.env.MONGO_URI || 'mongodb://localhost:27017/codeplay',
+      mongoUrl: mongoUri,
       ttl: 14 * 24 * 60 * 60 // Tiempo de vida de la sesión (14 días)
   }),
   cookie: {
-      secure: process.env.NODE_ENV === 'production', // Solo para HTTPS en producción
-      httpOnly: true, // Protege contra XSS
-      sameSite: process.env.NODE_ENV === 'production' ? 'None' : 'Lax', // 'Lax' para local
-      maxAge: 1000 * 60 * 60 * 24 // Sesión válida por 1 día
+      secure: process.env.NODE_ENV === 'production',
+      httpOnly: true,
+      sameSite: process.env.NODE_ENV === 'production' ? 'None' : 'Lax',
+      maxAge: 1000 * 60 * 60 * 24 // 1 día
   }
 }));
 
