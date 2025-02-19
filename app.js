@@ -8,6 +8,7 @@ const Proyecto = require('./models/Project'); // Modelo para los proyectos
 const session = require('express-session');
 const MongoStore = require('connect-mongo');
 
+
 var app = express();
 
 // view engine setup
@@ -20,28 +21,26 @@ app.use(express.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.static(path.join(__dirname, 'node_modules/@emmetio/codemirror-plugin/dist')));
 
-mongoose.connect('mongodb+srv://CODEPLAY:1234@cluster0.ieneu.mongodb.net/codeplay')
-  .then(() => { console.log('Connected to MongoDB...') });
+mongoose.connect(process.env.MONGO_URI || 'mongodb+srv://CODEPLAY:1234@cluster0.ieneu.mongodb.net/codeplay')
+  .then(() => { console.log('Connected to MongoDB...') })
+  .catch(err => console.error('Error connecting to MongoDB:', err));
 
 // Middleware de sesión
-const mongoUrl = process.env.MONGO_URI || 'mongodb+srv://CODEPLAY:1234@cluster0.ieneu.mongodb.net/codeplay';
-
 app.use(session({
-    secret: 'mi_secreto_seguro',
-    resave: false,
-    saveUninitialized: false,
-    store: MongoStore.create({
-        mongoUrl: mongoUrl, // Asegura que siempre haya un valor
-        ttl: 14 * 24 * 60 * 60 // Tiempo de vida de la sesión (14 días)
-    }),
-    cookie: {
-        secure: process.env.NODE_ENV === 'production', // true en producción
-        httpOnly: true,
-        sameSite: 'None',
-        maxAge: 1000 * 60 * 60 * 24
-    }
+  secret: 'mi_secreto_seguro', // Cambia esto por algo seguro
+  resave: false,
+  saveUninitialized: false,
+  store: MongoStore.create({
+      mongoUrl: process.env.MONGO_URI || 'mongodb://localhost:27017/codeplay',
+      ttl: 14 * 24 * 60 * 60 // Tiempo de vida de la sesión (14 días)
+  }),
+  cookie: {
+      secure: process.env.NODE_ENV === 'production', // Solo para HTTPS en producción
+      httpOnly: true, // Protege contra XSS
+      sameSite: process.env.NODE_ENV === 'production' ? 'None' : 'Lax', // 'Lax' para local
+      maxAge: 1000 * 60 * 60 * 24 // Sesión válida por 1 día
+  }
 }));
-
 
 // pagina principal
 const indexRouter = require('./routes/index');
