@@ -34,7 +34,7 @@ app.use(session({
   secret: 'mi_secreto_seguro', // Cambia esto por algo seguro
   resave: false,
   saveUninitialized: false,
-  /*store: MongoStore.create({
+  store: MongoStore.create({
       mongoUrl: mongoUri,
       ttl: 14 * 24 * 60 * 60 // Tiempo de vida de la sesión (14 días)
   }),
@@ -43,7 +43,7 @@ app.use(session({
       httpOnly: true,
       sameSite: process.env.NODE_ENV === 'production' ? 'None' : 'Lax',
       maxAge: 1000 * 60 * 60 * 24 // 1 día
-  }*/
+  }
 } ));
 // pagina principal
 const indexRouter = require('./routes/index');
