@@ -1,11 +1,15 @@
 const express = require('express');
-const { createProject, getProjects, getProjectById, getUserProjects, getProjectsByQuery} = require('../controllers/projectController');
+const { createProject, getProjects, getProjectById, getUserProjects, getProjectsByQuery } = require('../controllers/projectController');
 const router = express.Router();
 const Project = require('../models/Project');
-const mongoose = require('mongoose');
+const mongoose = require('mongoose');;
 
 
 
+// Ruta de búsqueda por query
+router.get('/proyectos', getProjectsByQuery);
+
+module.exports = router;
 
 // Ruta para crear un proyecto
 router.post('/', createProject);
@@ -20,6 +24,9 @@ router.get('/:id', getProjectById);
 router.get('/user/:id', getUserProjects);
 
 router.get('/proyectos', getProjectsByQuery);
+
+router.get("/search", getProjectsByQuery);
+
 
 
 router.get('/', async (req, res) => {

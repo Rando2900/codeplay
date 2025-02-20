@@ -90,16 +90,23 @@ const createProject = async (req, res) => {
 
 
 // Obtener proyectos filtrados por nombre
-async function getProjectsByQuery(req, res) {
+const getProjectsByQuery = async (req, res) => {
     try {
-        const searchQuery = req.query.query;
-        const projects = await Project.find({ title: { $regex: searchQuery, $options: 'i' } });
-        res.json(projects);
+        const query = req.query.query;
+        if (!query) {
+            return res.status(400).json({ error: "No se proporcionó un término de búsqueda." });
+        }
+
+        // Buscar proyectos que coincidan con el término de búsqueda
+        const proyectos = await Project.find({ title: { $regex: query, $options: "i" } });
+
+        res.json(proyectos);
     } catch (error) {
         console.error("Error al obtener proyectos:", error);
-        res.status(500).json({ error: "Error en el servidor" });
+        res.status(500).json({ error: "Error al obtener proyectos." });
     }
-}
+};
+
 
 module.exports = {
     createProject,

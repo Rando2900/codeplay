@@ -46,6 +46,7 @@ app.use('/', indexRouter);
 const userRoutes = require('./routes/users');
 app.use('/api/users', userRoutes);
 const userControllers = require('./controllers/userControllers');
+app.post('/users/register', userControllers.registerUser);
 app.post('/users/login', userControllers.loginUser);
 app.get('/users/session', userControllers.checkSession);
 app.post('/users/logout', userControllers.logoutUser);
