@@ -40,22 +40,95 @@ app.use(session({
 } ));
 
 // pagina principal
+app.get('/', (req, res) => res.render('index', { title: 'Inicio' }));
+app.get('/registro', (req, res) => res.render('registro', { title: 'Registro' }));
+app.get('/login', (req, res) => res.render('login', { title: 'Iniciar Sesión' }));
+app.get('/perfil', (req, res) => res.render('perfil', { title: 'Perfil' }));
+app.get('/perfil_usuario', (req, res) => res.render('perfil_usuario', { title: 'Perfil de Usuario' }));
+app.get('/editarperfil', (req, res) => res.render('editarperfil', { title: 'Editar Perfil' }));
+app.get('/proyecto', (req, res) => res.render('proyecto', { title: 'Proyecto' }));
+app.get('/juegos', (req, res) => res.render('juegos', { title: 'Juegos' }));
+app.get('/editarjuegos', (req, res) => res.render('editarjuegos', { title: 'Editor de Juegos' }));
+app.get('/comunidad', (req, res) => res.render('comunidad', { title: 'Comunidad' }));
+app.get('/terminos_condiciones', (req, res) => res.render('terminos_condiciones', { title: 'Términos y Condiciones' }));
+app.get('/politica_privacidad', (req, res) => res.render('politica_privacidad', { title: 'Política de Privacidad' }));
+app.get('/formulario', (req, res) => res.render('formulario', { title: 'Formulario' }));
+app.get('/buscador', (req, res) => res.render('buscador', { title: 'Buscador' }));
+app.get('/anotaciones', (req, res) => res.render('anotaciones', { title: 'Anotaciones' }));
+
+app.use((req, res, next) => {
+  res.locals.user = req.session.user || null; 
+  next();
+});
+
+
+// 📌 Rutas de API
 const indexRouter = require('./routes/index');
 app.use('/', indexRouter);
 
 const userRoutes = require('./routes/users');
 app.use('/api/users', userRoutes);
+
 const userControllers = require('./controllers/userControllers');
 app.post('/users/register', userControllers.registerUser);
 app.post('/users/login', userControllers.loginUser);
 app.get('/users/session', userControllers.checkSession);
 app.post('/users/logout', userControllers.logoutUser);
+
 const juegosRoutes = require('./routes/juegos');
 app.use('/api/juegos', juegosRoutes);
-const projectRoutes = require('./routes/projectRoutes'); // Añade esta línea
-app.use('/api/projects', projectRoutes); // Y esta línea
-app.use('/api', projectRoutes); // Monta las rutas bajo "/api"
-const anotacionesRoutes = require('./routes/anotaciones'); // Importar las rutas
-app.use('/api/anotaciones', anotacionesRoutes)
 
+const projectRoutes = require('./routes/projectRoutes');
+app.use('/api/projects', projectRoutes);
+app.use('/api', projectRoutes); // Monta las rutas bajo "/api"
+
+const anotacionesRoutes = require('./routes/anotaciones');
+app.use('/api/anotaciones', anotacionesRoutes);
+
+// Ruta para mostrar un proyecto específico
+app.get('/project', async (req, res) => {
+  const projectId = req.query.id; // Obtener el ID del proyecto desde la URL
+
+  if (!projectId) {
+      return res.status(400).send('ID del proyecto no proporcionado');
+  }
+
+  try {
+      const response = await fetch(`http://localhost:3000/api/projects/${projectId}`);
+      if (!response.ok) {
+          throw new Error('No se pudo obtener el proyecto');
+      }
+      const project = await response.json();
+      res.render('project', { title: 'Proyecto', project });
+  } catch (error) {
+      res.status(500).send('Error al cargar el proyecto');
+  }
+});
+
+// Ruta para mostrar un juego específico
+app.get('/juego', async (req, res) => {
+  const juegoId = req.query.id; // Obtener el ID del juego desde la URL
+
+  if (!juegoId) {
+      return res.status(400).send('ID del juego no proporcionado');
+  }
+
+  try {
+      const response = await fetch(`http://localhost:3000/api/juegos/${juegoId}`);
+      if (!response.ok) {
+          throw new Error('No se pudo obtener el juego');
+      }
+      const juego = await response.json();
+      res.render('juego', { title: 'Juego', juego });
+  } catch (error) {
+      res.status(500).send('Error al cargar el juego');
+  }
+});
+
+// Middleware de error 404
+app.use((req, res) => {
+  res.status(404).render('404', { title: 'Página no encontrada' });
+});
+
+// Iniciar el servidor
 module.exports = app;

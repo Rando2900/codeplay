@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Buscador - Code-Play</title>
+    <link rel="stylesheet" href="stylesheets/buscador.css">
+</head>
+<body>
+    <%- include('partials/header') %>
+
+    <!-- Sidebar -->
+    <div class="result">
+        <div class="sidebar">
+            <h2>Filtrar por</h2>
+            <a href="#" onclick="setFilter('proyectos')">Proyectos</a>
+            <a href="#" onclick="setFilter('usuarios')">Usuarios</a>
+            <a href="#" onclick="setFilter('juegos')">Juegos</a>
+            <a href="#" onclick="setFilter('anotaciones')">Anotaciones</a>
+        </div>
+        
+        <!-- Contenido de búsqueda -->
+        <div class="main-content">
+            <div class="search-bar">
+                <input type="text" id="searchInput" placeholder="Buscar..." oninput="searchData()">
+            </div>
+            
+            <div class="results" id="results-container">
+                <p>Introduce un término de búsqueda...</p>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+let currentFilter = "proyectos";
+
+// Manejo de cambio de filtro en la barra lateral
+document.querySelectorAll(".sidebar a").forEach(link => {
+    link.addEventListener("click", function(event) {
+        event.preventDefault();
+        currentFilter = this.textContent.toLowerCase();
+        console.log("Filtro cambiado a:", currentFilter);
+        searchData(); // Actualiza los resultados cuando cambias de filtro
+    });
+});
+
+// Función para buscar los datos
+async function searchData() {
+    const searchTerm = document.getElementById('searchInput').value.trim();
+    if (searchTerm.length === 0) {
+        document.getElementById('results-container').innerHTML = '<p>Introduce un término de búsqueda...</p>';
+        return;
+    }
+
+    console.log("Buscando:", searchTerm, "en", currentFilter);
+
+    try {
+        const response = await fetch(`/api/${currentFilter}?query=${encodeURIComponent(searchTerm)}`);
+        if (!response.ok) throw new Error(`Error en la API: ${response.status}`);
+
+        const data = await response.json();
+        console.log("Datos recibidos:", data);
+
+        if (!Array.isArray(data)) {
+            throw new Error("Los datos recibidos no son un array.");
+        }
+
+        displayResults(data);
+    } catch (error) {
+        console.error("Error al obtener resultados:", error);
+        document.getElementById('results-container').innerHTML = '<p>Error al cargar los resultados.</p>';
+    }
+}
+
+// Función para mostrar los resultados en la página
+function displayResults(data) {
+    const resultsContainer = document.getElementById('results-container');
+    resultsContainer.innerHTML = '';
+
+    data.forEach(project => {
+        const projectElement = document.createElement('div');
+        projectElement.classList.add('project-card');
+
+        // Crear un iframe y cargar su contenido correctamente
+        const iframe = document.createElement('iframe');
+        iframe.classList.add('project-frame');
+        iframe.setAttribute('scrolling', 'no');
+
+        projectElement.innerHTML = `
+            <div class="project-container">
+                <h3 class="project-title">${project.title}</h3>
+                <div class="project-preview"></div>
+                <p class="likes">❤️ ${project.likes}</p>
+                <button class="btn ver-proyecto" data-id="${project._id}">Ver Proyecto</button>
+            </div>
+        `;
+
+        resultsContainer.appendChild(projectElement);
+
+        // Insertar el iframe en la vista previa
+        projectElement.querySelector('.project-preview').appendChild(iframe);
+
+        // Escribir el contenido en el iframe
+        const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+        iframeDoc.open();
+        iframeDoc.write(`
+            <html>
+                <head>
+                    <meta charset="UTF-8">
+                    <style>${project.css}</style>
+                </head>
+                <body>
+                    ${project.html}
+                    <script>${project.js}<\/script>
+                </body>
+            </html>
+        `);
+        iframeDoc.close();
+    });
+
+    
+    // Redirigir al usuario al hacer clic en "Ver Proyecto"
+document.querySelectorAll('.ver-proyecto').forEach(button => {
+    button.addEventListener('click', function () {
+        const projectId = this.getAttribute('data-id');
+        window.location.href = `/project.html?id=${projectId}`; // Cambio de projectId a id
+    });
+});
+
+}
+
+
+
+
+
+
+
+
+        
+       
+function renderResults(data) {
+    const resultsContainer = document.getElementById('results');
+    resultsContainer.innerHTML = '';
+
+    if (data.length === 0) {
+        resultsContainer.innerHTML = '<p>No se encontraron resultados.</p>';
+        return;
+    }
+
+    data.forEach(item => {
+        const div = document.createElement('div');
+        div.classList.add('result-item');
+        div.innerHTML = `<h3>${item.title || item.usuario || item.nombre}</h3>`;
+        resultsContainer.appendChild(div);
+    });
+        async function searchData() {
+    const searchTerm = document.getElementById('searchInput').value.trim();
+    if (searchTerm.length === 0) {
+        document.getElementById('results-container').innerHTML = '<p>Introduce un término de búsqueda...</p>';
+        return;
+    }
+
+    try {
+        console.log("Buscando:", searchTerm); // Verificar en la consola si el evento se activa
+
+        const response = await fetch(`/api/proyectos?query=${encodeURIComponent(searchTerm)}`);
+        if (!response.ok) throw new Error('Error en la API');
+        
+        const data = await response.json();
+        console.log("Datos recibidos:", data); // Verificar qué datos devuelve la API
+        displayResults(data);
+    } catch (error) {
+        console.error('Error al obtener resultados:', error);
+        document.getElementById('results-container').innerHTML = '<p>Error al cargar los resultados.</p>';
+    }
+}
+
+async function searchData() {
+    const searchTerm = document.getElementById('searchInput').value.trim();
+    if (searchTerm.length === 0) {
+        document.getElementById('results-container').innerHTML = '<p>Introduce un término de búsqueda...</p>';
+        return;
+    }
+
+    console.log("Buscando:", searchTerm, "en", currentFilter); 
+
+    try {
+        const response = await fetch(`/api/${currentFilter}?query=${encodeURIComponent(searchTerm)}`);
+        if (!response.ok) throw new Error(`Error en la API: ${response.status}`);
+
+        const data = await response.json();
+        console.log("Datos recibidos:", data); 
+
+        if (!Array.isArray(data)) {
+            throw new Error("Los datos recibidos no son un array.");
+        }
+
+        displayResults(data);
+    } catch (error) {
+        console.error("Error al obtener resultados:", error);
+        document.getElementById('results-container').innerHTML = '<p>Error al cargar los resultados.</p>';
+    }
+}
+
+}
+
+
+    </script>
+
+<%- include('partials/footer') %>
+</body>
+</html>

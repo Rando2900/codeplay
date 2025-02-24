@@ -1,11 +1,304 @@
 <!DOCTYPE html>
-<html>
-  <head>
-    <title><%= title %></title>
-    <link rel='stylesheet' href='/stylesheets/style.css' />
-  </head>
-  <body>
-    <h1><%= title %></h1>
-    <p>Welcome to <%= title %></p>
-  </body>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Code-Play</title>
+  <link rel="stylesheet" href="stylesheets/style.css">
+  <style>
+    /* Contenedor del video de introducción */
+    #video-intro {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: black;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+    }
+
+    /* Ocultar el contenido principal al inicio */
+    #main-content {
+      display: none;
+    }
+  </style>
+   <style>
+    /* Estilo para el hero */
+    .hero {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 60vh;
+        background: linear-gradient(to right, #007bff, #6a11cb);
+        text-align: center;
+        color: white;
+        padding: 20px;
+    }
+
+    .hero h1 {
+        font-size: 50px;
+        margin-bottom: 10px;
+    }
+
+    .hero p {
+        font-size: 20px;
+        margin-bottom: 20px;
+    }
+
+    .hero-buttons {
+        display: flex;
+        gap: 15px;
+        margin-top: 20px;
+    }
+
+    .hero-buttons a {
+        text-decoration: none;
+    }
+
+    .hero-buttons button {
+        background: white;
+        color: #007bff;
+        padding: 12px 20px;
+        font-size: 16px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-weight: bold;
+        transition: 0.3s;
+    }
+
+    .hero-buttons button:hover {
+        background: #f1f1f1;
+    }
+
+</style>
+</head>
+<body>
+  <!-- Contenedor del video de introducción -->
+  <div id="video-intro">
+    <video id="intro-video" autoplay muted>
+      <source src="images/El texto del párrafo.mp4" type="video/mp4">
+      Tu navegador no soporta videos.
+    </video>
+  </div>
+
+  <!-- Header -->
+  <%- include('partials/header') %>
+
+  <!-- Barra verde -->
+    <div id="notification-bar"></div>
+
+  
+    <section class="hero">
+      <h1>CodePlay</h1>
+      <p>Explora, crea y comparte tus proyectos.</p>
+
+      <!-- Botones -->
+      <div class="hero-buttons">
+          <a href="login.html"><button>Iniciar Sesión</button></a>
+          <a href="registro.html"><button>Registrarse</button></a>
+      </div>
+
+      <!-- Buscador -->
+    <!-- Buscador en index.html -->
+    <div class="search-container">
+      <p class="search-label">Busca un proyecto</p>
+      <a href="buscador">
+      <div class="group">
+          <svg class="icon" aria-hidden="true" viewBox="0 0 24 24">
+              <g>
+                  <path d="M21.53 20.47l-3.66-3.66C19.195 15.24 20 13.214 20 11c0-4.97-4.03-9-9-9s-9 4.03-9 9 4.03 9 9 9c2.215 0 4.24-.804 5.808-2.13l3.66 3.66c.147.146.34.22.53.22s.385-.073.53-.22c.295-.293.295-.767.002-1.06zM3.5 11c0-4.135 3.365-7.5 7.5-7.5s7.5 3.365 7.5 7.5-3.365 7.5-7.5 7.5-7.5-3.365-7.5-7.5z"></path>
+              </g>
+          </svg>
+          <input placeholder="Search" type="search" id="search-bar" class="input" onkeyup="buscarProyectos()">
+      </div>
+    </a>
+  </div>
+  </section>
+
+
+  
+
+<section class="features" id="features">
+  <h2>Características Destacadas</h2>
+  <div class="grid">
+      <div class="card">
+          <h3>Crea Tus Propios Proyectos</h3>
+          <p>Con nuestro editor ONLINE puedes crear proyectos y publicarlos para que todos los usuarios puedan verlos.</p>
+          <a href="Proyecto.html"><button class="card-button">Button</button></a>
+      </div>
+      <div class="card">
+          <h3>Juega</h3>
+          <p>Prueba, disfruta y crea juegos.</p>
+          <a href="juegos.html"><button class="card-button">Button</button></a>
+      </div>
+      <div class="card">
+          <h3>Guarda Trozos de Código</h3>
+          <p>Con nuestro sistema de anotaciones puedes guardar trozos de código para que jamás se te olviden.</p>
+          <a href="anotaciones.html"><button class="card-button">Button</button></a>
+      </div>
+  </div>
+  <br>
+  <br> 
+  <div class="unique-container">
+    <a class="codepen-button" href="Proyecto.html"><span>Start Coding</span></a>
+  </div>
+  <br><br>
+
+  <div id="custom-section" style="display: flex; justify-content: space-between; padding: 20px; background-color: #f9f9f9; border-top: 1px solid #ddd;">
+    <div style="width: 48%; text-align: center;">
+      <h1>Guarda tus Anotaciones </h1>
+      <p>Guarda tus trozos de codigo , para no perderlos jamas.</p>
+      
+    </div>
+    <div style="width: 32%; text-align: right;">
+      
+<div class="vcard">
+  <div class="titlebar">
+    <span class="buttons">
+    <button class="minimize">
+			<svg x="0px" y="0px" viewBox="0 0 10.2 1"><rect x="0" y="50%" width="10.2" height="1"></rect></svg>
+		</button>
+    <button class="maximize">
+			<svg viewBox="0 0 10 10"><path d="M0,0v10h10V0H0z M9,9H1V1h8V9z"></path></svg>
+		</button>
+    <button class="close">
+			<svg viewBox="0 0 10 10"><polygon points="10.2,0.7 9.5,0 5.1,4.4 0.7,0 0,0.7 4.4,5.1 0,9.5 0.7,10.2 5.1,5.8 9.5,10.2 10.2,9.5 5.8,5.1"></polygon></svg>
+		</button>
+    </span>
+  </div>
+  <div class="cppcode">
+    <pre id="pre"><code><span class="s1">#include</span> <span class="s2">&lt;iostream&gt;</span>
+using<span class="s3"> namespace </span>std<span class="sc">;</span>
+
+<span class="s3">int</span> <span class="s2">main()</span> <span class="curlies">{</span>
+
+  <span class="s3">int</span> <span class="s4">a</span> <span class="operator">=</span> 12<span class="sc">;</span>
+  <span class="s3">int</span> <span class="s4">b</span> <span class="operator">=</span> 5<span class="sc">;</span>
+
+  <span class="s4">cout</span> <span class="s5">&lt;&lt;</span> <span class="s1">"Sum of the numbers
+    is: "</span> <span class="s5">&lt;&lt;</span> <span class="rounds">(</span><span class="s4">a </span><span class="operator">+</span><span class="s4"> b</span><span class="rounds">)</span><span class="sc">;</span>
+
+  <span class="s6">return</span> 0<span class="sc">;</span>
+
+<span class="curlies">}</span>
+    </code></pre>
+  </div>
+</div>
+
+    </div>
+  </div>
+  
+ 
+
+</div>
+
+
+
+    
+</main>
+<%- include('partials/footer') %>
+
+  <script>
+    // Detectar el final del video o esperar 3 segundos
+    const videoIntro = document.getElementById('video-intro');
+    const mainContent = document.getElementById('main-content');
+
+    setTimeout(() => {
+      videoIntro.style.display = 'none'; // Ocultar el video
+      mainContent.style.display = 'block'; // Mostrar el contenido principal
+    }, 4000); // Esperar 3 segundos
+  </script>
+
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        // Verificar si la cookie de sesión existe
+        fetch('/users/session', { method: 'GET', credentials: 'same-origin' })
+            .then(response => response.json())
+            .then(data => {
+                const videoIntro = document.getElementById('video-intro');
+                const mainContent = document.getElementById('main-content');
+
+                if (data.loggedIn) {
+                    // Ocultar el video si el usuario ha iniciado sesión
+                    videoIntro.style.display = 'none';
+                    mainContent.style.display = 'block';
+                } else {
+                    // Si no ha iniciado sesión, esperar a que el video termine o pasar 4 segundos
+                    setTimeout(() => {
+                        videoIntro.style.display = 'none';
+                        mainContent.style.display = 'block';
+                    }, 4000);
+                }
+            })
+            .catch(err => console.error('Error verificando la sesión:', err));
+    });
+
+    function logout() {
+        fetch('/users/logout', { method: 'POST', credentials: 'same-origin' })
+            .then(() => {
+                window.location.reload();
+            })
+            .catch(err => console.error('Error cerrando sesión:', err));
+    }
+</script>
+
+
+<!-- Script barra Verde -->
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+      fetch('/users/session', { method: 'GET', credentials: 'same-origin' })
+          .then(response => response.json())
+          .then(data => {
+              const userMenu = document.querySelector('.buttons');
+              const heroButtons = document.querySelector('.hero-buttons');
+              if (data.loggedIn) {
+                  userMenu.innerHTML = `
+                      <div class="profile-menu">
+                        <a href="perfil" style="text-decoration: none; color: inherit; cursor: pointer;">
+                          <span>Hola, ${data.username}</span>
+                          <button onclick="logout()">Cerrar Sesión</button>
+                      </div>
+                  `;
+                  if (heroButtons) {
+                    heroButtons.style.display = 'none'; // 🟢 Oculta los botones si el usuario está logueado
+                }
+                  // Mostrar la barra de notificación
+                  showNotification('Inicio de sesión exitoso');
+              }
+          })
+          .catch(err => console.error('Error verificando la sesión:', err));
+  });
+
+  function showNotification(message) {
+      const notificationBar = document.getElementById('notification-bar');
+      notificationBar.textContent = message;
+      notificationBar.style.display = 'block';
+
+      // Ocultar automáticamente después de 5 segundos
+      setTimeout(() => {
+          notificationBar.style.display = 'none';
+      }, 5000);
+  }
+
+  function logout() {
+      fetch('/users/logout', { method: 'POST', credentials: 'same-origin' })
+          .then(() => {
+              window.location.reload();
+          })
+          .catch(err => console.error('Error cerrando sesión:', err));
+  }
+  
+        function scrollToFeatures() {
+            document.getElementById('features').scrollIntoView({ behavior: 'smooth' });
+        }
+</script>
+
+
+</body>
 </html>

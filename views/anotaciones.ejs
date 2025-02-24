@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Anotaciones - Code-Play</title>
+    <link rel="stylesheet" href="stylesheets/anotaciones.css">
+    <script src="https://cdn.jsdelivr.net/npm/codemirror/lib/codemirror.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/codemirror/lib/codemirror.css">
+    <script src="https://cdn.jsdelivr.net/npm/codemirror/mode/javascript/javascript.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/codemirror/mode/python/python.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/codemirror/mode/php/php.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/codemirror/mode/clike/clike.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/codemirror/mode/xml/xml.js"></script>
+</head>
+<body>
+    <%- include('partials/header') %>
+
+    <main>
+        <section class="anotaciones">
+            <h1>Crear una Anotación</h1>
+            <form id="anotacionForm">
+                <label for="title">Título de la Anotación:</label>
+                <input type="text" id="title" name="title" required>
+            
+                <label for="language">Lenguaje de Programación:</label>
+                <select id="language" name="language" required>
+                    <option value="javascript">JavaScript</option>
+                    <option value="python">Python</option>
+                    <option value="php">PHP</option>
+                    <option value="java">Java</option>
+                    <option value="html">HTML/XML</option>
+                </select>
+            
+                <label for="code">Escribe tu Código:</label>
+                <textarea id="code" name="code"></textarea>
+                <br><br> 
+                <button class="buttons2" type="submit">Publicar</button>
+                <br><br>
+            </form>
+            
+        </section>
+    </main>
+
+    <%- include('partials/footer') %>
+
+    <script>
+        // Inicializar CodeMirror
+        const codeEditor = CodeMirror.fromTextArea(document.getElementById('code'), {
+            lineNumbers: true,
+            mode: 'javascript', // Valor por defecto
+            theme: 'default'
+        });
+
+        // Cambiar el modo de CodeMirror según el lenguaje seleccionado
+        document.getElementById('language').addEventListener('change', (event) => {
+            const language = event.target.value;
+            let mode;
+            switch (language) {
+                case 'javascript':
+                    mode = 'javascript';
+                    break;
+                case 'python':
+                    mode = 'python';
+                    break;
+                case 'php':
+                    mode = 'php';
+                    break;
+                case 'java':
+                    mode = 'text/x-java';
+                    break;
+                case 'html':
+                    mode = 'xml';
+                    break;
+                default:
+                    mode = 'javascript';
+            }
+            codeEditor.setOption('mode', mode);
+        });
+
+        // Manejo del formulario
+        document.getElementById('anotacionForm').addEventListener('submit', async (event) => {
+    event.preventDefault();
+
+    const title = document.getElementById('title').value.trim();
+    const language = document.getElementById('language').value;
+    const code = codeEditor.getValue();
+
+    if (!title || !code) {
+        alert("El título y el código son obligatorios.");
+        return;
+    }
+
+    const response = await fetch('/api/anotaciones', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ title, language, code }),
+    });
+
+    if (response.ok) {
+        alert('Anotación guardada con éxito');
+        document.getElementById('anotacionForm').reset();
+        codeEditor.setValue('');
+    } else {
+        alert('Error al guardar la anotación');
+    }
+});
+;
+
+
+        
+    </script>
+
+<script>
+async function publicarAnotacion() {
+    const response = await fetch('/api/anotaciones/session');
+    const data = await response.json();
+
+    if (!data.loggedIn) {
+        alert('Debes iniciar sesión para publicar una anotación.');
+        window.location.href = 'login.html';
+        return;
+    }
+
+    const language = document.getElementById('language').value;
+    const code = codeEditor.getValue();
+
+    const postResponse = await fetch('/api/anotaciones', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ language, code }),
+    });
+
+    if (postResponse.ok) {
+        alert('Anotación guardada con éxito');
+        window.location.reload();
+    } else {
+        alert('Error al guardar la anotación');
+    }
+}
+
+document.getElementById('publicarBtn').addEventListener('click', publicarAnotacion);
+    
+  </script>
+</body>
+</html>

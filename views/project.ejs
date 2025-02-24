@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Editor del Proyecto - Code-Play</title>
+    <link rel="stylesheet" href="stylesheets/project.css">
+    <!-- CodeMirror CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.10/codemirror.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.10/theme/material-darker.min.css">
+    <!-- Emmet CSS/JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/emmet-codemirror/1.5.0/emmet.min.js"></script>
+</head>
+<body>
+
+ <!-- Contenido principal de la página -->
+ <%- include('partials/header') %>
+
+    <main>
+        <!-- Contenedor para editores -->
+        <div class="container" id="editors-container">
+            <div class="editor">
+                <h3>HTML</h3>
+                <textarea id="html-editor"></textarea>
+            </div>
+            <div class="editor">
+                <h3>CSS</h3>
+                <textarea id="css-editor"></textarea>
+            </div>
+            <div class="editor">
+                <h3>JavaScript</h3>
+                <textarea id="js-editor"></textarea>
+            </div>
+        </div>
+    </main>        
+
+    <!-- Contenedor para vista previa -->
+    <div id="preview-container">
+        <h2>Vista Previa</h2>
+        <iframe id="preview" style="width: 100%; height: 500px; border: 1px solid #ccc;" title="Vista Previa del Proyecto"></iframe>
+    </div>
+
+    <!-- CodeMirror JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.12/codemirror.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.12/mode/xml/xml.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.12/mode/css/css.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.12/mode/javascript/javascript.min.js"></script>
+  <!-- Código para inicializar CodeMirror y actualizar la vista previa -->
+  <script src="./node_modules/codemirror/lib/codemirror.js"></script>
+<script src="browser.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const projectId = urlParams.get('id');
+
+            // Referencias a los elementos
+            const htmlTextarea = document.getElementById('html-editor');
+            const cssTextarea = document.getElementById('css-editor');
+            const jsTextarea = document.getElementById('js-editor');
+            const iframe = document.getElementById('preview');
+
+            // Inicializar editores de CodeMirror con Emmet
+            const htmlEditor = CodeMirror.fromTextArea(htmlTextarea, {
+                mode: 'text/html',
+                theme: 'default',
+                lineNumbers: true,
+                extraKeys: {
+                    'Tab': 'emmetExpandAbbreviation',
+                    'Ctrl-Space': 'autocomplete'
+                }
+            });
+
+            const cssEditor = CodeMirror.fromTextArea(cssTextarea, {
+                mode: 'css',
+                theme: 'default',
+                lineNumbers: true,
+                extraKeys: {
+                    'Tab': 'emmetExpandAbbreviation',
+                    'Ctrl-Space': 'autocomplete'
+                }
+            });
+
+            const jsEditor = CodeMirror.fromTextArea(jsTextarea, {
+                mode: 'javascript',
+                theme: 'default',
+                lineNumbers: true
+            });
+
+            try {
+                // Cargar datos del proyecto
+                const response = await fetch(`/api/projects/${projectId}`);
+                if (!response.ok) {
+                    throw new Error(`Error al cargar el proyecto: ${response.status}`);
+                }
+
+                const project = await response.json();
+                htmlEditor.setValue(project.html || ''); // Cargar HTML
+                cssEditor.setValue(project.css || '');   // Cargar CSS
+                jsEditor.setValue(project.js || '');     // Cargar JS
+
+                // Función para actualizar la vista previa
+                const updatePreview = () => {
+                    const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+                    iframeDoc.open();
+                    iframeDoc.write(`
+                        <!DOCTYPE html>
+                        <html lang="es">
+                        <head>
+                            <style>${cssEditor.getValue()}</style>
+                        </head>
+                        <body>
+                            ${htmlEditor.getValue()}
+                            <script>${jsEditor.getValue()}<\/script>
+                        </body>
+                        </html>
+                    `);
+                    iframeDoc.close();
+                };
+
+                // Actualizar la vista previa inicialmente
+                updatePreview();
+
+                // Eventos para actualizar la vista previa automáticamente
+                htmlEditor.on('change', updatePreview);
+                cssEditor.on('change', updatePreview);
+                jsEditor.on('change', updatePreview);
+            } catch (error) {
+                console.error('Error al cargar el proyecto:', error);
+                iframe.contentDocument.body.innerHTML = '<p>Error al cargar el proyecto.</p>';
+            }
+        });
+    </script>
+
+<br>
+<%- include('partials/footer') %>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+      const userMenu = document.getElementById('userMenu'); // Obtén el contenedor de los botones
+
+      // Verificar si la cookie de sesión existe
+      fetch('/users/session', { method: 'GET', credentials: 'same-origin' })
+          .then(response => response.json())
+          .then(data => {
+              if (!data.loggedIn) {
+                  // Redirige al login si no está logueado
+                  window.location.href = 'login.html';
+              } else {
+                  // Reemplaza los botones con el menú de perfil si está logueado
+                  userMenu.innerHTML = `
+                      <div class="profile-menu">
+                          <a href="perfil.html" style="text-decoration: none; color: inherit; cursor: pointer;">
+                          <span>Hola, ${data.username}</span>
+                          <button onclick="logout()">Cerrar Sesión</button>
+                      </div>
+                  `;
+              }
+          })
+          .catch(err => console.error('Error verificando la sesión:', err));
+  });
+
+  function logout() {
+  fetch('/users/logout', { method: 'POST', credentials: 'same-origin' })
+      .then(response => {
+          if (response.ok) {
+              window.location.href = 'login.html'; // Redirige al login
+          } else {
+              alert('Error al cerrar sesión.');
+          }
+      })
+      .catch(err => console.error('Error cerrando sesión:', err));
+}
+
+
+</script>
+</body>
+</html>

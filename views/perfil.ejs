@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="stylesheets/perfil.css">
+    <title>User Profile - Code-Play</title>
+</head>
+<body>
+    <%- include('partials/header') %>
+
+<main class="profile-container">
+    <div class="profile-header">
+        <h1 id="username-display">Username</h1>
+        <p class="user-bio">"Passionate developer and video game enthusiast. Ready to create and explore new ideas!"</p>
+        <button onclick="location.href='editarperfil.html'" class="edit-profile-button">Editar Perfil</button>
+    </div>
+
+    <div class="user-projects">
+        <h2>My Projects</h2>
+        <div id="projects-list" class="project-grid"></div>
+        <button id="toggle-projects" class="toggle-button" style="display: none;">Mostrar más</button>
+    </div>
+</main>
+
+<div class="user-anotaciones">
+    <h2>Mis Anotaciones</h2>
+    <input type="text" id="searchAnotaciones" placeholder="Buscar anotación...">
+<select id="filterLanguage">
+    <option value="">Todos los Lenguajes</option>
+    <option value="javascript">JavaScript</option>
+    <option value="python">Python</option>
+    <option value="php">PHP</option>
+    <option value="java">Java</option>
+    <option value="html">HTML/XML</option>
+</select>
+
+    <div id="anotaciones-list" class="anotaciones-grid"></div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        fetch('/users/session', { method: 'GET', credentials: 'same-origin' })
+            .then(response => response.json())
+            .then(data => {
+                if (data.loggedIn) {
+                    document.getElementById('username-display').textContent = data.username;
+                    const userId = data.userId;
+ 
+                    // Cargar proyectos
+                    fetch(`/api/projects/user/${userId}`)
+                        .then(res => res.json())
+                        .then(projects => {
+                            const container = document.getElementById('projects-list');
+                            const toggleButton = document.getElementById('toggle-projects');
+                            let projectsToShow = 3;
+                            let isExpanded = false;
+ 
+                            function renderProjects() {
+                                container.innerHTML = '';
+                                const visibleProjects = isExpanded ? projects : projects.slice(0, projectsToShow);
+ 
+                                visibleProjects.forEach(project => {
+                                    const card = document.createElement('div');
+                                    card.classList.add('project-card');
+ 
+                                    const iframe = document.createElement('iframe');
+                                    iframe.srcdoc = `
+                                        <!DOCTYPE html>
+                                        <html lang="en">
+                                        <head>
+                                            <style>${project.css}</style>
+                                        </head>
+                                        <body>
+                                            ${project.html}
+                                            <script>${project.js}<\/script>
+                                        </body>
+                                        </html>
+                                    `;
+                                    iframe.width = "100%";
+                                    iframe.height = "200px";
+                                    iframe.style.border = "1px solid #ccc";
+ 
+                                    card.innerHTML = `
+                                        <h3>${project.title || 'Proyecto Sin Título'}</h3>
+                                        <button onclick="viewProject('${project._id}')">Ver Proyecto</button>
+                                    `;
+                                    card.appendChild(iframe);
+                                    container.appendChild(card);
+                                });
+ 
+                                if (projects.length > projectsToShow) {
+                                    toggleButton.style.display = "block";
+                                    toggleButton.textContent = isExpanded ? "Mostrar menos" : "Mostrar más";
+                                } else {
+                                    toggleButton.style.display = "none";
+                                }
+                            }
+ 
+                            toggleButton.addEventListener('click', () => {
+                                isExpanded = !isExpanded;
+                                renderProjects();
+                            });
+ 
+                            renderProjects();
+                        })
+                        .catch(err => console.error('❌ Error cargando proyectos:', err));
+ 
+                    // Cargar anotaciones
+                    fetch(`/api/anotaciones/user/${userId}`)
+                        .then(res => {
+                            if (!res.ok) {
+                                throw new Error(`Error al obtener anotaciones: ${res.status}`);
+                            }
+                            return res.json();
+                        })
+                        .then(anotaciones => {
+                            console.log('✅ Anotaciones cargadas:', anotaciones);
+                            const container = document.getElementById('anotaciones-list');
+                            container.innerHTML = '';
+ 
+                            function renderAnotaciones(filterText = '', filterLang = '') {
+                                container.innerHTML = '';
+                                const filtered = anotaciones.filter(anotacion =>
+                                (anotacion.title && anotacion.title.toLowerCase().includes(filterText.toLowerCase())) &&
+                                (filterLang === '' || anotacion.language === filterLang)
+                            );
+
+ 
+                                if (filtered.length) {
+                                    filtered.forEach(anotacion => {
+                                        const card = document.createElement('div');
+                                        card.classList.add('anotacion-card');
+ 
+                                        card.innerHTML = `
+                                            <h3>${anotacion.title || 'Sin título'}</h3>
+                                            <p style="font-size: 14px; color: gray;">${anotacion.language}</p>
+                                            <pre>${anotacion.code}</pre>
+                                        `;
+                                        container.appendChild(card);
+                                    });
+                                } else {
+                                    container.innerHTML = '<p>No se encontraron anotaciones</p>';
+                                }
+                            }
+ 
+                            // Detectar cambios en los filtros y actualizar la lista
+                            document.getElementById('searchAnotaciones').addEventListener('input', (e) => {
+                                renderAnotaciones(e.target.value, document.getElementById('filterLanguage').value);
+                            });
+ 
+                            document.getElementById('filterLanguage').addEventListener('change', (e) => {
+                                renderAnotaciones(document.getElementById('searchAnotaciones').value, e.target.value);
+                            });
+ 
+                            renderAnotaciones();
+                        })
+                        .catch(err => {
+                            console.error('❌ Error cargando anotaciones:', err);
+                            document.getElementById('anotaciones-list').innerHTML = '<p>Error al cargar anotaciones</p>';
+                        });
+ 
+                } else {
+                    console.error('❌ Usuario no logueado');
+                    window.location.href = '/login.html'; // Redirigir si no está logueado
+                }
+            })
+            .catch(err => console.error('❌ Error obteniendo sesión:', err));
+    });
+ </script>
+   <%- include('partials/footer') %>
+</body>
+</html>

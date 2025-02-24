@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Crear Juego</title>
+  <link rel="stylesheet" href="stylesheets/editar.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.12/codemirror.min.css">
+</head>
+<body>
+  <%- include('partials/header') %>
+
+  <div style="text-align: center; margin-top: 20px;">   
+    <div style="text-align: center; margin-top: 20px;">
+      <input type="text" id="game-title" placeholder="Nombre del Juego" style="padding: 10px; margin-right: 10px;">
+      <br>
+      <input type="text" id="game-description" placeholder="Descripción del Juego" style="padding: 10px; margin-top: 10px;">
+      <br>
+      <button id="publish-button" class="styled-button">Publicar Juego</button>
+    </div>
+  </div>
+
+  <div class="container">
+    <div class="editor" data-title="HTML">
+      <textarea id="html-editor"></textarea>
+    </div>
+    <div class="editor" data-title="CSS">
+      <textarea id="css-editor"></textarea>
+    </div>
+    <div class="editor" data-title="JavaScript">
+      <textarea id="js-editor"></textarea>
+    </div>
+    <div class="preview">
+      <iframe id="preview"></iframe>
+    </div>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.12/codemirror.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.12/mode/xml/xml.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.12/mode/css/css.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.12/mode/javascript/javascript.min.js"></script>
+
+  <script>
+    const htmlEditor = CodeMirror.fromTextArea(document.getElementById('html-editor'), { mode: 'text/html', theme: 'default', lineNumbers: true });
+    const cssEditor = CodeMirror.fromTextArea(document.getElementById('css-editor'), { mode: 'css', theme: 'default', lineNumbers: true });
+    const jsEditor = CodeMirror.fromTextArea(document.getElementById('js-editor'), { mode: 'javascript', theme: 'default', lineNumbers: true });
+
+    function updatePreview() {
+      const html = htmlEditor.getValue();
+      const css = `<style>${cssEditor.getValue()}</style>`;
+      const js = `<script>${jsEditor.getValue()}<\/script>`;
+      const iframe = document.getElementById('preview');
+      const doc = iframe.contentDocument || iframe.contentWindow.document;
+      doc.open();
+      doc.write(html + css + js);
+      doc.close();
+    }
+    
+    htmlEditor.on('change', updatePreview);
+    cssEditor.on('change', updatePreview);
+    jsEditor.on('change', updatePreview);
+
+    document.getElementById('publish-button').addEventListener('click', async () => {
+      const title = document.getElementById('game-title').value || 'Juego Sin Nombre';
+      const html = htmlEditor.getValue();
+      const css = cssEditor.getValue();
+      const js = jsEditor.getValue();
+      const data = { title, html, css, js };
+
+      try {
+        const response = await fetch('/api/juegos', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data),
+        });
+
+        if (response.ok) {
+          alert('Juego publicado con éxito');
+        } else {
+          const errorMessage = await response.text();
+          alert(`Error al publicar el juego: ${errorMessage}`);
+        }
+      } catch (err) {
+        console.error('Error al publicar el juego:', err);
+        alert('Error al publicar el juego. Intenta nuevamente.');
+      }
+    });
+  </script>
+
+  <style>
+    .styled-button {
+      background-color: #001a57;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 5px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background-color 0.3s ease, transform 0.2s ease;
+    }
+    .styled-button:hover {
+      background-color: #0056b3;
+      transform: scale(1.05);
+    }
+  </style>
+  <%- include('partials/footer') %>
+</body>
+</html>

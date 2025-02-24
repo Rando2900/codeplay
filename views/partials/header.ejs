@@ -1,0 +1,26 @@
+<header class="header">
+  <nav class="nav">
+    <a href="/">Inicio</a>
+    <a href="/comunidad">Comunidad</a>
+    <a href="/juegos">Juegos</a>
+    <a href="/formulario">Crear</a>
+  </nav>
+  <div class="logo">
+    <a href="/"><img src="/images/CodePlay_ejemplo_sin_fondo (1).png" alt="Logo del Proyecto" /></a>
+  </div>
+
+  <div id="userMenu" class="buttons">
+    <% if (typeof user !== 'undefined' && user && user.username) { %> 
+      <div class="profile-menu">
+        <a href="/perfil" style="text-decoration: none; color: inherit; cursor: pointer;">
+          <span>Hola, <%= user.username %></span>
+        </a>
+        <button onclick="logout()">Cerrar Sesión</button>
+      </div>
+    <% } else { %>
+      <a href="/login"><button>Iniciar Sesión</button></a>
+      <a href="/registro"><button>Registrarse</button></a>
+    <% } %>
+  </div>
+</header>
+<script src="/javascripts/session.js"></script>

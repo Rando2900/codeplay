@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="stylesheets/registro.css">
+    <title>Registro - Code-Play</title>
+</head>
+<body>
+  <%- include('partials/header') %>
+  
+  <form id="register-form" action="/users/register" method="POST">
+      <h2>Registro</h2>
+      <div class="section">
+        <div class="title">Username</div>
+        <div class="field"><input type="text" id="username" name="username"></div>
+      </div>
+      <div class="section">
+        <div class="title">Password</div>
+        <div class="field"><input type="password" id="password" name="password"></div>
+      </div>
+      <div class="section">
+        <div class="button"><input type="submit" value="Registrar Usuario"></div>
+        <br>
+        <br>
+        <p style="text-align: center;">¿Ya tienes una cuenta?</p>
+        <div class="button"><a href="login.html">Inicia Sesión</a></div>
+      </div>
+  </form>
+
+  <script>
+    const registerForm = document.getElementById('register-form');
+
+    registerForm.addEventListener('submit', async (event) => {
+      event.preventDefault(); // Previene el envío por defecto del formulario
+
+      const formData = new FormData(registerForm);
+      const data = {
+        username: formData.get('username'),
+        password: formData.get('password'),
+      };
+
+      try {
+        const response = await fetch(registerForm.action, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(data),
+        });
+
+        if (response.ok) {
+          const result = await response.json();
+          if (result.redirect) {
+            window.location.href = result.redirect; // Redirige al login
+          }
+        } else {
+          const errorMessage = await response.text();
+          alert(`Error: ${errorMessage}`);
+        }
+      } catch (err) {
+        console.error('Error al registrar:', err);
+        alert('Error al registrar. Por favor, inténtalo de nuevo.');
+      }
+    });
+  </script>
+
+<%- include('partials/footer') %>
+</body>
+</html>
