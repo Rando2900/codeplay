@@ -23,7 +23,7 @@ const registerUser = async (req, res) => {
             console.log('Usuario registrado con éxito:', username);
 
             // Respuesta con redirección a login.html
-            res.status(200).json({ redirect: 'login.html' });
+            res.status(200).json({ redirect: 'login' });
         } else {
             console.error('Error al registrar el usuario.');
             res.status(500).send('Error registering new user, please try again.');
@@ -54,7 +54,7 @@ const loginUser = async (req, res) => {
         req.session.userId = user._id; // Guardamos solo el ID del usuario en la sesión
         req.session.username = user.usuario; // Guardamos el nombre
 
-        res.status(200).json({ message: 'Login exitoso', redirect: 'index.html' });
+        res.status(200).json({ message: 'Login exitoso', redirect: '/' });
     } catch (err) {
         res.status(500).send('Error interno del servidor.');
     }
