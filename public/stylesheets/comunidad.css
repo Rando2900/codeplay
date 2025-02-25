@@ -5,58 +5,6 @@ body {
     padding: 0;
 }
 
-.header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 10px 30px;
-    background-color: #f9f9f9;
-    border-bottom: 1px solid #ddd;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    height: 80px;
-}
-
-.header nav {
-    display: flex;
-    gap: 20px;
-}
-
-.header nav a {
-    text-decoration: none;
-    color: #000;
-    font-size: 16px;
-    font-weight: bold;
-    transition: color 0.3s ease;
-}
-
-.header nav a:hover {
-    color: #0056b3;
-}
-
-.header .logo img {
-    height: 60px;
-}
-
-.header .buttons {
-    display: flex;
-    gap: 15px;
-}
-
-.header .buttons button {
-    background-color: #0056b3;
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 5px;
-    font-size: 14px;
-    cursor: pointer;
-    transition: background-color 0.3s ease, transform 0.2s ease;
-}
-
-.header .buttons button:hover {
-    background-color: #003d80;
-    transform: scale(1.05);
-}
 
 main {
     padding: 20px 30px;
@@ -334,6 +282,13 @@ main h1 {
     font-size: 14px;
     color: #666;
     margin: 5px 0;
+}
+
+.game-description {
+    font-size: 0.9em;
+    color: #444;
+    margin-top: 5px;
+    text-align: center;
 }
 
 
