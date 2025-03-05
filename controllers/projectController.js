@@ -107,11 +107,55 @@ const getProjectsByQuery = async (req, res) => {
     }
 };
 
+const updateProject = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { title } = req.body;
+
+        const updatedProject = await Project.findByIdAndUpdate(id, { title }, { new: true });
+
+        if (!updatedProject) {
+            return res.status(404).json({ error: "Proyecto no encontrado." });
+        }
+
+        res.json({ message: "Proyecto actualizado con éxito.", project: updatedProject });
+    } catch (error) {
+        console.error("Error al actualizar el proyecto:", error);
+        res.status(500).json({ error: "Error interno del servidor." });
+    }
+};
+
+// Eliminar un proyecto
+const deleteProject = async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        const deletedProject = await Project.findByIdAndDelete(id);
+
+        if (!deletedProject) {
+            return res.status(404).json({ error: "Proyecto no encontrado." });
+        }
+
+        res.json({ message: "Proyecto eliminado con éxito." });
+    } catch (error) {
+        console.error("Error al eliminar el proyecto:", error);
+        res.status(500).json({ error: "Error interno del servidor." });
+    }
+};
+
 
 module.exports = {
     createProject,
     getProjects,
     getProjectById,
     getUserProjects,
-    getProjectsByQuery
+    getProjectsByQuery,
+    updateProject,
+    deleteProject
 };
+
+
+
+
+
+

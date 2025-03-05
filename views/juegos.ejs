@@ -1,3 +1,4 @@
+<script src="/javascripts/redirigelogin.js"></script>
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -78,49 +79,68 @@ async function cargarJuegos() {
         const response = await fetch('/api/juegos');
         const juegos = await response.json();
 
+        console.log("📌 Datos recibidos:", juegos); // 🔹 Ver qué datos llegan
+
+        if (!Array.isArray(juegos) || juegos.length === 0) {
+            gameContainer.innerHTML = '<p>No hay juegos disponibles.</p>';
+            return;
+        }
+
         gameContainer.innerHTML = '';
         juegos.sort((a, b) => b.likes - a.likes);
 
         juegos.forEach(juego => {
+            console.log("🔹 Procesando juego:", juego); // 🔹 Ver cada juego en consola
+
             const card = document.createElement('div');
             card.classList.add('game-card');
 
             const iframe = document.createElement('iframe');
+            iframe.style.width = "100%";
+            iframe.style.height = "200px";
+            iframe.style.border = "1px solid #ddd";
             iframe.srcdoc = `
                 <!DOCTYPE html>
                 <html lang='es'>
-                <head><style>${juego.css}</style></head>
+                <head><style>${juego.css || ''}</style></head>
                 <body>
-                    ${juego.html}
+                    ${juego.html || ''}
                     <script>
-                        window.alert = function() {}; // 🔹 Bloquea alert()
-                        window.confirm = function() { return false; }; // 🔹 Bloquea confirm()
-                        window.prompt = function() { return null; }; // 🔹 Bloquea prompt()
-                        ${juego.javascript}
+                        window.alert = function() {}; 
+                        window.confirm = function() { return false; }; 
+                        window.prompt = function() { return null; }; 
+                        ${juego.javascript || ''}
                     <\\/script>
                 </body>
                 </html>
             `;
 
             const titleElement = document.createElement('h3');
-            titleElement.textContent = juego.nombre;
+            titleElement.textContent = juego.nombre || 'Juego sin nombre';
+
+            const descriptionElement = document.createElement('p');
+            descriptionElement.textContent = juego.descripcion || 'Sin descripción disponible';
+            descriptionElement.classList.add('game-description');
 
             const playButton = document.createElement('button');
             playButton.textContent = 'Jugar';
             playButton.onclick = () => window.location.href = `/juego?id=${juego._id}`;
 
             card.appendChild(titleElement);
+            card.appendChild(descriptionElement);
             card.appendChild(iframe);
             card.appendChild(playButton);
             gameContainer.appendChild(card);
         });
+
     } catch (error) {
-        console.error('Error al cargar los juegos:', error);
+        console.error('❌ Error al cargar los juegos:', error);
         gameContainer.innerHTML = '<p>Error al cargar los juegos.</p>';
     }
 }
 
-    cargarJuegos();
+cargarJuegos();
+
   </script>
   <%- include('partials/footer') %>
 </body>

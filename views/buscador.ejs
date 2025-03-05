@@ -123,7 +123,7 @@ function displayResults(data) {
 document.querySelectorAll('.ver-proyecto').forEach(button => {
     button.addEventListener('click', function () {
         const projectId = this.getAttribute('data-id');
-        window.location.href = `/project.html?id=${projectId}`; // Cambio de projectId a id
+        window.location.href = `/project?id=${projectId}`; // Cambio de projectId a id
     });
 });
 

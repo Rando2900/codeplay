@@ -23,7 +23,7 @@ const registerUser = async (req, res) => {
             console.log('Usuario registrado con éxito:', username);
 
             // Respuesta con redirección a login.html
-            res.status(200).json({ redirect: 'login' });
+            res.status(200).json({ redirect: 'login.html' });
         } else {
             console.error('Error al registrar el usuario.');
             res.status(500).send('Error registering new user, please try again.');

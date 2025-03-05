@@ -382,3 +382,47 @@ body {
     background-color: #0056b3;
 }
 
+/* Contenedor centrado */
+.filter-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+/* Estilos para el input de búsqueda */
+#searchAnotaciones {
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 14px;
+    width: 250px;
+}
+
+/* Estilos mejorados para el select */
+#filterLanguage {
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: white;
+    font-size: 14px;
+    cursor: pointer;
+    appearance: none; /* Oculta el diseño predeterminado */
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="gray"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"/></svg>');
+    background-repeat: no-repeat;
+    background-position: right 5px center;
+    background-size: 12px;
+}
+
+/* Efecto al pasar el cursor */
+#filterLanguage:hover {
+    border-color: #007BFF;
+}
+
+/* Efecto al seleccionar */
+#filterLanguage:focus {
+    outline: none;
+    border-color: #007BFF;
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+}

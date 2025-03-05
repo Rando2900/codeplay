@@ -123,17 +123,20 @@ body {
 
 /* Vista previa */
 .preview {
-  grid-column: 1 / span 3; /* Ocupa toda la fila */
-  background-color: #ffffff; /* Fondo blanco */
-  border: 1px solid #000000; /* Bordes definidos */
+  grid-column: 1 / span 3; /* Sigue ocupando toda la fila */
+  background-color: #ffffff;
+  border: 1px solid #000000;
   border-radius: 5px;
   overflow: hidden;
+  height: 66vh; /* Ajusta el tamaño según necesites */
 }
+
 iframe {
   width: 100%;
   height: 100%;
   border: none;
 }
+
 
 
 

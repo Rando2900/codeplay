@@ -1,3 +1,4 @@
+<script src="/javascripts/redirigelogin.js"></script>
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -133,44 +134,6 @@
 
 <br>
 <%- include('partials/footer') %>
-<script>
-  document.addEventListener('DOMContentLoaded', () => {
-      const userMenu = document.getElementById('userMenu'); // Obtén el contenedor de los botones
-
-      // Verificar si la cookie de sesión existe
-      fetch('/users/session', { method: 'GET', credentials: 'same-origin' })
-          .then(response => response.json())
-          .then(data => {
-              if (!data.loggedIn) {
-                  // Redirige al login si no está logueado
-                  window.location.href = 'login.html';
-              } else {
-                  // Reemplaza los botones con el menú de perfil si está logueado
-                  userMenu.innerHTML = `
-                      <div class="profile-menu">
-                          <a href="perfil.html" style="text-decoration: none; color: inherit; cursor: pointer;">
-                          <span>Hola, ${data.username}</span>
-                          <button onclick="logout()">Cerrar Sesión</button>
-                      </div>
-                  `;
-              }
-          })
-          .catch(err => console.error('Error verificando la sesión:', err));
-  });
-
-  function logout() {
-  fetch('/users/logout', { method: 'POST', credentials: 'same-origin' })
-      .then(response => {
-          if (response.ok) {
-              window.location.href = 'login.html'; // Redirige al login
-          } else {
-              alert('Error al cerrar sesión.');
-          }
-      })
-      .catch(err => console.error('Error cerrando sesión:', err));
-}
-
-
 </script>
 </body>
 </html>

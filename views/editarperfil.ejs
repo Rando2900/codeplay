@@ -1,3 +1,4 @@
+<script src="/javascripts/redirigelogin.js"></script>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -8,18 +9,7 @@
 </head>
 <body>
   <!-- Contenido principal de la página -->
-  <div id="main-content">
-    <header class="header">
-      <nav class="nav">
-        <a href="index.html">Inicio</a>
-        <a href="comunidad.html">Comunidad</a>
-        <a href="juegos.html">Juegos</a>
-        <a href="formulario.html">Crear</a>
-      </nav>
-      <div class="logo">
-        <a href="index.html"><img src="images/CodePlay_ejemplo_sin_fondo (1).png" alt="Logo del Proyecto" /></a>
-      </div>
-    </header>
+  <%- include('partials/header') %>
 
 <main class="profile-edit-container">
     <h1>Editar Perfil</h1>

@@ -1,3 +1,4 @@
+<script src="/javascripts/redirigelogin.js"></script>
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -36,7 +37,7 @@
     </div>
 
     <!-- Vista previa -->
-    <div class="preview">
+    <div class="preview" data-title="Vista">
       <iframe id="preview"></iframe>
     </div>
   </div>
@@ -166,7 +167,7 @@
           .then(data => {
               if (!data.loggedIn) {
                   // Redirige al login si no está logueado
-                  window.location.href = 'login.html';
+                  window.location.href = 'login';
               } else {
                   // Reemplaza los botones con el menú de perfil si está logueado
                   userMenu.innerHTML = `

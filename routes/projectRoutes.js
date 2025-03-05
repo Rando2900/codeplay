@@ -1,5 +1,5 @@
 const express = require('express');
-const { createProject, getProjects, getProjectById, getUserProjects, getProjectsByQuery } = require('../controllers/projectController');
+const { createProject, getProjects, getProjectById, getUserProjects, getProjectsByQuery, updateProject, deleteProject } = require('../controllers/projectController');
 const router = express.Router();
 const Project = require('../models/Project');
 const mongoose = require('mongoose');;
@@ -26,6 +26,13 @@ router.get('/user/:id', getUserProjects);
 router.get('/proyectos', getProjectsByQuery);
 
 router.get("/search", getProjectsByQuery);
+
+// Ruta para actualizar un proyecto
+router.put('/:id', updateProject);
+
+// Ruta para eliminar un proyecto
+router.delete('/:id', deleteProject);
+
 
 
 
