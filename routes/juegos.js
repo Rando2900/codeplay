@@ -38,14 +38,14 @@ router.get('/:id', async (req, res) => {
 // 🔹 Nueva Ruta para crear un juego (POST)
 router.post('/', async (req, res) => {
   try {
-    const { title, html, css, js } = req.body;
+    const { nombre, descripcion, html, css, javascript } = req.body;
 
     // Validación de datos
-    if (!title || !html || !css || !js) {
+    if (!nombre || !html || !css || !javascript) {  // ✅ Ahora usa 'javascript'
       return res.status(400).json({ error: 'Todos los campos son obligatorios' });
     }
 
-    const nuevoJuego = new Juego({ title, html, css, js });
+    const nuevoJuego = new Juego({ nombre, descripcion, html, css, javascript });
     await nuevoJuego.save();
     res.status(201).json({ message: 'Juego guardado correctamente' });
   } catch (error) {

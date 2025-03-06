@@ -126,42 +126,62 @@
         });
 
         function renderProjects(projects) {
-            const container = document.getElementById('projects-container');
-            container.innerHTML = '';
+    const container = document.getElementById('projects-container');
+    container.innerHTML = '';
 
-            if (projects.length === 0) {
-                container.innerHTML = '<p>Este usuario no tiene proyectos.</p>';
-                return;
+    if (projects.length === 0) {
+        container.innerHTML = '<p>Este usuario no tiene proyectos.</p>';
+        return;
+    }
+
+    projects.forEach(project => {
+        const card = document.createElement('div');
+        card.classList.add('project-card');
+
+        const iframe = document.createElement('iframe');
+        iframe.srcdoc = `
+            <!DOCTYPE html>
+            <html lang="es">
+            <head>
+                <style>${project.css}</style>
+            </head>
+            <body>
+                ${project.html}
+                <script> ${project.js.replace(/<\/script>/g, "<\\/script>")} <\/script>
+            </body>
+            </html>
+        `;
+        iframe.width = "100%";
+        iframe.height = "200px";
+
+        const titleElement = document.createElement('h2');
+        titleElement.textContent = project.title || 'Proyecto Sin Título';
+
+        const forkButton = document.createElement('button');
+        forkButton.textContent = 'Fork';
+        forkButton.classList.add('fork-button');
+        forkButton.addEventListener('click', async () => {
+            try {
+                const response = await fetch(`/api/projects/${project._id}/fork`, {
+                    method: 'POST',
+                    credentials: 'include'
+                });
+
+                if (!response.ok) throw new Error('Error al hacer fork del proyecto');
+
+                alert('¡Proyecto forkeado con éxito!');
+            } catch (error) {
+                console.error('Error:', error);
             }
+        });
 
-            projects.forEach(project => {
-                const card = document.createElement('div');
-                card.classList.add('project-card');
+        card.appendChild(iframe);
+        card.appendChild(titleElement);
+        card.appendChild(forkButton); // ✅ Agregamos el botón de fork
+        container.appendChild(card);
+    });
+}
 
-                const iframe = document.createElement('iframe');
-                iframe.srcdoc = `
-                    <!DOCTYPE html>
-                    <html lang="es">
-                    <head>
-                        <style>${project.css}</style>
-                    </head>
-                    <body>
-                        ${project.html}
-                        <script> ${project.js.replace(/<\/script>/g, "<\\/script>")} <\/script>
-                    </body>
-                    </html>
-                `;
-                iframe.width = "100%";
-                iframe.height = "200px";
-
-                const titleElement = document.createElement('h2');
-                titleElement.textContent = project.title || 'Proyecto Sin Título';
-
-                card.appendChild(iframe);
-                card.appendChild(titleElement);
-                container.appendChild(card);
-            });
-        }
 
         function calculateTotalLikes(projects) {
             const totalLikes = projects.reduce((sum, project) => sum + (project.likes || 0), 0);

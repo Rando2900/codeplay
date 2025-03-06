@@ -156,17 +156,18 @@ const getUserById = async (req, res) => {
     }
 };
 
-
-exports.getUsersByQuery = async (req, res) => {
+const getUsersByQuery = async (req, res) => {
+    console.log("getUsersByQuery");
     try {
-        const query = req.query.query;
-        if (!query) {
-            return res.status(400).json({ error: 'No se proporcionó un término de búsqueda' });
+        const query = req.query.query; // Obtener el término de búsqueda
+        if (!query || typeof query !== "string") {
+            return res.status(400).json({ error: 'Consulta de búsqueda inválida' });
         }
 
+        // 📌 Buscar usuarios por su nombre de usuario, asegurando que NO se trate como un ID
         const users = await User.find({ usuario: { $regex: query, $options: 'i' } });
 
-        res.json(users);
+        res.json(users.length ? users : []);
     } catch (error) {
         console.error('Error al obtener usuarios:', error);
         res.status(500).json({ error: 'Error del servidor' });
@@ -175,6 +176,9 @@ exports.getUsersByQuery = async (req, res) => {
 
 
 
+
+
+// 📌 Asegurarse de exportarla correctamente
 module.exports = {
     getUsers,
     registerUser,
@@ -184,5 +188,6 @@ module.exports = {
     updateProfile,
     logoutUser,
     verificarCookie,
-    getUserById
+    getUserById,
+    getUsersByQuery // 🔹 Asegurar que está aquí
 };

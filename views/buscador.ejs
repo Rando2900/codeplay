@@ -15,8 +15,6 @@
             <h2>Filtrar por</h2>
             <a href="#" onclick="setFilter('proyectos')">Proyectos</a>
             <a href="#" onclick="setFilter('usuarios')">Usuarios</a>
-            <a href="#" onclick="setFilter('juegos')">Juegos</a>
-            <a href="#" onclick="setFilter('anotaciones')">Anotaciones</a>
         </div>
         
         <!-- Contenido de búsqueda -->
@@ -39,7 +37,7 @@ document.querySelectorAll(".sidebar a").forEach(link => {
     link.addEventListener("click", function(event) {
         event.preventDefault();
         currentFilter = this.textContent.toLowerCase();
-        console.log("Filtro cambiado a:", currentFilter);
+    console.log("Filtro cambiado a:", currentFilter);
         searchData(); // Actualiza los resultados cuando cambias de filtro
     });
 });
@@ -77,58 +75,74 @@ function displayResults(data) {
     const resultsContainer = document.getElementById('results-container');
     resultsContainer.innerHTML = '';
 
-    data.forEach(project => {
-        const projectElement = document.createElement('div');
-        projectElement.classList.add('project-card');
+    if (data.length === 0) {
+        resultsContainer.innerHTML = '<p>No se encontraron resultados.</p>';
+        return;
+    }
 
-        // Crear un iframe y cargar su contenido correctamente
-        const iframe = document.createElement('iframe');
-        iframe.classList.add('project-frame');
-        iframe.setAttribute('scrolling', 'no');
+    data.forEach(item => {
+        const div = document.createElement('div');
 
-        projectElement.innerHTML = `
-            <div class="project-container">
-                <h3 class="project-title">${project.title}</h3>
-                <div class="project-preview"></div>
-                <p class="likes">❤️ ${project.likes}</p>
-                <button class="btn ver-proyecto" data-id="${project._id}">Ver Proyecto</button>
-            </div>
-        `;
+        if (currentFilter === "usuarios") {
+            div.classList.add('user-card-minimal');
+            div.innerHTML = `
+                <div class="user-info">
+                    <img src="${item.foto || '/images/default-avatar.png'}" class="user-avatar">
+                    <h3 class="user-name">${item.usuario}</h3>
+                    <button class="btn ver-perfil" data-id="${item._id}">Ver Perfil</button>
+                </div>
+            `;
+        } else {
+            div.classList.add('project-card');
+            div.innerHTML = `
+                <h3 class="project-title">${item.title}</h3>
+                <div class="project-preview">
+                    <iframe class="project-frame"></iframe>
+                </div>
+                <p class="likes">❤️ ${item.likes}</p>
+                <button class="btn ver-proyecto" data-id="${item._id}">Ver Proyecto</button>
+            `;
 
-        resultsContainer.appendChild(projectElement);
+            resultsContainer.appendChild(div);
 
-        // Insertar el iframe en la vista previa
-        projectElement.querySelector('.project-preview').appendChild(iframe);
+            // Insertar la vista previa en el iframe
+            const iframe = div.querySelector('.project-frame');
+            const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+            iframeDoc.open();
+            iframeDoc.write(`
+                <html>
+                    <head>
+                        <meta charset="UTF-8">
+                        <style>${item.css}</style>
+                    </head>
+                    <body>
+                        ${item.html}
+                        <script>${item.js}<\/script>
+                    </body>
+                </html>
+            `);
+            iframeDoc.close();
+        }
 
-        // Escribir el contenido en el iframe
-        const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
-        iframeDoc.open();
-        iframeDoc.write(`
-            <html>
-                <head>
-                    <meta charset="UTF-8">
-                    <style>${project.css}</style>
-                </head>
-                <body>
-                    ${project.html}
-                    <script>${project.js}<\/script>
-                </body>
-            </html>
-        `);
-        iframeDoc.close();
+        resultsContainer.appendChild(div);
     });
 
-    
-    // Redirigir al usuario al hacer clic en "Ver Proyecto"
-document.querySelectorAll('.ver-proyecto').forEach(button => {
-    button.addEventListener('click', function () {
-        const projectId = this.getAttribute('data-id');
-        window.location.href = `/project?id=${projectId}`; // Cambio de projectId a id
+    // Evento para ver perfil de usuario
+    document.querySelectorAll('.ver-perfil').forEach(button => {
+        button.addEventListener('click', function () {
+            const userId = this.getAttribute('data-id');
+            window.location.href = `/perfil_usuario?id=${userId}`;
+        });
     });
-});
 
+    // Evento para ver proyecto
+    document.querySelectorAll('.ver-proyecto').forEach(button => {
+        button.addEventListener('click', function () {
+            const projectId = this.getAttribute('data-id');
+            window.location.href = `/project?id=${projectId}`;
+        });
+    });
 }
-
 
 
 
@@ -182,14 +196,17 @@ async function searchData() {
         return;
     }
 
-    console.log("Buscando:", searchTerm, "en", currentFilter); 
+    console.log("Buscando:", searchTerm, "en", currentFilter);
 
     try {
-        const response = await fetch(`/api/${currentFilter}?query=${encodeURIComponent(searchTerm)}`);
+        // 📌 Asegurar que la API se llama correctamente dependiendo del filtro seleccionado
+        let endpoint = currentFilter === "usuarios" ? "/api/users/search" : "/api/projects/search";
+        const response = await fetch(`${endpoint}?query=${encodeURIComponent(searchTerm)}`);
+        
         if (!response.ok) throw new Error(`Error en la API: ${response.status}`);
 
         const data = await response.json();
-        console.log("Datos recibidos:", data); 
+        console.log("Datos recibidos:", data);
 
         if (!Array.isArray(data)) {
             throw new Error("Los datos recibidos no son un array.");
@@ -201,6 +218,7 @@ async function searchData() {
         document.getElementById('results-container').innerHTML = '<p>Error al cargar los resultados.</p>';
     }
 }
+
 
 }
 

@@ -11,23 +11,24 @@
   <!-- Contenido principal de la página -->
   <%- include('partials/header') %>
 
-<main class="profile-edit-container">
+  <main class="profile-edit-container">
     <h1>Editar Perfil</h1>
-    <form id="edit-profile-form" action="/users/updateProfile" method="POST">
+    <form id="edit-profile-form" action="/api/users/updateProfile" method="POST">
         <div class="form-section">
-            <label for="username">Usuario</label>
-            <input type="text" id="username" name="username" placeholder="Ingresa tu nuevo usuario" required>
+            <label for="usuario">Usuario</label>
+            <input type="text" id="usuario" name="usuario" placeholder="Ingresa tu nuevo usuario" required>
         </div>
         <div class="form-section">
-            <label for="password">Contraseña</label>
-            <input type="password" id="password" name="password" placeholder="Ingresa tu nueva contraseña" required>
+            <label for="contraseña">Contraseña</label>
+            <input type="password" id="contraseña" name="contraseña" placeholder="Ingresa tu nueva contraseña" required>
         </div>
         <div class="form-buttons">
             <button type="submit">Guardar Cambios</button>
             <button type="button" onclick="window.location.href='perfil.html'">Cancelar</button>
         </div>
-    </form>
+    </form>        
 </main>
+
 
 <%- include('partials/footer') %>
 <script>
@@ -36,11 +37,43 @@
             .then(response => response.json())
             .then(data => {
                 if (!data.loggedIn) {
-                    window.location.href = 'login.html';
+                    window.location.href = '/login'; // 🔥 Redirigir a la ruta correcta del login
                 }
             })
-            .catch(err => console.error('Error verificando la sesión:', err));
+            .catch(err => console.error('❌ Error verificando la sesión:', err));
+    });
+
+    document.getElementById('edit-profile-form').addEventListener('submit', async (event) => {
+        event.preventDefault(); // 🔥 Evita el envío tradicional del formulario
+
+        const formData = new FormData(event.target);
+        const data = Object.fromEntries(formData.entries());
+
+        try {
+            const response = await fetch('/api/users/updateProfile', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            });
+
+            const result = await response.json();
+
+            if (response.ok) {
+                alert('✅ Perfil actualizado correctamente. Se cerrará la sesión.');
+                
+                // 🔥 Esperar 1 segundo antes de redirigir
+                setTimeout(() => {
+                    window.location.href = result.redirect;
+                }, 1000);
+                
+            } else {
+                alert('❌ Error al actualizar el perfil: ' + (result.message || 'Inténtalo nuevamente.'));
+            }
+        } catch (error) {
+            alert('❌ Error en la solicitud: ' + error.message);
+        }
     });
 </script>
+
 </body>
 </html>

@@ -1,5 +1,6 @@
 const express = require('express');
 const { createProject, getProjects, getProjectById, getUserProjects, getProjectsByQuery, updateProject, deleteProject } = require('../controllers/projectController');
+const { getUsersByQuery } = require('../controllers/userControllers');
 const router = express.Router();
 const Project = require('../models/Project');
 const mongoose = require('mongoose');;
@@ -9,7 +10,8 @@ const mongoose = require('mongoose');;
 // Ruta de búsqueda por query
 router.get('/proyectos', getProjectsByQuery);
 
-module.exports = router;
+router.get('/usuarios', getUsersByQuery);
+
 
 // Ruta para crear un proyecto
 router.post('/', createProject);
@@ -83,6 +85,36 @@ router.post('/:id/like', async (req, res) => {
     } catch (error) {
         console.error('Error al dar/quitar like:', error);
         res.status(500).json({ error: 'Error al actualizar like' });
+    }
+});
+
+router.post('/:id/fork', async (req, res) => {
+    try {
+        const userId = req.session.userId;
+        if (!userId) {
+            return res.status(401).json({ error: 'Debes estar autenticado para forkar un proyecto.' });
+        }
+
+        const originalProject = await Project.findById(req.params.id);
+        if (!originalProject) {
+            return res.status(404).json({ error: 'Proyecto no encontrado' });
+        }
+
+        // Crear una copia del proyecto con el nuevo propietario
+        const forkedProject = new Project({
+            title: originalProject.title + ' (Fork)',
+            html: originalProject.html,
+            css: originalProject.css,
+            js: originalProject.js,
+            userId: userId, // Asignar el nuevo usuario
+        });
+
+        await forkedProject.save();
+
+        res.json({ message: 'Proyecto forkeado con éxito', project: forkedProject });
+    } catch (error) {
+        console.error('Error al hacer fork del proyecto:', error);
+        res.status(500).json({ error: 'Error interno del servidor.' });
     }
 });
 

@@ -100,7 +100,28 @@
                const viewButton = document.createElement('button');
                viewButton.textContent = 'Ver Proyecto';
                viewButton.addEventListener('click', () => viewProject(project._id));
- 
+                   
+               const forkButton = document.createElement('button');
+                forkButton.textContent = 'Fork';
+                forkButton.addEventListener('click', async () => {
+                    try {
+                        const response = await fetch(`/api/projects/${project._id}/fork`, { 
+                            method: 'POST', 
+                            credentials: 'include' 
+                        });
+
+                        if (!response.ok) throw new Error('Error al hacer fork del proyecto');
+
+                        alert('¡Proyecto forkeado con éxito!');
+                        window.location.reload();
+                    } catch (error) {
+                        console.error('Error:', error);
+                    }
+                });
+
+                
+
+               
                const likeButton = document.createElement('button');
                likeButton.classList.add('heart-button');
                likeButton.textContent = project.liked ? `❤️ ${project.likes}` : `🤍 ${project.likes}`;
@@ -127,12 +148,14 @@
                
                 const creatorName = document.createElement('p');
                 creatorName.classList.add('project-creator');
-                creatorName.innerHTML = `Creado por: <button class='creator-button' onclick="window.location.href='perfil_usuario.html?id=${project.userId?._id}'">${project.userId?.usuario || 'Anónimo'}</button>`;
+                creatorName.innerHTML = `Creado por: <button class='creator-button' onclick="window.location.href='perfil_usuario?id=${project.userId?._id}'">${project.userId?.usuario || 'Anónimo'}</button>`;
 
                creatorContainer.appendChild(creatorName);
                card.appendChild(creatorContainer);
-               
+               card.appendChild(forkButton);
                container.appendChild(card);
+               
+               
            });
        }
  

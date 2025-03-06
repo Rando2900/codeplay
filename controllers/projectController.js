@@ -61,7 +61,7 @@ const getProjectById = async (req, res) => {
 // Crear un proyecto
 const createProject = async (req, res) => {
     try {
-        const { title, html, css, js } = req.body;
+        const { nombre, descripcion, html, css, javascript } = req.body;
 
         // Verificar si el usuario está autenticado
         const userId = req.session.userId;

@@ -16,7 +16,7 @@
 
  <!-- Contenido principal de la página -->
  <%- include('partials/header') %>
-
+ <button id="fork-button">Fork</button>
     <main>
         <!-- Contenedor para editores -->
         <div class="container" id="editors-container">
@@ -130,6 +130,33 @@
                 iframe.contentDocument.body.innerHTML = '<p>Error al cargar el proyecto.</p>';
             }
         });
+        document.addEventListener('DOMContentLoaded', () => {
+    const forkButton = document.getElementById('fork-button');
+    
+    if (forkButton) {
+        forkButton.addEventListener('click', async () => {
+            try {
+                const projectId = new URLSearchParams(window.location.search).get('id');
+                if (!projectId) {
+                    alert('ID de proyecto no encontrado');
+                    return;
+                }
+
+                const response = await fetch(`/api/projects/${projectId}/fork`, { 
+                    method: 'POST', 
+                    credentials: 'include' 
+                });
+
+                if (!response.ok) throw new Error('Error al hacer fork del proyecto');
+
+                alert('¡Proyecto forkeado con éxito!');
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        });
+    }
+});
+
     </script>
 
 <br>

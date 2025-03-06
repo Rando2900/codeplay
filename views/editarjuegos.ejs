@@ -41,12 +41,44 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.12/mode/xml/xml.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.12/mode/css/css.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.12/mode/javascript/javascript.min.js"></script>
+ 
+<!-- Código para inicializar CodeMirror y actualizar la vista previa -->
+<script src="./node_modules/codemirror/lib/codemirror.js"></script>
+<script src="browser.js"></script>
+
 
   <script>
-    const htmlEditor = CodeMirror.fromTextArea(document.getElementById('html-editor'), { mode: 'text/html', theme: 'default', lineNumbers: true });
-    const cssEditor = CodeMirror.fromTextArea(document.getElementById('css-editor'), { mode: 'css', theme: 'default', lineNumbers: true });
-    const jsEditor = CodeMirror.fromTextArea(document.getElementById('js-editor'), { mode: 'javascript', theme: 'default', lineNumbers: true });
+ 
+    // Inicializar CodeMirror para HTML
+    const htmlEditor = CodeMirror.fromTextArea(document.getElementById('html-editor'), {
+      mode: 'text/html',
+      theme: 'default',
+      lineNumbers: true,
+      extraKeys: {
+        'Tab': 'emmetExpandAbbreviation',
+        'Esc': 'emmetResetAbbreviation',
+        'Enter': 'emmetInsertLineBreak'
+    }
+    });
 
+    // Inicializar CodeMirror para CSS
+    const cssEditor = CodeMirror.fromTextArea(document.getElementById('css-editor'), {
+      mode: 'css',
+      theme: 'default',
+      lineNumbers: true,
+      extraKeys: {
+        'Tab': 'emmetExpandAbbreviation',
+        'Esc': 'emmetResetAbbreviation',
+        'Enter': 'emmetInsertLineBreak'
+    }
+    });
+
+    // Inicializar CodeMirror para JavaScript
+    const jsEditor = CodeMirror.fromTextArea(document.getElementById('js-editor'), {
+      mode: 'javascript',
+      theme: 'default',
+      lineNumbers: true
+    });
     function updatePreview() {
       const html = htmlEditor.getValue();
       const css = `<style>${cssEditor.getValue()}</style>`;
@@ -56,6 +88,7 @@
       doc.open();
       doc.write(html + css + js);
       doc.close();
+      console.log("Vista previa actualizada.");
     }
     
     htmlEditor.on('change', updatePreview);
@@ -63,30 +96,39 @@
     jsEditor.on('change', updatePreview);
 
     document.getElementById('publish-button').addEventListener('click', async () => {
-      const title = document.getElementById('game-title').value || 'Juego Sin Nombre';
-      const html = htmlEditor.getValue();
-      const css = cssEditor.getValue();
-      const js = jsEditor.getValue();
-      const data = { title, html, css, js };
+    const nombre = document.getElementById('game-title').value.trim() || 'Juego Sin Nombre';
+    const descripcion = document.getElementById('game-description').value.trim() || 'Sin descripción';
+    const html = htmlEditor.getValue().trim();
+    const css = cssEditor.getValue().trim();
+    const javascript = jsEditor.getValue().trim();
+    
+    if (!javascript) {
+        alert('Error: El campo de JavaScript no puede estar vacío.');
+        return;
+    }
 
-      try {
+    const data = { nombre, descripcion, html, css, javascript };
+
+    console.log("Enviando datos al servidor:", data);
+
+    try {
         const response = await fetch('/api/juegos', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(data),
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data),
         });
 
         if (response.ok) {
-          alert('Juego publicado con éxito');
+            alert('Juego publicado con éxito');
         } else {
-          const errorMessage = await response.text();
-          alert(`Error al publicar el juego: ${errorMessage}`);
+            const errorMessage = await response.text();
+            alert(`Error al publicar el juego: ${errorMessage}`);
         }
-      } catch (err) {
+    } catch (err) {
         console.error('Error al publicar el juego:', err);
         alert('Error al publicar el juego. Intenta nuevamente.');
-      }
-    });
+    }
+});
   </script>
 
   <style>

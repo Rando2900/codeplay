@@ -9,21 +9,21 @@
 </head>
 <body>
     <%- include('partials/header') %>
-
+ 
 <main class="profile-container">
     <div class="profile-header">
         <h1 id="username-display">Username</h1>
         <p class="user-bio">"Passionate developer and video game enthusiast. Ready to create and explore new ideas!"</p>
         <button onclick="location.href='editarperfil'" class="edit-profile-button">Editar Perfil</button>
     </div>
-
+ 
     <div class="user-projects">
         <h2>My Projects</h2>
         <div id="projects-list" class="project-grid"></div>
         <button id="toggle-projects" class="toggle-button" style="display: none;">Mostrar más</button>
     </div>
 </main>
-
+ 
 <div class="user-anotaciones">
     <h2>Mis Anotaciones</h2>
     <div class="filter-container">
@@ -38,11 +38,11 @@
         </select>
     </div>
 </div>
-
-
+ 
+ 
     <div id="anotaciones-list" class="anotaciones-grid"></div>
 </div>
-
+ 
 <script>
     document.addEventListener('DOMContentLoaded', () => {
         fetch('/users/session', { method: 'GET', credentials: 'same-origin' })
@@ -88,9 +88,9 @@
  
                                     card.innerHTML = `
                                         <h3>${project.title || 'Proyecto Sin Título'}</h3>
-                                        <button onclick="viewProject('${project._id}')">Ver Proyecto</button>
-                                        <button onclick="editProject('${project._id}')">✏️ Editar</button>
-                                        <button onclick="deleteProject('${project._id}')">🗑️ Eliminar</button>
+                                        <button onclick="viewProject('${project._id}')" class="view-project-button">Ver Proyecto</button>
+                                        <button onclick="editProject('${project._id}')" class="edit-project-button">✏️ Editar</button>
+                                        <button onclick="deleteProject('${project._id}')" class="delete-project-button">🗑️ Eliminar</button>
                                     `;
                                     card.appendChild(iframe);
                                     container.appendChild(card);
@@ -132,7 +132,7 @@
                                 (anotacion.title && anotacion.title.toLowerCase().includes(filterText.toLowerCase())) &&
                                 (filterLang === '' || anotacion.language === filterLang)
                             );
-
+ 
  
                                 if (filtered.length) {
                                     filtered.forEach(anotacion => {
@@ -174,7 +174,7 @@
             })
             .catch(err => console.error('❌ Error obteniendo sesión:', err));
     });
-
+ 
     // Eliminar proyecto
 function deleteProject(projectId) {
     if (confirm("¿Estás seguro de que deseas eliminar este proyecto?")) {
@@ -192,7 +192,7 @@ function deleteProject(projectId) {
         .catch(error => console.error("Error eliminando proyecto:", error));
     }
 }
-
+ 
 // Editar proyecto
 function editProject(projectId) {
     const newTitle = prompt("Nuevo título del proyecto:");
@@ -213,11 +213,11 @@ function editProject(projectId) {
         .catch(error => console.error("Error actualizando proyecto:", error));
     }
 }
-
+ 
  
  </script>
-
-
+ 
+ 
    <%- include('partials/footer') %>
 </body>
 </html>
