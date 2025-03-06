@@ -94,7 +94,7 @@ app.get('/project', async (req, res) => {
   }
 
   try {
-      const response = await fetch(`http://localhost:3000/api/projects/${projectId}`);
+    const response = await fetch(`https://code-play.es/api/projects/${projectId}`);
       if (!response.ok) {
           throw new Error('No se pudo obtener el proyecto');
       }
