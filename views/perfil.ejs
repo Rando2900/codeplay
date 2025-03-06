@@ -213,7 +213,10 @@ function editProject(projectId) {
         .catch(error => console.error("Error actualizando proyecto:", error));
     }
 }
- 
+
+ function viewProject(projectId) {
+        window.location.href = `/project?id=${projectId}`;
+    }
  
  </script>
  
