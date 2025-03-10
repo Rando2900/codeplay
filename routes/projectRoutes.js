@@ -27,6 +27,9 @@ router.get('/user/:id', getUserProjects);
 
 router.get('/proyectos', getProjectsByQuery);
 
+router.get('/projects/search', getProjectsByQuery);
+
+
 router.get("/search", getProjectsByQuery);
 
 // Ruta para actualizar un proyecto

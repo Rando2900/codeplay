@@ -203,3 +203,13 @@ label, input, select, textarea {
 textarea {
     min-height: 150px;
 }
+
+.CodeMirror {
+  text-align: left;       /* Asegura que el texto esté alineado a la izquierda */
+  direction: ltr;         /* Dirección del texto de izquierda a derecha */
+}
+
+.CodeMirror pre {
+  text-align: left;       /* Asegura que el texto dentro del editor esté alineado */
+}
+

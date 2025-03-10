@@ -18,6 +18,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.static(path.join(__dirname, 'node_modules/@emmetio/codemirror-plugin/dist')));
+app.use(express.urlencoded({ extended: true }));
 
 const mongoUri = process.env.MONGO_URI || 'mongodb+srv://CODEPLAY:1234@cluster0.ieneu.mongodb.net/codeplay';
 
@@ -55,6 +56,10 @@ app.get('/politica_privacidad', (req, res) => res.render('politica_privacidad', 
 app.get('/formulario', (req, res) => res.render('formulario', { title: 'Formulario' }));
 app.get('/buscador', (req, res) => res.render('buscador', { title: 'Buscador' }));
 app.get('/anotaciones', (req, res) => res.render('anotaciones', { title: 'Anotaciones' }));
+app.get('/editarProyecto', (req, res) => res.render('editarProyecto', { title: 'Editar Proyecto' }));
+app.get('/editarJuego', (req, res) => res.render('editarJuego', { title: 'Editar Juego' }));
+
+
 
 app.use((req, res, next) => {
   res.locals.user = req.session.user || null; 
@@ -68,6 +73,12 @@ app.use('/', indexRouter);
 
 const userRoutes = require('./routes/users');
 app.use('/api/users', userRoutes);
+
+app.get('/editarAnotacion', (req, res) => {
+  res.render('editaranotaciones', { title: 'Editar Anotación' });
+});
+
+
 
 const userControllers = require('./controllers/userControllers');
 app.post('/users/register', userControllers.registerUser);

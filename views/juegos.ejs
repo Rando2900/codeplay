@@ -1,13 +1,15 @@
 <script src="/javascripts/redirigelogin.js"></script>
 <!DOCTYPE html>
-<html lang="es">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Juegos - Code-Play</title>
+  <title>Games - Code-Play</title>
   <link rel="stylesheet" href="stylesheets/comunidad.css">
+  <link rel="icon" href="/favicon.ico" type="image/x-icon">
+  <link rel="shortcut icon" href="/logo.ico" type="image/x-icon">
   <style>
-    /* Estilo adicional para la galería */
+    /* Additional style for the gallery */
     #gameContainer {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
@@ -62,35 +64,34 @@
   </style>
 </head>
 <body>
-<!-- Contenido principal de la página -->
+<!-- Main content of the page -->
 <%- include('partials/header') %>
 
-
   <div style="text-align: center;">
-    <h2>Juegos Populares</h2>
+    <h2>Popular Games</h2>
   </div>
   <div id="gameContainer"></div>
 
   <script>
-async function cargarJuegos() {
+async function loadGames() {
     const gameContainer = document.getElementById('gameContainer');
 
     try {
         const response = await fetch('/api/juegos');
-        const juegos = await response.json();
+        const games = await response.json();
 
-        console.log("📌 Datos recibidos:", juegos); // 🔹 Ver qué datos llegan
+        console.log("📌 Data received:", games); // 🔹 View received data
 
-        if (!Array.isArray(juegos) || juegos.length === 0) {
-            gameContainer.innerHTML = '<p>No hay juegos disponibles.</p>';
+        if (!Array.isArray(games) || games.length === 0) {
+            gameContainer.innerHTML = '<p>No games available.</p>';
             return;
         }
 
         gameContainer.innerHTML = '';
-        juegos.sort((a, b) => b.likes - a.likes);
+        games.sort((a, b) => b.likes - a.likes);
 
-        juegos.forEach(juego => {
-            console.log("🔹 Procesando juego:", juego); // 🔹 Ver cada juego en consola
+        games.forEach(game => {
+            console.log("🔹 Processing game:", game); // 🔹 Log each game in console
 
             const card = document.createElement('div');
             card.classList.add('game-card');
@@ -101,30 +102,30 @@ async function cargarJuegos() {
             iframe.style.border = "1px solid #ddd";
             iframe.srcdoc = `
                 <!DOCTYPE html>
-                <html lang='es'>
-                <head><style>${juego.css || ''}</style></head>
+                <html lang='en'>
+                <head><style>${game.css || ''}</style></head>
                 <body>
-                    ${juego.html || ''}
+                    ${game.html || ''}
                     <script>
                         window.alert = function() {}; 
                         window.confirm = function() { return false; }; 
                         window.prompt = function() { return null; }; 
-                        ${juego.javascript || ''}
+                        ${game.javascript || ''}
                     <\\/script>
                 </body>
                 </html>
             `;
 
             const titleElement = document.createElement('h3');
-            titleElement.textContent = juego.nombre || 'Juego sin nombre';
+            titleElement.textContent = game.nombre || 'Untitled Game';
 
             const descriptionElement = document.createElement('p');
-            descriptionElement.textContent = juego.descripcion || 'Sin descripción disponible';
+            descriptionElement.textContent = game.descripcion || 'No description available';
             descriptionElement.classList.add('game-description');
 
             const playButton = document.createElement('button');
-            playButton.textContent = 'Jugar';
-            playButton.onclick = () => window.location.href = `/juego?id=${juego._id}`;
+            playButton.textContent = 'Play';
+            playButton.onclick = () => window.location.href = `/juego?id=${game._id}`;
 
             card.appendChild(titleElement);
             card.appendChild(descriptionElement);
@@ -134,12 +135,12 @@ async function cargarJuegos() {
         });
 
     } catch (error) {
-        console.error('❌ Error al cargar los juegos:', error);
-        gameContainer.innerHTML = '<p>Error al cargar los juegos.</p>';
+        console.error('❌ Error loading games:', error);
+        gameContainer.innerHTML = '<p>Error loading games.</p>';
     }
 }
 
-cargarJuegos();
+loadGames();
 
   </script>
   <%- include('partials/footer') %>

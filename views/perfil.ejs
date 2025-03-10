@@ -6,6 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="stylesheets/perfil.css">
     <title>User Profile - Code-Play</title>
+    <link rel="icon" href="/favicon.ico" type="image/x-icon">
+    <link rel="shortcut icon" href="/logo.ico" type="image/x-icon">
 </head>
 <body>
     <%- include('partials/header') %>
@@ -16,14 +18,17 @@
         <p class="user-bio">"Passionate developer and video game enthusiast. Ready to create and explore new ideas!"</p>
         <button onclick="location.href='editarperfil'" class="edit-profile-button">Editar Perfil</button>
     </div>
- 
+
     <div class="user-projects">
-        <h2>My Projects</h2>
+        <h2>Mis Proyectos</h2>
         <div id="projects-list" class="project-grid"></div>
         <button id="toggle-projects" class="toggle-button" style="display: none;">Mostrar más</button>
     </div>
 </main>
- 
+<div class="user-juegos">
+    <h2>Mis Juegos</h2>
+    <div id="juegos-list" class="project-grid"></div>
+</div>
 <div class="user-anotaciones">
     <h2>Mis Anotaciones</h2>
     <div class="filter-container">
@@ -38,11 +43,9 @@
         </select>
     </div>
 </div>
- 
- 
-    <div id="anotaciones-list" class="anotaciones-grid"></div>
-</div>
- 
+
+<div id="anotaciones-list" class="anotaciones-grid"></div>
+
 <script>
     document.addEventListener('DOMContentLoaded', () => {
         fetch('/users/session', { method: 'GET', credentials: 'same-origin' })
@@ -51,24 +54,31 @@
                 if (data.loggedIn) {
                     document.getElementById('username-display').textContent = data.username;
                     const userId = data.userId;
- 
+
                     // Cargar proyectos
                     fetch(`/api/projects/user/${userId}`)
                         .then(res => res.json())
                         .then(projects => {
+                            console.log("✅ Proyectos obtenidos:", projects); // 📌 Verificación
+
                             const container = document.getElementById('projects-list');
                             const toggleButton = document.getElementById('toggle-projects');
-                            let projectsToShow = 3;
+                            let projectsToShow = 3; // ✅ Inicialmente solo mostramos 3 proyectos
                             let isExpanded = false;
- 
+
+                            if (!projects || projects.length === 0) {
+                                container.innerHTML = '<p>No tienes proyectos creados.</p>';
+                                return;
+                            }
+
                             function renderProjects() {
-                                container.innerHTML = '';
+                                container.innerHTML = ''; 
                                 const visibleProjects = isExpanded ? projects : projects.slice(0, projectsToShow);
- 
+
                                 visibleProjects.forEach(project => {
                                     const card = document.createElement('div');
                                     card.classList.add('project-card');
- 
+
                                     const iframe = document.createElement('iframe');
                                     iframe.srcdoc = `
                                         <!DOCTYPE html>
@@ -85,17 +95,18 @@
                                     iframe.width = "100%";
                                     iframe.height = "200px";
                                     iframe.style.border = "1px solid #ccc";
- 
+
                                     card.innerHTML = `
                                         <h3>${project.title || 'Proyecto Sin Título'}</h3>
                                         <button onclick="viewProject('${project._id}')" class="view-project-button">Ver Proyecto</button>
                                         <button onclick="editProject('${project._id}')" class="edit-project-button">✏️ Editar</button>
                                         <button onclick="deleteProject('${project._id}')" class="delete-project-button">🗑️ Eliminar</button>
                                     `;
+
                                     card.appendChild(iframe);
                                     container.appendChild(card);
                                 });
- 
+
                                 if (projects.length > projectsToShow) {
                                     toggleButton.style.display = "block";
                                     toggleButton.textContent = isExpanded ? "Mostrar menos" : "Mostrar más";
@@ -103,70 +114,72 @@
                                     toggleButton.style.display = "none";
                                 }
                             }
- 
+
                             toggleButton.addEventListener('click', () => {
                                 isExpanded = !isExpanded;
                                 renderProjects();
                             });
- 
+
                             renderProjects();
                         })
                         .catch(err => console.error('❌ Error cargando proyectos:', err));
- 
+
                     // Cargar anotaciones
                     fetch(`/api/anotaciones/user/${userId}`)
-                        .then(res => {
-                            if (!res.ok) {
-                                throw new Error(`Error al obtener anotaciones: ${res.status}`);
-                            }
-                            return res.json();
-                        })
+                        .then(res => res.json())
                         .then(anotaciones => {
                             console.log('✅ Anotaciones cargadas:', anotaciones);
                             const container = document.getElementById('anotaciones-list');
                             container.innerHTML = '';
- 
+
                             function renderAnotaciones(filterText = '', filterLang = '') {
                                 container.innerHTML = '';
                                 const filtered = anotaciones.filter(anotacion =>
-                                (anotacion.title && anotacion.title.toLowerCase().includes(filterText.toLowerCase())) &&
-                                (filterLang === '' || anotacion.language === filterLang)
-                            );
- 
- 
+                                    (anotacion.title && anotacion.title.toLowerCase().includes(filterText.toLowerCase())) &&
+                                    (filterLang === '' || anotacion.language === filterLang)
+                                );
+
                                 if (filtered.length) {
                                     filtered.forEach(anotacion => {
                                         const card = document.createElement('div');
                                         card.classList.add('anotacion-card');
- 
+
                                         card.innerHTML = `
-                                            <h3>${anotacion.title || 'Sin título'}</h3>
-                                            <p style="font-size: 14px; color: gray;">${anotacion.language}</p>
-                                            <pre>${anotacion.code}</pre>
-                                        `;
-                                        container.appendChild(card);
+    <h3>${anotacion.title || 'Sin título'}</h3>
+    <p style="font-size: 14px; color: gray;">${anotacion.language}</p>
+    <pre>${anotacion.code}</pre>
+    <button onclick="editAnotacion('${anotacion._id}')" class="anotacion-button edit-anotacion-button">
+        Editar
+    </button>
+    <button onclick="deleteAnotacion('${anotacion._id}')" class="anotacion-button delete-anotacion-button">
+        Eliminar
+    </button>
+`;
+container.appendChild(card);
+
                                     });
                                 } else {
                                     container.innerHTML = '<p>No se encontraron anotaciones</p>';
                                 }
                             }
- 
+
+
                             // Detectar cambios en los filtros y actualizar la lista
                             document.getElementById('searchAnotaciones').addEventListener('input', (e) => {
                                 renderAnotaciones(e.target.value, document.getElementById('filterLanguage').value);
                             });
- 
+
                             document.getElementById('filterLanguage').addEventListener('change', (e) => {
                                 renderAnotaciones(document.getElementById('searchAnotaciones').value, e.target.value);
                             });
- 
+
                             renderAnotaciones();
                         })
                         .catch(err => {
                             console.error('❌ Error cargando anotaciones:', err);
                             document.getElementById('anotaciones-list').innerHTML = '<p>Error al cargar anotaciones</p>';
                         });
- 
+
                 } else {
                     console.error('❌ Usuario no logueado');
                     window.location.href = '/login'; // Redirigir si no está logueado
@@ -174,53 +187,178 @@
             })
             .catch(err => console.error('❌ Error obteniendo sesión:', err));
     });
- 
+
     // Eliminar proyecto
-function deleteProject(projectId) {
-    if (confirm("¿Estás seguro de que deseas eliminar este proyecto?")) {
-        fetch(`/api/projects/${projectId}`, {
+    function deleteProject(projectId) {
+        if (confirm("¿Estás seguro de que deseas eliminar este proyecto?")) {
+            fetch(`/api/projects/${projectId}`, { method: "DELETE" })
+                .then(response => response.json())
+                .then(() => {
+                    alert("Proyecto eliminado con éxito.");
+                    location.reload(); // Recargar la página para actualizar la lista
+                })
+                .catch(error => console.error("Error eliminando proyecto:", error));
+        }
+    }
+
+    // Editar proyecto
+    function editProject(projectId) {
+        window.location.href = `/editarProyecto?id=${projectId}`;
+    }
+
+    // Ver proyecto
+    function viewProject(projectId) {
+        window.location.href = `/project?id=${projectId}`;
+    }
+    function editJuego(juegoId) {
+                                     window.location.href = `/editarJuego?id=${juegoId}`;
+                                    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+    fetch('/users/session', { method: 'GET', credentials: 'same-origin' })
+        .then(response => response.json())
+        .then(data => {
+            if (data.loggedIn) {
+                document.getElementById('username-display').textContent = data.username;
+                const userId = data.userId; // Definimos userId dentro del bloque
+
+                console.log("📌 userId obtenido:", userId); // <-- Verificar si se obtiene correctamente
+
+                // 🔥 Cargar juegos del usuario
+                fetch(`/api/juegos/user/${userId}`)
+                    .then(res => res.json())
+                    .then(juegos => {
+                        console.log("📌 Juegos recibidos en el frontend:", juegos); // <-- Verificar si llegan los juegos
+
+                        const container = document.getElementById('juegos-list');
+                        container.innerHTML = '';
+
+                        if (juegos.length === 0) {
+                            container.innerHTML = '<p>No has creado ningún juego aún.</p>';
+                            return;
+                        }
+
+                        juegos.forEach(juego => {
+                            const card = document.createElement('div');
+                            card.classList.add('project-card');
+
+                            const iframe = document.createElement('iframe');
+                            iframe.srcdoc = `
+                                <!DOCTYPE html>
+                                <html lang="en">
+                                <head>
+                                    <style>${juego.css}</style>
+                                </head>
+                                <body>
+                                    ${juego.html}
+                                    <script>${juego.javascript}<\/script>
+                                </body>
+                                </html>
+                            `;
+                            iframe.width = "100%";
+                            iframe.height = "200px";
+                            iframe.style.border = "1px solid #ccc";
+
+                            card.innerHTML = `
+                                    <h3>${juego.nombre || 'Juego Sin Nombre'}</h3>
+                                    <button onclick="viewJuego('${juego._id}')" class="view-project-button">Ver Juego</button>
+                                    <button onclick="editJuego('${juego._id}')" class="edit-project-button">✏️ Editar</button>
+                                    <button onclick="deleteJuego('${juego._id}')" class="delete-project-button">🗑️ Eliminar</button>
+                                `;
+                              
+                            card.appendChild(iframe);
+                            container.appendChild(card);
+                        });
+                    })
+                    .catch(err => console.error('❌ Error cargando juegos:', err));
+            } else {
+                console.error('❌ Usuario no logueado');
+                window.location.href = '/login'; // Redirigir si no está logueado
+            }
+        })
+        .catch(err => console.error('❌ Error obteniendo sesión:', err));
+});
+
+// Función para ver juego
+function viewJuego(juegoId) {
+    window.location.href = `/juego?id=${juegoId}`;
+}
+
+// 🔥 Función para eliminar juego
+function deleteJuego(juegoId) {
+    console.log("📌 Intentando eliminar el juego con ID:", juegoId); // <-- Verifica el ID aquí
+
+    if (!juegoId || juegoId.length < 10) { // Asegurar que el ID es válido
+        console.error("❌ ERROR: ID de juego inválido");
+        return;
+    }
+
+    if (confirm("¿Estás seguro de que deseas eliminar este juego?")) {
+        fetch(`/api/juegos/${juegoId}`, {
             method: "DELETE",
         })
         .then(response => {
-            if (!response.ok) throw new Error("Error al eliminar el proyecto.");
+            if (!response.ok) throw new Error("Error al eliminar el juego.");
             return response.json();
         })
         .then(() => {
-            alert("Proyecto eliminado con éxito.");
-            location.reload(); // Recargar la página para actualizar la lista
+            alert("Juego eliminado con éxito.");
+            location.reload();
         })
-        .catch(error => console.error("Error eliminando proyecto:", error));
-    }
-}
- 
-// Editar proyecto
-function editProject(projectId) {
-    const newTitle = prompt("Nuevo título del proyecto:");
-    if (newTitle) {
-        fetch(`/api/projects/${projectId}`, {
-            method: "PUT",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ title: newTitle }),
-        })
-        .then(response => {
-            if (!response.ok) throw new Error("Error al editar el proyecto.");
-            return response.json();
-        })
-        .then(() => {
-            alert("Proyecto actualizado con éxito.");
-            location.reload(); // Refrescar la página
-        })
-        .catch(error => console.error("Error actualizando proyecto:", error));
+        .catch(error => console.error("Error eliminando juego:", error));
     }
 }
 
- function viewProject(projectId) {
-        window.location.href = `/project?id=${projectId}`;
-    }
- 
- </script>
- 
- 
-   <%- include('partials/footer') %>
+
+// 🔥 Editar anotación
+function editAnotacion(anotacionId) {
+    window.location.href = `/editarAnotacion?id=${anotacionId}`;
+
+    if (!nuevoTitulo || !nuevoLenguaje || !nuevoCodigo) {
+        alert("Todos los campos son obligatorios.");
+        return;
+    }
+
+    fetch(`/api/anotaciones/${anotacionId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            title: nuevoTitulo,
+            language: nuevoLenguaje,
+            code: nuevoCodigo
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        alert(data.message);
+        location.reload();
+    })
+    .catch(err => console.error('❌ Error al editar la anotación:', err));
+}
+
+// 🔥 Eliminar anotación
+function deleteAnotacion(anotacionId) {
+    console.log("🟡 Intentando eliminar anotación con ID:", anotacionId); // <-- NUEVO
+    if (!anotacionId || anotacionId.length < 10) {
+        console.error("❌ ERROR: ID de anotación inválido");
+        return;
+    }
+
+    if (confirm("¿Estás seguro de que deseas eliminar esta anotación?")) {
+        fetch(`/api/anotaciones/${anotacionId}`, { method: 'DELETE' })
+        .then(response => response.json())
+        .then(data => {
+            alert(data.message);
+            location.reload();
+        })
+        .catch(err => console.error('❌ Error al eliminar la anotación:', err));
+    }
+}
+
+
+
+</script>
+
+<%- include('partials/footer') %>
 </body>
 </html>

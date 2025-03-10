@@ -3,7 +3,26 @@ body {
     margin: 0;
     font-family: Arial, sans-serif;
   }
-  
+  html, body {
+    height: 100%;             /* Ocupa toda la altura de la pantalla */
+    margin: 0;
+    display: flex;
+    flex-direction: column;   /* Asegura que el contenido esté en columna */
+}
+
+.main-content {
+    flex: 1;                  /* Permite que el contenido se expanda */
+}
+
+.footer {
+    background-color: #001a57;
+    color: #ffffff;
+    padding: 20px 30px;
+    border-top: 2px solid #0056b3;
+    width: 100%;              /* Ocupa todo el ancho */
+    margin-top: auto;         /* Empuja el footer hacia abajo */
+}
+
   .header {
     display: flex;
     justify-content: space-between;

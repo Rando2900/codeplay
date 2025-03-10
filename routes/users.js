@@ -9,6 +9,7 @@
     router.post('/login', userControllers.loginUser);
     router.post('/updateProfile', userControllers.updateProfile);
     router.get('/verificar-cookie', userControllers.verificarCookie);
+
     
     module.exports = router;
     

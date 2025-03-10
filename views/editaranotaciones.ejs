@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Annotations - Code-Play</title>
+    <title>Edit Annotation - Code-Play</title>
     <link rel="stylesheet" href="stylesheets/anotaciones.css">
     <script src="https://cdn.jsdelivr.net/npm/codemirror/lib/codemirror.js"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/codemirror/lib/codemirror.css">
@@ -21,8 +21,8 @@
 
     <main>
         <section class="anotaciones">
-            <h1>Create an Annotation</h1>
-            <form id="anotacionForm">
+            <h1>Edit Annotation</h1>
+            <form id="editarAnotacionForm">
                 <label for="title">Annotation Title:</label>
                 <input type="text" id="title" name="title" required>
             
@@ -38,109 +38,97 @@
                 <label for="code">Write Your Code:</label>
                 <textarea id="code" name="code"></textarea>
                 <br><br> 
-                <button class="buttons2" type="submit">Publish</button>
+                <button class="buttons2" type="submit">Update</button>
                 <br><br>
             </form>
-            
         </section>
     </main>
 
     <%- include('partials/footer') %>
 
     <script>
-        // Initialize CodeMirror
+        // Inicializar CodeMirror
         const codeEditor = CodeMirror.fromTextArea(document.getElementById('code'), {
             lineNumbers: true,
             mode: 'javascript',
             theme: 'default',
-            lineWrapping: true,      // Prevents text from overflowing the editor area
-            viewportMargin: Infinity // Ensures the area expands based on content
+            lineWrapping: true,
+            viewportMargin: Infinity 
         });
 
-        // Change CodeMirror mode based on selected language
+        // Cambiar el modo de CodeMirror según el lenguaje seleccionado
         document.getElementById('language').addEventListener('change', (event) => {
             const language = event.target.value;
             let mode;
             switch (language) {
-                case 'javascript':
-                    mode = 'javascript';
-                    break;
-                case 'python':
-                    mode = 'python';
-                    break;
-                case 'php':
-                    mode = 'php';
-                    break;
-                case 'java':
-                    mode = 'text/x-java';
-                    break;
-                case 'html':
-                    mode = 'xml';
-                    break;
-                default:
-                    mode = 'javascript';
+                case 'javascript': mode = 'javascript'; break;
+                case 'python': mode = 'python'; break;
+                case 'php': mode = 'php'; break;
+                case 'java': mode = 'text/x-java'; break;
+                case 'html': mode = 'xml'; break;
+                default: mode = 'javascript';
             }
             codeEditor.setOption('mode', mode);
         });
 
-        // Form Handling
-        document.getElementById('anotacionForm').addEventListener('submit', async (event) => {
+        document.addEventListener('DOMContentLoaded', async () => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const anotacionId = urlParams.get('id');
+
+    if (!anotacionId) {
+        alert("Error: No se proporcionó el ID de la anotación.");
+        window.location.href = '/perfil';
+        return;
+    }
+
+    try {
+        const response = await fetch(`/api/anotaciones/${anotacionId}`);
+        const data = await response.json();
+
+        if (response.ok) {
+            document.getElementById('title').value = data.title;
+            document.getElementById('language').value = data.language;
+            codeEditor.setValue(data.code);
+        } else {
+            alert(data.error || "Error al cargar la anotación.");
+            window.location.href = '/perfil';
+        }
+    } catch (error) {
+        console.error("❌ Error al obtener la anotación:", error);
+        alert("Error al obtener la anotación.");
+        window.location.href = '/perfil';
+    }
+});
+
+
+
+
+
+
+        // Manejar el envío del formulario
+        document.getElementById('editarAnotacionForm').addEventListener('submit', async (event) => {
             event.preventDefault();
+
+            const urlParams = new URLSearchParams(window.location.search);
+            const anotacionId = urlParams.get('id');
 
             const title = document.getElementById('title').value.trim();
             const language = document.getElementById('language').value;
             const code = codeEditor.getValue();
 
-            if (!title || !code) {
-                alert("The title and code are required.");
-                return;
-            }
-
-            const response = await fetch('/api/anotaciones', {
-                method: 'POST',
+            const response = await fetch(`/api/anotaciones/${anotacionId}`, {
+                method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ title, language, code }),
             });
 
             if (response.ok) {
-                alert('Annotation saved successfully.');
-                document.getElementById('anotacionForm').reset();
-                codeEditor.setValue('');
+                alert('Annotation updated successfully.');
+                window.location.href = '/perfil';
             } else {
-                alert('Error saving the annotation.');
+                alert('Error updating the annotation.');
             }
         });
     </script>
-
-<script>
-async function publishAnnotation() {
-    const response = await fetch('/api/anotaciones/session');
-    const data = await response.json();
-
-    if (!data.loggedIn) {
-        alert('You must log in to publish an annotation.');
-        window.location.href = 'login.html';
-        return;
-    }
-
-    const language = document.getElementById('language').value;
-    const code = codeEditor.getValue();
-
-    const postResponse = await fetch('/api/anotaciones', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ language, code }),
-    });
-
-    if (postResponse.ok) {
-        alert('Annotation saved successfully.');
-        window.location.reload();
-    } else {
-        alert('Error saving the annotation.');
-    }
-}
-
-document.getElementById('publicarBtn').addEventListener('click', publishAnnotation);
-</script>
 </body>
 </html>

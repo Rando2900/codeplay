@@ -7,6 +7,8 @@
   <title>Crear Juego</title>
   <link rel="stylesheet" href="stylesheets/editar.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.12/codemirror.min.css">
+  <link rel="icon" href="/favicon.ico" type="image/x-icon">
+  <link rel="shortcut icon" href="/logo.ico" type="image/x-icon">
 </head>
 <body>
   <%- include('partials/header') %>
@@ -37,15 +39,15 @@
     </div>
   </div>
 
+  <!-- CodeMirror JS -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.12/codemirror.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.12/mode/xml/xml.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.12/mode/css/css.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.12/mode/javascript/javascript.min.js"></script>
- 
-<!-- Código para inicializar CodeMirror y actualizar la vista previa -->
-<script src="./node_modules/codemirror/lib/codemirror.js"></script>
-<script src="browser.js"></script>
 
+  <!-- Código para inicializar CodeMirror y actualizar la vista previa -->
+  <script src="./node_modules/codemirror/lib/codemirror.js"></script>
+<script src="browser.js"></script>
 
   <script>
  
@@ -101,17 +103,25 @@
     const html = htmlEditor.getValue().trim();
     const css = cssEditor.getValue().trim();
     const javascript = jsEditor.getValue().trim();
-    
-    if (!javascript) {
-        alert('Error: El campo de JavaScript no puede estar vacío.');
-        return;
-    }
-
-    const data = { nombre, descripcion, html, css, javascript };
-
-    console.log("Enviando datos al servidor:", data);
 
     try {
+        // 🔥 Obtener la sesión del usuario
+        const sessionResponse = await fetch('/users/session');
+        const sessionData = await sessionResponse.json();
+
+        console.log("📌 Datos de sesión obtenidos:", sessionData); // <-- Verificar qué llega aquí
+
+        if (!sessionData.loggedIn) {
+            alert('Debes iniciar sesión para publicar un juego.');
+            return;
+        }
+
+        const usuario = sessionData.userId; // ID del usuario
+        console.log("📌 ID de usuario antes de enviar:", usuario); // <-- Verificar que el ID no sea undefined
+
+        const data = { nombre, descripcion, html, css, javascript, usuario };
+        console.log("📌 Enviando datos al servidor:", data); // <-- Verificar qué datos se están enviando
+
         const response = await fetch('/api/juegos', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -122,13 +132,15 @@
             alert('Juego publicado con éxito');
         } else {
             const errorMessage = await response.text();
+            console.error(`❌ Error del servidor: ${errorMessage}`);
             alert(`Error al publicar el juego: ${errorMessage}`);
         }
     } catch (err) {
-        console.error('Error al publicar el juego:', err);
+        console.error('❌ Error al publicar el juego:', err);
         alert('Error al publicar el juego. Intenta nuevamente.');
     }
 });
+
   </script>
 
   <style>

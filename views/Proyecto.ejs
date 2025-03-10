@@ -1,143 +1,117 @@
 <script src="/javascripts/redirigelogin.js"></script>
 <!DOCTYPE html>
-<html lang="es">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Editor de Código - Code-Play</title>
+  <title>Code Editor - Code-Play</title>
   <link rel="stylesheet" href="stylesheets/editar.css">
   <!-- CodeMirror CSS -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.12/codemirror.min.css">
+  <link rel="icon" href="/favicon.ico" type="image/x-icon">
+  <link rel="shortcut icon" href="/logo.ico" type="image/x-icon">
 </head>
 <body>
 
- <!-- Contenido principal de la página -->
- <%- include('partials/header') %>
+<!-- Main Content -->
+<%- include('partials/header') %>
+
+<div style="text-align: center; margin-top: 20px;">
+  <button id="publish-button" class="styled-button">Publish Project</button>
   <div style="text-align: center; margin-top: 20px;">
-    <button id="publish-button" class="styled-button">Publicar Proyecto</button>
-    <div style="text-align: center; margin-top: 20px;">
-      <input type="text" id="project-title" placeholder="Nombre del Proyecto" style="padding: 10px; margin-right: 10px;">
+    <input type="text" id="project-title" placeholder="Project Name" style="padding: 10px; margin-right: 10px;">
+
+    <br>
+    <br>
+    <select id="project-visibility">
+      <option value="public">Public</option>
+      <option value="private">Private</option>
+    </select>
   </div>
-  
-  </div>
-   <div class="container">
-    <!-- Edición HTML -->
-    <div class="editor" data-title="HTML">
-      <textarea id="html-editor"></textarea>
-    </div>
+</div>
 
-    <!-- Edición CSS -->
-    <div class="editor" data-title="CSS">
-      <textarea id="css-editor"></textarea>
-    </div>
-
-    <!-- Edición JS -->
-    <div class="editor" data-title="JavaScript">
-      <textarea id="js-editor"></textarea>
-    </div>
-
-    <!-- Vista previa -->
-    <div class="preview" data-title="Vista">
-      <iframe id="preview"></iframe>
-    </div>
+<div class="container">
+  <!-- HTML Editor -->
+  <div class="editor" data-title="HTML">
+    <textarea id="html-editor"></textarea>
   </div>
 
-  <!-- CodeMirror JS -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.12/codemirror.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.12/mode/xml/xml.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.12/mode/css/css.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.12/mode/javascript/javascript.min.js"></script>
+  <!-- CSS Editor -->
+  <div class="editor" data-title="CSS">
+    <textarea id="css-editor"></textarea>
+  </div>
 
-  <!-- Código para inicializar CodeMirror y actualizar la vista previa -->
-  <script src="./node_modules/codemirror/lib/codemirror.js"></script>
+  <!-- JavaScript Editor -->
+  <div class="editor" data-title="JavaScript">
+    <textarea id="js-editor"></textarea>
+  </div>
+
+  <!-- Preview -->
+  <div class="preview" data-title="Preview">
+    <iframe id="preview"></iframe>
+  </div>
+</div>
+
+<!-- CodeMirror JS -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.12/codemirror.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.12/mode/xml/xml.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.12/mode/css/css.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.12/mode/javascript/javascript.min.js"></script>
+
+<script src="./node_modules/codemirror/lib/codemirror.js"></script>
 <script src="browser.js"></script>
 
 <script>
-
-    // Inicializar CodeMirror para HTML
-    const htmlEditor = CodeMirror.fromTextArea(document.getElementById('html-editor'), {
-      mode: 'text/html',
-      theme: 'default',
-      lineNumbers: true,
-      extraKeys: {
-        'Tab': 'emmetExpandAbbreviation',
-        'Esc': 'emmetResetAbbreviation',
-        'Enter': 'emmetInsertLineBreak'
+  // Initialize CodeMirror for HTML
+  const htmlEditor = CodeMirror.fromTextArea(document.getElementById('html-editor'), {
+    mode: 'text/html',
+    theme: 'default',
+    lineNumbers: true,
+    extraKeys: {
+      'Tab': 'emmetExpandAbbreviation',
+      'Esc': 'emmetResetAbbreviation',
+      'Enter': 'emmetInsertLineBreak'
     }
-    });
+  });
 
-    // Inicializar CodeMirror para CSS
-    const cssEditor = CodeMirror.fromTextArea(document.getElementById('css-editor'), {
-      mode: 'css',
-      theme: 'default',
-      lineNumbers: true,
-      extraKeys: {
-        'Tab': 'emmetExpandAbbreviation',
-        'Esc': 'emmetResetAbbreviation',
-        'Enter': 'emmetInsertLineBreak'
+  // Initialize CodeMirror for CSS
+  const cssEditor = CodeMirror.fromTextArea(document.getElementById('css-editor'), {
+    mode: 'css',
+    theme: 'default',
+    lineNumbers: true,
+    extraKeys: {
+      'Tab': 'emmetExpandAbbreviation',
+      'Esc': 'emmetResetAbbreviation',
+      'Enter': 'emmetInsertLineBreak'
     }
-    });
+  });
 
-    // Inicializar CodeMirror para JavaScript
-    const jsEditor = CodeMirror.fromTextArea(document.getElementById('js-editor'), {
-      mode: 'javascript',
-      theme: 'default',
-      lineNumbers: true
-    });
+  // Initialize CodeMirror for JavaScript
+  const jsEditor = CodeMirror.fromTextArea(document.getElementById('js-editor'), {
+    mode: 'javascript',
+    theme: 'default',
+    lineNumbers: true
+  });
 
-    // Actualizar la vista previa en vivo
-    function updatePreview() {
-      const html = htmlEditor.getValue();
-      const css = `<style>${cssEditor.getValue()}</style>`;
-      const js = `<script>${jsEditor.getValue()}<\/script>`;
-      const iframe = document.getElementById('preview');
-      const doc = iframe.contentDocument || iframe.contentWindow.document;
-      doc.open();
-      doc.write(html + css + js);
-      doc.close();
-    }
+  // Live Preview Update
+  function updatePreview() {
+    const html = htmlEditor.getValue();
+    const css = `<style>${cssEditor.getValue()}</style>`;
+    const js = `<script>${jsEditor.getValue()}<\/script>`;
+    const iframe = document.getElementById('preview');
+    const doc = iframe.contentDocument || iframe.contentWindow.document;
+    doc.open();
+    doc.write(html + css + js);
+    doc.close();
+  }
 
-    // Escuchar cambios en los editores
-    htmlEditor.on('change', updatePreview);
-    cssEditor.on('change', updatePreview);
-    jsEditor.on('change', updatePreview);
-  </script>
+  // Listen for Editor Changes
+  htmlEditor.on('change', updatePreview);
+  cssEditor.on('change', updatePreview);
+  jsEditor.on('change', updatePreview);
+</script>
 
 <br>
-
-
-<script>
-  // Envía el código HTML, CSS y JS al servidor
-  document.getElementById('publish-button').addEventListener('click', async () => {
-    const title = document.getElementById('project-title').value || 'Proyecto Sin Nombre';
-    const html = htmlEditor.getValue();
-    const css = cssEditor.getValue();
-    const js = jsEditor.getValue();
-
-    const data = { title, html, css, js };
-
-    try {
-        const response = await fetch('/api/projects', { 
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(data),
-        });
-
-        if (response.ok) {
-            alert('Proyecto publicado con éxito');
-        } else {
-            const errorMessage = await response.text();
-            alert(`Error al publicar el proyecto: ${errorMessage}`);
-        }
-    } catch (err) {
-        console.error('Error al publicar el proyecto:', err);
-        alert('Error al publicar el proyecto. Intenta nuevamente.');
-    }
-});
-
-</script>
 
 <style>
   .styled-button {
@@ -159,38 +133,71 @@
 
 <script>
   document.addEventListener('DOMContentLoaded', () => {
-      const userMenu = document.getElementById('userMenu'); // Obtén el contenedor de los botones
+    const userMenu = document.getElementById('userMenu'); 
 
-      // Verificar si la cookie de sesión existe
-      fetch('/users/session', { method: 'GET', credentials: 'same-origin' })
-          .then(response => response.json())
-          .then(data => {
-              if (!data.loggedIn) {
-                  // Redirige al login si no está logueado
-                  window.location.href = 'login';
-              } else {
-                  // Reemplaza los botones con el menú de perfil si está logueado
-                  userMenu.innerHTML = `
-                      <div class="profile-menu">
-                          <a href="perfil.html" style="text-decoration: none; color: inherit; cursor: pointer;">
-                          <span>Hola, ${data.username}</span>
-                          <button onclick="logout()">Cerrar Sesión</button>
-                      </div>
-                  `;
-              }
-          })
-          .catch(err => console.error('Error verificando la sesión:', err));
+    // Check if session cookie exists
+    fetch('/users/session', { method: 'GET', credentials: 'same-origin' })
+      .then(response => response.json())
+      .then(data => {
+        if (!data.loggedIn) {
+          window.location.href = 'login';
+        } else {
+          userMenu.innerHTML = `
+            <div class="profile-menu">
+              <a href="perfil.html" style="text-decoration: none; color: inherit; cursor: pointer;">
+              <span>Hello, ${data.username}</span>
+              <button onclick="logout()">Logout</button>
+            </div>
+          `;
+        }
+      })
+      .catch(err => console.error('Error checking session:', err));
   });
 
   function logout() {
-      fetch('/users/logout', { method: 'POST', credentials: 'same-origin' })
-          .then(() => {
-              window.location.reload(); // Recargar la página después de cerrar sesión
-          })
-          .catch(err => console.error('Error cerrando sesión:', err));
+    fetch('/users/logout', { method: 'POST', credentials: 'same-origin' })
+      .then(() => {
+        window.location.reload();
+      })
+      .catch(err => console.error('Error logging out:', err));
   }
-</script>
 
+  document.getElementById('publish-button').addEventListener('click', async () => {
+    const publishButton = document.getElementById('publish-button');
+    publishButton.disabled = true;
+
+    const title = document.getElementById('project-title').value || 'Untitled Project';
+    const visibility = document.getElementById('project-visibility').value;
+    const html = htmlEditor.getValue();
+    const css = cssEditor.getValue();
+    const js = jsEditor.getValue();
+
+    const data = { title, visibility, html, css, js };
+
+    try {
+      const response = await fetch('/api/projects', { 
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+      });
+
+      if (response.ok) {
+        alert('Project published successfully');
+        window.location.href = '/perfil';
+      } else {
+        const errorMessage = await response.text();
+        alert(`Error publishing project: ${errorMessage}`);
+      }
+    } catch (err) {
+      console.error('Error publishing project:', err);
+      alert('Error publishing project. Please try again.');
+    } finally {
+      publishButton.disabled = false;
+    }
+  });
+</script>
 
 <br>
 <%- include('partials/footer') %>

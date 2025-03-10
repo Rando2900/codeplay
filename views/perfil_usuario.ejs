@@ -1,11 +1,13 @@
 <script src="/javascripts/redirigelogin.js"></script>
 <!DOCTYPE html>
-<html lang="es">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="stylesheets/perfil_usuario.css">
-    <title>Perfil del Usuario - Code-Play</title>
+    <title>User Profile - Code-Play</title>
+    <link rel="icon" href="/favicon.ico" type="image/x-icon">
+    <link rel="shortcut icon" href="/logo.ico" type="image/x-icon">
     <style>
         .profile-container {
             display: flex;
@@ -15,7 +17,7 @@
             margin-top: 20px;
         }
         .user-name {
-            font-size: 20px;
+            font-size: 22px;
             font-weight: bold;
             color: #333;
         }
@@ -37,7 +39,6 @@
             font-weight: bold;
             color: #333;
         }
-        /* 📌 Diseño en grid: 3 columnas con espacio */
         .project-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
@@ -50,10 +51,14 @@
         .project-card {
             border: 1px solid #ddd;
             border-radius: 10px;
-            padding: 10px;
+            padding: 15px;
             background: white;
             box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
             text-align: center;
+            transition: transform 0.3s ease;
+        }
+        .project-card:hover {
+            transform: scale(1.05);
         }
         .project-card h2 {
             font-size: 18px;
@@ -64,6 +69,34 @@
             width: 100%;
             height: 200px;
             border: none;
+            border-radius: 5px;
+        }
+        .action-buttons {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 10px;
+        }
+        .project-button {
+            padding: 8px 12px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background 0.3s ease;
+        }
+        .fork-button {
+            background-color: #007BFF;
+            color: white;
+        }
+        .fork-button:hover {
+            background-color: #0056b3;
+        }
+        .view-button {
+            background-color: #007BFF;
+            color: white;
+        }
+        .view-button:hover {
+            background-color: #0056b3;
         }
     </style>
 </head>
@@ -71,10 +104,9 @@
     <%- include('partials/header') %>
     
     <main class="profile-container">
-        <h1>Perfil de Usuario</h1>
-        <p id="user-name" class="user-name">Cargando usuario...</p>
+        <h1>User Profile</h1>
+        <p id="user-name" class="user-name">Loading user...</p>
 
-        <!-- 📌 Contador de Likes -->
         <div class="likes-container">
             <p>Likes</p>
             <div class="heart-icon">❤️</div>
@@ -82,106 +114,114 @@
         </div>
 
         <section class="projects-section">
-            <h2>Proyectos de este usuario</h2>
+            <h2>This user's projects</h2>
             <div class="project-grid" id="projects-container">
-                <p>Cargando proyectos...</p>
+                <p>Loading projects...</p>
             </div>
         </section>
     </main>
-    <br>
-    <br>
-    <br>
-    
+
     <%- include('partials/footer') %>
-    
-    
+
     <script>
         document.addEventListener('DOMContentLoaded', async () => {
             const params = new URLSearchParams(window.location.search);
             const userId = params.get('id');
 
             if (!userId) {
-                document.getElementById('projects-container').innerHTML = '<p>Error: Usuario no encontrado.</p>';
+                document.getElementById('projects-container').innerHTML = '<p>Error: User not found.</p>';
                 return;
             }
 
             try {
-                // Obtener usuario
                 const userResponse = await fetch(`/api/users/${userId}`);
-                if (!userResponse.ok) throw new Error(`Usuario no encontrado: ${userResponse.status}`);
+                if (!userResponse.ok) throw new Error(`User not found: ${userResponse.status}`);
                 const userData = await userResponse.json();
-                document.getElementById('user-name').textContent = userData.usuario || 'Usuario Desconocido';
+                document.getElementById('user-name').textContent = userData.usuario || 'Unknown User';
                 
-                // Obtener proyectos del usuario
                 const projectsResponse = await fetch(`/api/projects/user/${userId}`);
-                if (!projectsResponse.ok) throw new Error('Error al obtener proyectos');
-                const projects = await projectsResponse.json();
-                
+                if (!projectsResponse.ok) throw new Error('Error fetching projects');
+                let projects = await projectsResponse.json();
+
+                console.log("✅ Projects retrieved:", projects);
+
+                projects = projects.filter(project => project.visibility === 'public');
+
                 renderProjects(projects);
-                calculateTotalLikes(projects); // ✅ Calcular y mostrar total de likes
+                calculateTotalLikes(projects);
             } catch (error) {
-                console.error('Error al cargar los datos:', error);
-                document.getElementById('user-name').textContent = 'Error al cargar usuario';
+                console.error('Error loading data:', error);
+                document.getElementById('user-name').textContent = 'Error loading user';
             }
         });
 
         function renderProjects(projects) {
-    const container = document.getElementById('projects-container');
-    container.innerHTML = '';
+            const container = document.getElementById('projects-container');
+            container.innerHTML = '';
 
-    if (projects.length === 0) {
-        container.innerHTML = '<p>Este usuario no tiene proyectos.</p>';
-        return;
-    }
-
-    projects.forEach(project => {
-        const card = document.createElement('div');
-        card.classList.add('project-card');
-
-        const iframe = document.createElement('iframe');
-        iframe.srcdoc = `
-            <!DOCTYPE html>
-            <html lang="es">
-            <head>
-                <style>${project.css}</style>
-            </head>
-            <body>
-                ${project.html}
-                <script> ${project.js.replace(/<\/script>/g, "<\\/script>")} <\/script>
-            </body>
-            </html>
-        `;
-        iframe.width = "100%";
-        iframe.height = "200px";
-
-        const titleElement = document.createElement('h2');
-        titleElement.textContent = project.title || 'Proyecto Sin Título';
-
-        const forkButton = document.createElement('button');
-        forkButton.textContent = 'Fork';
-        forkButton.classList.add('fork-button');
-        forkButton.addEventListener('click', async () => {
-            try {
-                const response = await fetch(`/api/projects/${project._id}/fork`, {
-                    method: 'POST',
-                    credentials: 'include'
-                });
-
-                if (!response.ok) throw new Error('Error al hacer fork del proyecto');
-
-                alert('¡Proyecto forkeado con éxito!');
-            } catch (error) {
-                console.error('Error:', error);
+            if (projects.length === 0) {
+                container.innerHTML = '<p>This user has no public projects.</p>';
+                return;
             }
-        });
 
-        card.appendChild(iframe);
-        card.appendChild(titleElement);
-        card.appendChild(forkButton); // ✅ Agregamos el botón de fork
-        container.appendChild(card);
-    });
-}
+            projects.forEach(project => {
+                const card = document.createElement('div');
+                card.classList.add('project-card');
 
+                const iframe = document.createElement('iframe');
+                iframe.srcdoc = `
+                    <!DOCTYPE html>
+                    <html lang="en">
+                    <head>
+                        <style>${project.css}</style>
+                    </head>
+                    <body>
+                        ${project.html}
+                        <script> ${project.js.replace(/<\/script>/g, "<\\/script>")} <\/script>
+                    </body>
+                    </html>
+                `;
+                iframe.width = "100%";
+                iframe.height = "200px";
+
+                const titleElement = document.createElement('h2');
+                titleElement.textContent = project.title || 'Untitled Project';
+
+                const buttonsContainer = document.createElement('div');
+                buttonsContainer.classList.add('action-buttons');
+
+                const viewButton = document.createElement('button');
+                viewButton.textContent = 'View Project';
+                viewButton.classList.add('project-button', 'view-button');
+                viewButton.onclick = () => window.location.href = `/project?id=${project._id}`;
+
+                const forkButton = document.createElement('button');
+                forkButton.textContent = 'Fork';
+                forkButton.classList.add('project-button', 'fork-button');
+                forkButton.onclick = async () => {
+                    try {
+                        const response = await fetch(`/api/projects/${project._id}/fork`, {
+                            method: 'POST',
+                            credentials: 'include'
+                        });
+
+                        if (!response.ok) throw new Error('Error forking the project');
+
+                        alert('Project successfully forked!');
+                    } catch (error) {
+                        console.error('Error:', error);
+                    }
+                };
+
+                buttonsContainer.appendChild(viewButton);
+                buttonsContainer.appendChild(forkButton);
+
+                card.appendChild(iframe);
+                card.appendChild(titleElement);
+                card.appendChild(buttonsContainer);
+                container.appendChild(card);
+            });
+        }
 
         function calculateTotalLikes(projects) {
             const totalLikes = projects.reduce((sum, project) => sum + (project.likes || 0), 0);

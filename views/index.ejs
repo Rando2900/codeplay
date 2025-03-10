@@ -1,12 +1,13 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Code-Play</title>
   <link rel="stylesheet" href="stylesheets/style.css">
+
   <style>
-    /* Contenedor del video de introducción */
+    /* Intro video container */
     #video-intro {
       position: fixed;
       top: 0;
@@ -20,13 +21,12 @@
       z-index: 1000;
     }
 
-    /* Ocultar el contenido principal al inicio */
+    /* Hide main content initially */
     #main-content {
       display: none;
     }
-  </style>
-   <style>
-    /* Estilo para el hero */
+
+    /* Hero section styling */
     .hero {
         display: flex;
         flex-direction: column;
@@ -75,143 +75,82 @@
         background: #f1f1f1;
     }
 
-</style>
+  </style>
 </head>
 <body>
-  <!-- Contenedor del video de introducción -->
+  <div class="content">
+  
+  <!-- Intro video container -->
   <div id="video-intro">
     <video id="intro-video" autoplay muted>
       <source src="images/El texto del párrafo.mp4" type="video/mp4">
-      Tu navegador no soporta videos.
+      Your browser does not support videos.
     </video>
   </div>
 
   <!-- Header -->
   <%- include('partials/header') %> 
 
-  <!-- Barra verde -->
+  <!-- Green notification bar -->
     <div id="notification-bar"></div>
 
   
     <section class="hero">
       <h1>CodePlay</h1>
-      <p>Explora, crea y comparte tus proyectos.</p>
+      <p>Explore, create, and share your projects.</p>
 
-      <!-- Botones -->
+      <!-- Buttons -->
       <div class="hero-buttons">
-          <a href="login.html"><button>Iniciar Sesión</button></a>
-          <a href="registro.html"><button>Registrarse</button></a>
+          <a href="login"><button>Log In</button></a>
+          <a href="registro"><button>Sign Up</button></a>
       </div>
 
-      <!-- Buscador -->
-    <!-- Buscador en index.html -->
+      <!-- Search bar -->
     <div class="search-container">
-      <p class="search-label">Busca un proyecto</p>
+      <p class="search-label">Search for a project</p>
       <a href="buscador">
-      <button class="card-button">Buscador
-      </button>
-    </a>
-  </div>
+        <button class="card-button">Search
+        </button>
+      </a>
+    </div>
   </section>
 
-
-  
-
-<section class="features" id="features">
-  <h2>Características Destacadas</h2>
-  <div class="grid">
-      <div class="card">
-          <h3>Crea Tus Propios Proyectos</h3>
-          <p>Con nuestro editor ONLINE puedes crear proyectos y publicarlos para que todos los usuarios puedan verlos.</p>
-          <a href="Proyecto.html"><button class="card-button">Crear Proyectos</button></a>
-      </div>
-      <div class="card">
-          <h3>Juega</h3>
-          <p>Prueba, disfruta y crea juegos.</p>
-          <a href="juegos.html"><button class="card-button">Jugar</button></a>
-      </div>
-      <div class="card">
-          <h3>Guarda Trozos de Código</h3>
-          <p>Con nuestro sistema de anotaciones puedes guardar trozos de código para que jamás se te olviden.</p>
-          <a href="anotaciones.html"><button class="card-button">Anotaciones</button></a>
-      </div>
-  </div>
-  <br>
-  <br> 
-  <div class="unique-container">
-    <a class="codepen-button" href="Proyecto.html"><span>Start Coding</span></a>
-  </div>
-  <br><br>
-
-  <div id="custom-section" style="display: flex; justify-content: space-between; padding: 20px; background-color: #f9f9f9; border-top: 1px solid #ddd;">
-    <div style="width: 48%; text-align: center;">
-      <h1>Guarda tus Anotaciones </h1>
-      <p>Guarda tus trozos de codigo , para no perderlos jamas.</p>
-      
+  <section class="features" id="features">
+    <h2>Featured Features</h2>
+    <div class="grid">
+        <div class="card">
+            <h3>Create Your Own Projects</h3>
+            <p>With our ONLINE editor, you can create projects and publish them so that all users can view them.</p>
+            <a href="Proyecto"><button class="card-button">Create Projects</button></a>
+        </div>
+        <div class="card">
+            <h3>Play</h3>
+            <p>Test, enjoy, and create games.</p>
+            <a href="juegos"><button class="card-button">Play</button></a>
+        </div>
+        <div class="card">
+            <h3>Save Code Snippets</h3>
+            <p>With our annotations system, you can save code snippets so you'll never forget them.</p>
+            <a href="anotaciones"><button class="card-button">Annotations</button></a>
+        </div>
     </div>
-    <div style="width: 32%; text-align: right;">
-      
-<div class="vcard">
-  <div class="titlebar">
-    <span class="buttons">
-    <button class="minimize">
-			<svg x="0px" y="0px" viewBox="0 0 10.2 1"><rect x="0" y="50%" width="10.2" height="1"></rect></svg>
-		</button>
-    <button class="maximize">
-			<svg viewBox="0 0 10 10"><path d="M0,0v10h10V0H0z M9,9H1V1h8V9z"></path></svg>
-		</button>
-    <button class="close">
-			<svg viewBox="0 0 10 10"><polygon points="10.2,0.7 9.5,0 5.1,4.4 0.7,0 0,0.7 4.4,5.1 0,9.5 0.7,10.2 5.1,5.8 9.5,10.2 10.2,9.5 5.8,5.1"></polygon></svg>
-		</button>
-    </span>
-  </div>
-  <div class="cppcode">
-    <pre id="pre"><code><span class="s1">#include</span> <span class="s2">&lt;iostream&gt;</span>
-using<span class="s3"> namespace </span>std<span class="sc">;</span>
-
-<span class="s3">int</span> <span class="s2">main()</span> <span class="curlies">{</span>
-
-  <span class="s3">int</span> <span class="s4">a</span> <span class="operator">=</span> 12<span class="sc">;</span>
-  <span class="s3">int</span> <span class="s4">b</span> <span class="operator">=</span> 5<span class="sc">;</span>
-
-  <span class="s4">cout</span> <span class="s5">&lt;&lt;</span> <span class="s1">"Sum of the numbers
-    is: "</span> <span class="s5">&lt;&lt;</span> <span class="rounds">(</span><span class="s4">a </span><span class="operator">+</span><span class="s4"> b</span><span class="rounds">)</span><span class="sc">;</span>
-
-  <span class="s6">return</span> 0<span class="sc">;</span>
-
-<span class="curlies">}</span>
-    </code></pre>
-  </div>
-</div>
-
-    </div>
-  </div>
-  
- 
-
-</div>
-
-
-
-    
-</main>
-
+  </section>
 
   <script>
-    // Detectar el final del video o esperar 3 segundos
+    // Detect the end of the video or wait 3 seconds
     const videoIntro = document.getElementById('video-intro');
     const mainContent = document.getElementById('main-content');
 
     setTimeout(() => {
-      videoIntro.style.display = 'none'; // Ocultar el video
-      mainContent.style.display = 'block'; // Mostrar el contenido principal
-    }, 4000); // Esperar 3 segundos
+      videoIntro.style.display = 'none'; // Hide video
+      mainContent.style.display = 'block'; // Show main content
+    }, 4000);
   </script>
 
 
 <script>
     document.addEventListener('DOMContentLoaded', () => {
-        // Verificar si la cookie de sesión existe
+        // Check if session cookie exists
         fetch('/users/session', { method: 'GET', credentials: 'same-origin' })
             .then(response => response.json())
             .then(data => {
@@ -219,18 +158,18 @@ using<span class="s3"> namespace </span>std<span class="sc">;</span>
                 const mainContent = document.getElementById('main-content');
 
                 if (data.loggedIn) {
-                    // Ocultar el video si el usuario ha iniciado sesión
+                    // Hide video if user is logged in
                     videoIntro.style.display = 'none';
                     mainContent.style.display = 'block';
                 } else {
-                    // Si no ha iniciado sesión, esperar a que el video termine o pasar 4 segundos
+                    // If not logged in, wait 4 seconds before displaying content
                     setTimeout(() => {
                         videoIntro.style.display = 'none';
                         mainContent.style.display = 'block';
                     }, 4000);
                 }
             })
-            .catch(err => console.error('Error verificando la sesión:', err));
+            .catch(err => console.error('Error checking session:', err));
     });
 
     function logout() {
@@ -238,12 +177,12 @@ using<span class="s3"> namespace </span>std<span class="sc">;</span>
             .then(() => {
                 window.location.reload();
             })
-            .catch(err => console.error('Error cerrando sesión:', err));
+            .catch(err => console.error('Error logging out:', err));
     }
 </script>
 
 
-<!-- Script barra Verde -->
+<!-- Green Notification Bar Script -->
 <script>
   document.addEventListener('DOMContentLoaded', () => {
       fetch('/users/session', { method: 'GET', credentials: 'same-origin' })
@@ -255,18 +194,18 @@ using<span class="s3"> namespace </span>std<span class="sc">;</span>
                   userMenu.innerHTML = `
                       <div class="profile-menu">
                         <a href="perfil" style="text-decoration: none; color: inherit; cursor: pointer;">
-                          <span>Hola, ${data.username}</span>
-                          <button onclick="logout()">Cerrar Sesión</button>
+                          <span>Hello, ${data.username}</span>
+                          <button onclick="logout()">Logout</button>
                       </div>
                   `;
                   if (heroButtons) {
-                    heroButtons.style.display = 'none'; // 🟢 Oculta los botones si el usuario está logueado
+                    heroButtons.style.display = 'none'; // 🟢 Hide buttons if user is logged in
                 }
-                  // Mostrar la barra de notificación
-                  showNotification('Inicio de sesión exitoso');
+                  // Show the notification bar
+                  showNotification('Login successful');
               }
           })
-          .catch(err => console.error('Error verificando la sesión:', err));
+          .catch(err => console.error('Error checking session:', err));
   });
 
   function showNotification(message) {
@@ -274,7 +213,7 @@ using<span class="s3"> namespace </span>std<span class="sc">;</span>
       notificationBar.textContent = message;
       notificationBar.style.display = 'block';
 
-      // Ocultar automáticamente después de 5 segundos
+      // Auto-hide after 5 seconds
       setTimeout(() => {
           notificationBar.style.display = 'none';
       }, 5000);
@@ -285,12 +224,12 @@ using<span class="s3"> namespace </span>std<span class="sc">;</span>
           .then(() => {
               window.location.reload();
           })
-          .catch(err => console.error('Error cerrando sesión:', err));
+          .catch(err => console.error('Error logging out:', err));
   }
   
-        function scrollToFeatures() {
-            document.getElementById('features').scrollIntoView({ behavior: 'smooth' });
-        }
+  function scrollToFeatures() {
+      document.getElementById('features').scrollIntoView({ behavior: 'smooth' });
+  }
 </script>
 
 <%- include('partials/footer') %>

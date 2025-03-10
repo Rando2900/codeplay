@@ -220,3 +220,28 @@ iframe {
   color: #000; /* Texto negro */
   font-weight: bold; /* Opcional: letra en negrita */
 }
+
+
+.styled-button {
+  background-color: #001f4d;  /* Azul oscuro */
+  color: #ffffff;
+  border: none;
+  padding: 6px 20px;  /* Tamaño más pequeño */
+  border-radius: 8px;  /* Bordes ligeramente redondeados */
+  font-size: 14px;     /* Texto más pequeño */
+  cursor: pointer;
+  text-align: center;
+  transition: background 0.3s ease, transform 0.2s ease;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5); /* Sombra suave */
+}
+
+.styled-button:hover {
+  background-color: #003366; /* Azul más claro en hover */
+  transform: scale(1.05);  /* Efecto de ampliación suave */
+}
+
+.styled-button:active {
+  transform: scale(0.98); /* Efecto de presión */
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.8); 
+}
+

@@ -5,9 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login - Code-Play</title>
     <link rel="stylesheet" href="stylesheets/login.css">
+    <link rel="icon" href="/favicon.ico" type="image/x-icon">
+    <link rel="shortcut icon" href="/logo.ico" type="image/x-icon">
 </head>
 <body>
-  <%- include('partials/header') %>
+    <%- include('partials/header') %>
 
   <form id="login-form" action="/users/login" method="POST">
     <h2>Login</h2>
@@ -20,7 +22,7 @@
         <input type="password" id="contraseña" name="contraseña" required>
     </div>
     <div class="button"><input type="submit" value="Login"></div>
-    <div class="button"><a href="registro.html">Registrarse</a></div>
+    <div class="button"><a href="registro">Registrarse</a></div>
 </form>
 
 <script>

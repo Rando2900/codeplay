@@ -38,20 +38,96 @@ router.get('/:id', async (req, res) => {
 // 🔹 Nueva Ruta para crear un juego (POST)
 router.post('/', async (req, res) => {
   try {
-    const { nombre, descripcion, html, css, javascript } = req.body;
+    console.log("📌 Datos crudos recibidos en el backend:", req.body); // <-- Verifica qué llega exactamente
 
-    // Validación de datos
-    if (!nombre || !html || !css || !javascript) {  // ✅ Ahora usa 'javascript'
-      return res.status(400).json({ error: 'Todos los campos son obligatorios' });
+    const { nombre, descripcion, html, css, javascript, usuario } = req.body;
+
+    if (!usuario) {
+      console.error("❌ ERROR: Usuario no recibido en el backend.");
+      return res.status(400).json({ error: 'Usuario no autenticado' });
     }
 
-    const nuevoJuego = new Juego({ nombre, descripcion, html, css, javascript });
+    // 🔥 Convertimos usuario a ObjectId para que coincida con el esquema
+    const usuarioId = new mongoose.Types.ObjectId(usuario);
+
+    const nuevoJuego = new Juego({ nombre, descripcion, html, css, javascript, usuario: usuarioId });
+
     await nuevoJuego.save();
-    res.status(201).json({ message: 'Juego guardado correctamente' });
+    console.log("✅ Juego guardado correctamente:", nuevoJuego);
+    res.status(201).json({ message: 'Juego guardado correctamente', juego: nuevoJuego });
   } catch (error) {
-    console.error('Error al guardar el juego:', error);
-    res.status(500).json({ error: 'Error al guardar el juego' });
+    console.error("❌ Error al guardar el juego en MongoDB:", error);
+    res.status(500).json({ error: 'Error al guardar el juego', detalle: error.message });
   }
 });
+
+// Obtener juegos creados por un usuario específico
+router.get('/user/:userId', async (req, res) => {
+  try {
+    const { userId } = req.params;
+
+    if (!mongoose.Types.ObjectId.isValid(userId)) {
+      return res.status(400).json({ error: 'ID de usuario inválido' });
+    }
+
+    const juegos = await Juego.find({ usuario: userId });
+    res.json(juegos);
+  } catch (error) {
+    console.error('Error al obtener juegos del usuario:', error);
+    res.status(500).json({ error: 'Error al obtener juegos' });
+  }
+});
+
+
+router.delete('/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ error: 'ID de juego inválido' });
+    }
+
+    // 🔥 Convertimos el ID a ObjectId antes de buscar en la base de datos
+    const objectId = new mongoose.Types.ObjectId(id);
+
+    const juego = await Juego.findByIdAndDelete(objectId);
+
+    if (!juego) {
+      return res.status(404).json({ error: 'Juego no encontrado' });
+    }
+
+    res.json({ message: 'Juego eliminado correctamente' });
+  } catch (error) {
+    console.error('Error al eliminar el juego:', error);
+    res.status(500).json({ error: 'Error al eliminar el juego' });
+  }
+});
+
+router.put('/:id', async (req, res) => {
+  const { id } = req.params;
+  const { nombre, descripcion, html, css, javascript } = req.body;
+
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ error: 'ID de juego inválido' });
+  }
+
+  try {
+      const updatedJuego = await Juego.findByIdAndUpdate(
+          id,
+          { nombre, descripcion, html, css, javascript },
+          { new: true }
+      );
+
+      if (!updatedJuego) {
+          return res.status(404).json({ error: 'Juego no encontrado' });
+      }
+
+      res.json({ message: 'Juego actualizado correctamente', juego: updatedJuego });
+  } catch (error) {
+      console.error('❌ Error al actualizar el juego:', error);
+      res.status(500).json({ error: 'Error al actualizar el juego' });
+  }
+});
+
 
 module.exports = router;

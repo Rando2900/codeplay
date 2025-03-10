@@ -8,8 +8,9 @@ const ProjectSchema = new mongoose.Schema({
     js: { type: String },
     userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
     createdAt: { type: Date, default: Date.now },
-    likes: { type: Number, default: 0 }, // 🔥 Nuevo campo para los likes
-    likedBy: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }]
+    likes: { type: Number, default: 0 },
+    likedBy: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
+    visibility: { type: String, enum: ['public', 'private'], default: 'public' } // ✅ Nuevo campo
 });
 
 

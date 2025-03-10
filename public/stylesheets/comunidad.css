@@ -398,7 +398,14 @@ main h1 {
     height: 1rem;
    }
    
-   
+   .project-title {
+    white-space: nowrap;       /* Evita que el texto se divida en varias líneas */
+    overflow: hidden;          /* Oculta el contenido que excede el tamaño */
+    text-overflow: ellipsis;   /* Añade los puntos suspensivos (...) */
+    max-width: 100%;           /* Limita el ancho máximo del título */
+    display: block;            /* Para que el texto se comporte como bloque */
+}
+
    
    
    
