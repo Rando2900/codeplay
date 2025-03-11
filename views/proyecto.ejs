@@ -1,0 +1,211 @@
+<script src="/javascripts/redirigelogin.js"></script>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Code Editor - Code-Play</title>
+  <link rel="stylesheet" href="stylesheets/editar.css">
+  <!-- CodeMirror CSS -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.12/codemirror.min.css">
+  <link rel="icon" href="/favicon.ico" type="image/x-icon">
+  <link rel="shortcut icon" href="/logo.ico" type="image/x-icon">
+</head>
+<body>
+
+<!-- Main Content -->
+<%- include('partials/header') %>
+
+<div style="text-align: center; margin-top: 20px;">
+  <button id="publish-button" class="styled-button">Publish Project</button>
+  <div style="text-align: center; margin-top: 20px;">
+    <input type="text" id="project-title" placeholder="Project Name" style="padding: 10px; margin-right: 10px;">
+
+    <br>
+    <br>
+    <select id="project-visibility">
+      <option value="public">Public</option>
+      <option value="private">Private</option>
+    </select>
+  </div>
+</div>
+
+<div class="container">
+  <!-- HTML Editor -->
+  <div class="editor" data-title="HTML">
+    <textarea id="html-editor"></textarea>
+  </div>
+
+  <!-- CSS Editor -->
+  <div class="editor" data-title="CSS">
+    <textarea id="css-editor"></textarea>
+  </div>
+
+  <!-- JavaScript Editor -->
+  <div class="editor" data-title="JavaScript">
+    <textarea id="js-editor"></textarea>
+  </div>
+
+  <!-- Preview -->
+  <div class="preview" data-title="Preview">
+    <iframe id="preview"></iframe>
+  </div>
+</div>
+
+<!-- CodeMirror JS -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.12/codemirror.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.12/mode/xml/xml.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.12/mode/css/css.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.12/mode/javascript/javascript.min.js"></script>
+
+<script src="./node_modules/codemirror/lib/codemirror.js"></script>
+<script src="browser.js"></script>
+
+<script>
+  // Initialize CodeMirror for HTML
+  const htmlEditor = CodeMirror.fromTextArea(document.getElementById('html-editor'), {
+    mode: 'text/html',
+    theme: 'default',
+    lineNumbers: true,
+    extraKeys: {
+      'Tab': 'emmetExpandAbbreviation',
+      'Esc': 'emmetResetAbbreviation',
+      'Enter': 'emmetInsertLineBreak'
+    }
+  });
+
+  // Initialize CodeMirror for CSS
+  const cssEditor = CodeMirror.fromTextArea(document.getElementById('css-editor'), {
+    mode: 'css',
+    theme: 'default',
+    lineNumbers: true,
+    extraKeys: {
+      'Tab': 'emmetExpandAbbreviation',
+      'Esc': 'emmetResetAbbreviation',
+      'Enter': 'emmetInsertLineBreak'
+    }
+  });
+
+  // Initialize CodeMirror for JavaScript
+  const jsEditor = CodeMirror.fromTextArea(document.getElementById('js-editor'), {
+    mode: 'javascript',
+    theme: 'default',
+    lineNumbers: true
+  });
+
+  // Live Preview Update
+  function updatePreview() {
+    const html = htmlEditor.getValue();
+    const css = `<style>${cssEditor.getValue()}</style>`;
+    const js = `<script>${jsEditor.getValue()}<\/script>`;
+    const iframe = document.getElementById('preview');
+    const doc = iframe.contentDocument || iframe.contentWindow.document;
+    doc.open();
+    doc.write(html + css + js);
+    doc.close();
+  }
+
+  // Listen for Editor Changes
+  htmlEditor.on('change', updatePreview);
+  cssEditor.on('change', updatePreview);
+  jsEditor.on('change', updatePreview);
+</script>
+
+<br>
+
+<style>
+  .styled-button {
+    background-color: #001a57;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+  }
+
+  .styled-button:hover {
+    background-color: #0056b3;
+    transform: scale(1.05);
+  }
+</style>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const userMenu = document.getElementById('userMenu'); 
+
+    // Check if session cookie exists
+    fetch('/users/session', { method: 'GET', credentials: 'same-origin' })
+      .then(response => response.json())
+      .then(data => {
+        if (!data.loggedIn) {
+          window.location.href = 'login';
+        } else {
+          userMenu.innerHTML = `
+            <div class="profile-menu">
+              <a href="perfil.html" style="text-decoration: none; color: inherit; cursor: pointer;">
+              <span>Hello, ${data.username}</span>
+              <button onclick="logout()">Logout</button>
+            </div>
+          `;
+        }
+      })
+      .catch(err => console.error('Error checking session:', err));
+  });
+
+  function logout() {
+    fetch('/users/logout', { method: 'POST', credentials: 'same-origin' })
+      .then(() => {
+        window.location.reload();
+      })
+      .catch(err => console.error('Error logging out:', err));
+  }
+
+  document.getElementById('publish-button').addEventListener('click', async () => {
+    const publishButton = document.getElementById('publish-button');
+    publishButton.disabled = true;
+
+    const title = document.getElementById('project-title').value || 'Untitled Project';
+    const visibility = document.getElementById('project-visibility').value;
+    const html = htmlEditor.getValue();
+    const css = cssEditor.getValue();
+    const js = jsEditor.getValue();
+
+    const data = { title, visibility, html, css, js };
+
+    try {
+      const response = await fetch('/api/projects', { 
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+      });
+
+      if (response.ok) {
+        alert('Project published successfully');
+        window.location.href = '/perfil';
+      } else {
+        const errorMessage = await response.text();
+        alert(`Error publishing project: ${errorMessage}`);
+      }
+    } catch (err) {
+      console.error('Error publishing project:', err);
+      alert('Error publishing project. Please try again.');
+    } finally {
+      publishButton.disabled = false;
+    }
+  });
+  document.querySelectorAll('.CodeMirror-scroll').forEach(element => {
+    element.style.paddingBottom = '1px';
+});
+
+
+</script>
+
+<br>
+<%- include('partials/footer') %>
+</div>
+</body>
+</html>

@@ -140,7 +140,9 @@
         alert('Error publishing game. Please try again.');
     }
 });
-
+document.querySelectorAll('.CodeMirror-scroll').forEach(element => {
+    element.style.paddingBottom = '1px';
+});
   </script>
 
   <style>

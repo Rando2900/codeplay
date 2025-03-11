@@ -141,6 +141,9 @@ const htmlEditor = CodeMirror.fromTextArea(document.getElementById('html-editor'
             }
         });
     });
+    document.querySelectorAll('.CodeMirror-scroll').forEach(element => {
+    element.style.paddingBottom = '1px';
+});
 </script>
 
 <%- include('partials/footer') %>
