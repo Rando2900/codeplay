@@ -7,12 +7,12 @@ const getProjects = async (req, res) => {
         // Solo traer proyectos públicos
         const projects = await Project.find({ visibility: 'public' }).populate('userId', 'usuario');
 
-        console.log('🟢 Proyectos públicos obtenidos:', projects); // Agregar log para depuración
+        console.log('🟢 Public projects obtained:', projects); // Agregar log para depuración
 
         res.json(projects);
     } catch (error) {
-        console.error('❌ Error al obtener proyectos:', error);
-        res.status(500).json({ error: 'Error al obtener proyectos' });
+        console.error('❌ Error getting projects:', error);
+        res.status(500).json({ error: 'Error getting projects' });
     }
 };
 
@@ -26,7 +26,7 @@ const getUserProjects = async (req, res) => {
         const requestingUserId = req.session.userId; // Usuario autenticado
 
         if (!mongoose.Types.ObjectId.isValid(userId)) {
-            return res.status(400).json({ error: 'ID de usuario inválido' });
+            return res.status(400).json({ error: 'Invalid user ID' });
         }
 
         let query = { userId: new mongoose.Types.ObjectId(userId) };
@@ -37,11 +37,11 @@ const getUserProjects = async (req, res) => {
         }
 
         const projects = await Project.find(query).populate('userId', 'username');
-        console.log("✅ Proyectos filtrados:", projects);
+        console.log("✅ Leaked projects:", projects);
         res.status(200).json(projects);
     } catch (err) {
-        console.error('❌ Error al obtener proyectos del usuario:', err);
-        res.status(500).json({ error: 'Error al obtener proyectos del usuario' });
+        console.error('❌ Error getting projects from user:', err);
+        res.status(500).json({ error: 'Error getting projects from user' });
     }
 };
 
@@ -53,29 +53,29 @@ const getProjectById = async (req, res) => {
     try {
         const project = await Project.findById(req.params.id).populate('userId', 'username');
         if (!project) {
-            return res.status(404).json({ error: 'Proyecto no encontrado.' });
+            return res.status(404).json({ error: 'Project not found.' });
         }
         res.status(200).json(project);
     } catch (error) {
-        console.error('Error al obtener el proyecto:', error);
-        res.status(500).json({ error: 'Error al obtener el proyecto.' });
+        console.error('Error getting project:', error);
+        res.status(500).json({ error: 'Error getting project.' });
     }
 };
 
 // Crear un proyecto
 const createProject = async (req, res) => {
     try {
-        console.log('📌 Recibida solicitud para crear proyecto:', req.body.title); // ✅ Ver si se llama dos veces
+        console.log('📌 Request received to create project:', req.body.title); // ✅ Ver si se llama dos veces
 
         const { title, html, css, js, visibility } = req.body;
 
         if (!title) {
-            return res.status(400).json({ error: "El título es obligatorio" });
+            return res.status(400).json({ error: "Title is required" });
         }
 
         const userId = req.session.userId;
         if (!userId) {
-            return res.status(403).json({ error: "No estás autorizado para realizar esta acción." });
+            return res.status(403).json({ error: "You are not authorized to perform this action." });
         }
 
         const project = new Project({
@@ -88,12 +88,12 @@ const createProject = async (req, res) => {
         });
 
         await project.save();
-        console.log('✅ Proyecto guardado:', project._id);
+        console.log('✅ Saved project:', project._id);
 
-        res.status(200).json({ message: "Proyecto guardado con éxito.", project });
+        res.status(200).json({ message: "Project saved successfully.", project });
     } catch (err) {
-        console.error('❌ Error al guardar el proyecto:', err);
-        res.status(500).json({ error: "Error interno al guardar el proyecto." });
+        console.error('❌ Error saving project:', err);
+        res.status(500).json({ error: "Internal error saving project." });
     }
 };
 
@@ -102,7 +102,7 @@ const getProjectsByQuery = async (req, res) => {
     try {
         const query = req.query.query;
         if (!query) {
-            return res.status(400).json({ error: "No se proporcionó un término de búsqueda." });
+            return res.status(400).json({ error: "No search term was provided." });
         }
 
         // 🔒 Buscar solo proyectos públicos que coincidan con el término de búsqueda
@@ -113,8 +113,8 @@ const getProjectsByQuery = async (req, res) => {
 
         res.json(proyectos);
     } catch (error) {
-        console.error("Error al obtener proyectos:", error);
-        res.status(500).json({ error: "Error al obtener proyectos." });
+        console.error("Error getting projects:", error);
+        res.status(500).json({ error: "Error getting projects." });
     }
 };
 
@@ -127,17 +127,17 @@ const updateProject = async (req, res) => {
         const userId = req.session.userId; // Usuario autenticado
 
         if (!mongoose.Types.ObjectId.isValid(projectId)) {
-            return res.status(400).json({ error: "ID de proyecto inválido" });
+            return res.status(400).json({ error: "Invalid project ID" });
         }
 
         // Verificar si el usuario es el dueño del proyecto
         const project = await Project.findById(projectId);
         if (!project) {
-            return res.status(404).json({ error: "Proyecto no encontrado" });
+            return res.status(404).json({ error: "Project not found" });
         }
 
         if (String(project.userId) !== String(userId)) {
-            return res.status(403).json({ error: "No tienes permisos para editar este proyecto" });
+            return res.status(403).json({ error: "You do not have permissions to edit this project" });
         }
 
         // Actualizar los datos del proyecto
@@ -147,12 +147,12 @@ const updateProject = async (req, res) => {
             { new: true }
         );
 
-        console.log(`✅ Proyecto actualizado: ${updatedProject.title} - Nueva Visibilidad: ${updatedProject.visibility}`);
+        console.log(`✅ Updated project: ${updatedProject.title} - New Visibility: ${updatedProject.visibility}`);
 
-        res.json({ message: "Proyecto actualizado con éxito", project: updatedProject });
+        res.json({ message: "Project successfully updated", project: updatedProject });
     } catch (err) {
-        console.error("❌ Error al actualizar proyecto:", err);
-        res.status(500).json({ error: "Error al actualizar el proyecto" });
+        console.error("❌ Error updating project:", err);
+        res.status(500).json({ error: "Error updating project" });
     }
 };
 
@@ -165,13 +165,13 @@ const deleteProject = async (req, res) => {
         const deletedProject = await Project.findByIdAndDelete(id);
 
         if (!deletedProject) {
-            return res.status(404).json({ error: "Proyecto no encontrado." });
+            return res.status(404).json({ error: "Project not found." });
         }
 
-        res.json({ message: "Proyecto eliminado con éxito." });
+        res.json({ message: "Project successfully deleted." });
     } catch (error) {
-        console.error("Error al eliminar el proyecto:", error);
-        res.status(500).json({ error: "Error interno del servidor." });
+        console.error("Error deleting project:", error);
+        res.status(500).json({ error: "Error deleting project." });
     }
 };
 

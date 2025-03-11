@@ -88,25 +88,25 @@ router.put('/:id', async (req, res) => {
 router.delete('/:id', async (req, res) => {
     try {
         const anotacionEliminada = await Anotacion.findByIdAndDelete(req.params.id);
-        res.json({ message: "Anotación eliminada con éxito." });
+        res.json({ message: "Annotation successfully deleted." });
     } catch (error) {
-        res.status(500).json({ error: "Error al eliminar la anotación." });
+        res.status(500).json({ error: "Error deleting annotation." });
     }
 });
 router.get('/:id', async (req, res) => {
-    console.log("🟡 ID recibido en el backend:", req.params.id); // <-- NUEVO LOG
+    console.log("🟡 ID received in the backend:", req.params.id); // <-- NUEVO LOG
 
     try {
         const anotacion = await Anotacion.findById(req.params.id);
 
         if (!anotacion) {
-            return res.status(404).json({ error: "Anotación no encontrada." });
+            return res.status(404).json({ error: "Annotation not found." });
         }
 
         res.json(anotacion);
     } catch (error) {
-        console.error('❌ Error al obtener la anotación:', error.message);
-        res.status(500).json({ error: "Error al obtener la anotación." });
+        console.error('❌ Error getting annotation:', error.message);
+        res.status(500).json({ error: "Error getting annotation." });
     }
 });
 

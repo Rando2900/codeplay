@@ -7,17 +7,17 @@ document.addEventListener('DOMContentLoaded', () => {
             if (!data.loggedIn) {
                 // Si no hay usuario logueado, aseguramos que se muestren los botones de login
                 userMenu.innerHTML = `
-                    <a href="/login"><button>Iniciar Sesión</button></a>
-                    <a href="/registro"><button>Registrarse</button></a>
+                    <a href="/login"><button>Login</button></a>
+                    <a href="/registro"><button>Register</button></a>
                 `;
             } else {
                 // Si hay usuario logueado, mostramos el menú de perfil
                 userMenu.innerHTML = `
                     <div class="profile-menu">
                         <a href="/perfil" style="text-decoration: none; color: inherit; cursor: pointer;">
-                            <span>Hola, ${data.username}</span>
+                            <span>Hi, ${data.username}</span>
                         </a>
-                        <button onclick="logout()">Cerrar Sesión</button>
+                        <button onclick="logout()">Sign Out</button>
                     </div>
                 `;
             }

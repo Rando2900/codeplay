@@ -14,12 +14,12 @@ const registerUser = async (req, res) => {
         const { username, password } = req.body;
 
         if (!username || !password) {
-            return res.status(400).json({ message: 'Por favor, completa todos los campos.' });
+            return res.status(400).json({ message: 'Please complete all fields.' });
         }
 
         const existingUser = await User.findOne({ usuario: username });
         if (existingUser) {
-            return res.status(400).json({ message: 'El nombre de usuario ya está en uso.' });
+            return res.status(400).json({ message: 'The username is already in use.' });
         }
 
         const salt = await bcrypt.genSalt(10);    
@@ -33,11 +33,11 @@ const registerUser = async (req, res) => {
         await newUser.save();
 
         // ✅ Redirigir al login tras registro exitoso
-        res.status(200).json({ message: 'Usuario registrado con éxito.', redirect: '/login' });
+        res.status(200).json({ message: 'User registered successfully.', redirect: '/login' });
 
     } catch (err) {
-        console.error('Error al registrar el usuario:', err);
-        res.status(500).json({ message: 'Hubo un error en el registro.' });
+        console.error('Error registering user:', err);
+        res.status(500).json({ message: 'There was an error in registration.' });
     }
 };
 
@@ -49,30 +49,30 @@ const loginUser = async (req, res) => {
     const { usuario, contraseña } = req.body;
 
     if (!usuario || !contraseña) {
-        return res.status(400).send('El nombre de usuario y la contraseña son obligatorios.');
+        return res.status(400).send('Username and password are required.');
     }
 
     try {
         const user = await User.findOne({ usuario });
 
         if (!user) {
-            return res.status(401).send('Credenciales incorrectas.');
+            return res.status(401).send('Incorrect credentials.');
         }
 
         // Verificar la contraseña cifrada
         const isMatch = await bcrypt.compare(contraseña, user.contraseña);
         if (!isMatch) {
-            return res.status(401).send('Credenciales incorrectas.');
+            return res.status(401).send('Incorrect credentials.');
         }
 
         req.session.userId = user._id; // Guardamos solo el ID del usuario en la sesión
         req.session.username = user.usuario;
 
-        res.status(200).json({ message: 'Login exitoso', redirect: '/' });
+        res.status(200).json({ message: 'Successful login', redirect: '/' });
 
     } catch (err) {
-        console.error('Error al iniciar sesión:', err);
-        res.status(500).send('Error interno del servidor.');
+        console.error('Error logging in:', err);
+        res.status(500).send('Internal Server Error.');
     }
 };
 
@@ -94,11 +94,11 @@ const checkSession = (req, res) => {
 const logoutUser = (req, res) => {
     req.session.destroy((err) => {
         if (err) {
-            console.error('Error al destruir la sesión:', err);
-            return res.status(500).send('Error al cerrar sesión.');
+            console.error('Error destroying session:', err);
+            return res.status(500).send('Error logging out.');
         }
         res.clearCookie('loggedInUser'); // Limpia la cookie
-        res.status(200).send('Sesión cerrada con éxito.');
+        res.status(200).send('Session closed successfully.');
     });
 };
 
@@ -113,19 +113,19 @@ const publicarProyecto = async (req, res) => {
     try {
         const nuevoProyecto = new Proyecto({ usuario, html, css, js });
         await nuevoProyecto.save();
-        res.status(200).json({ mensaje: 'Proyecto publicado con éxito' });
+        res.status(200).json({ mensaje: 'Successfully published project' });
     } catch (error) {
-        console.error('Error al publicar el proyecto:', error);
-        res.status(500).json({ error: 'Error interno al guardar el proyecto' });
+        console.error('Error publishing project:', error);
+        res.status(500).json({ error: 'Internal error saving project' });
     }
 }
 
 const verificarCookie = (req, res) => {
     const miCookie = req.signedCookies.mi_cookie; // Accede a cookies firmadas
     if (!miCookie) {
-        return res.status(400).send('Cookie inválida o ausente');
+        return res.status(400).send('Invalid or missing cookie');
     }
-    res.status(200).send(`Cookie válida: ${miCookie}`);
+    res.status(200).send(`Valid cookie: ${miCookie}`);
 };
 
 const getUserById = async (req, res) => {
@@ -134,18 +134,18 @@ const getUserById = async (req, res) => {
 
         // Verificar si el ID es válido en MongoDB
         if (!mongoose.Types.ObjectId.isValid(userId)) {
-            return res.status(400).json({ error: 'ID de usuario inválido' });
+            return res.status(400).json({ error: 'Invalid user ID' });
         }
 
         const user = await User.findById(userId);
         if (!user) {
-            return res.status(404).json({ error: 'Usuario no encontrado' });
+            return res.status(404).json({ error: 'User not found' });
         }
 
         res.json(user);
     } catch (error) {
-        console.error('Error al obtener usuario:', error);
-        res.status(500).json({ error: 'Error del servidor' });
+        console.error('Error getting user:', error);
+        res.status(500).json({ error: 'Server error' });
     }
 };
 
@@ -154,7 +154,7 @@ const getUsersByQuery = async (req, res) => {
     try {
         const query = req.query.query; // Obtener el término de búsqueda
         if (!query || typeof query !== "string") {
-            return res.status(400).json({ error: 'Consulta de búsqueda inválida' });
+            return res.status(400).json({ error: 'Invalid search query' });
         }
 
         // 📌 Buscar usuarios por su nombre de usuario, asegurando que NO se trate como un ID
@@ -162,8 +162,8 @@ const getUsersByQuery = async (req, res) => {
 
         res.json(users.length ? users : []);
     } catch (error) {
-        console.error('Error al obtener usuarios:', error);
-        res.status(500).json({ error: 'Error del servidor' });
+        console.error('Error getting users:', error);
+        res.status(500).json({ error: 'Server error' });
     }
 };
 
@@ -173,18 +173,18 @@ const updateProfile = async (req, res) => {
         const userId = req.session.userId;
 
         if (!userId) {
-            return res.status(401).json({ error: 'No autorizado' });
+            return res.status(401).json({ error: 'Unauthorized' });
         }
 
         const user = await User.findById(userId);
         if (!user) {
-            return res.status(404).json({ error: 'Usuario no encontrado' });
+            return res.status(404).json({ error: 'User not found' });
         }
         // 🔹 Verificar si el nuevo nombre de usuario ya está en uso
         if (usuario && usuario !== user.usuario) {
             const usuarioExistente = await User.findOne({ usuario });
             if (usuarioExistente) {
-                return res.status(400).json({ error: 'El nombre de usuario ya está en uso.' });
+                return res.status(400).json({ error: 'The username is already in use.' });
             }
             user.usuario = usuario; // ✅ Actualizar el nombre de usuario si no está en uso
         }
@@ -197,17 +197,17 @@ const updateProfile = async (req, res) => {
 
         req.session.destroy((err) => {
             if (err) {
-                console.error('❌ Error al cerrar sesión:', err);
-                return res.status(500).json({ error: 'Error al cerrar sesión.' });
+                console.error('❌ Error logging out:', err);
+                return res.status(500).json({ error: 'Error logging out.' });
             }
 
             res.clearCookie('loggedInUser');
-            res.status(200).json({ message: 'Perfil actualizado correctamente.', redirect: '/' });
+            res.status(200).json({ message: 'Profile updated successfully.', redirect: '/' });
         });
 
     } catch (error) {
-        console.error('Error al actualizar perfil:', error);
-        res.status(500).json({ error: 'Error interno del servidor' });
+        console.error('Error updating profile:', error);
+        res.status(500).json({ error: 'Internal Server Error' });
     }
 };
 

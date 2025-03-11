@@ -12,8 +12,8 @@
     <!-- Sidebar -->
     <div class="result">
         <div class="sidebar">
-            <h2>Filtrar por</h2>
-            <a href="#" onclick="setFilter('proyectos')">Proyectos</a>
+            <h2>Filter by</h2>
+            <a href="#" onclick="setFilter('proyectos')">Projects</a>
             <a href="#" onclick="setFilter('usuarios')">Usuarios</a>
         </div>
         
@@ -24,7 +24,7 @@
             </div>
             
             <div class="results" id="results-container">
-                <p>Introduce un término de búsqueda...</p>
+                <p>Enter a search term...</p>
             </div>
         </div>
     </div>
@@ -80,75 +80,54 @@ function displayResults(data) {
         return;
     }
 
-    data.forEach(project => {
-        const card = document.createElement('div');
-        card.classList.add('project-card');
+    data.forEach(item => {
+        const div = document.createElement('div');
 
-        // ➤ Previsualización del proyecto en iframe
-        const iframe = document.createElement('iframe');
-        iframe.srcdoc = `
-            <!DOCTYPE html>
-            <html lang="en">
-            <head>
-                <style>${project.css}</style>
-            </head>
-            <body>
-                ${project.html}
-                <script> ${project.js.replace(/<\/script>/g, "<\\/script>")} <\/script>
-            </body>
-            </html>
+        if (currentFilter === "usuarios") {
+            div.classList.add('user-card-minimal');
+            div.innerHTML = `
+            <div class="user-info">
+                <img src="/images/default-avatar.png" class="user-avatar">
+                <h3 class="user-name">${item.usuario}</h3>
+                <button class="btn ver-perfil" data-id="${item._id}">View Profile</button>
+            </div>
+
+            `;
+        } else {
+            const div = document.createElement('div');
+            div.classList.add('project-card');
+            div.innerHTML = `
+            <h3 class="project-title">${item.title}</h3>
+            <div class="project-preview">
+                <iframe class="project-frame"></iframe>
+            </div>
+            <p class="likes">❤️ ${item.likes}</p>
+            <button class="btn ver-proyecto" data-id="${item._id}">See Project</button>
         `;
-        iframe.width = "100%";
-        iframe.height = "200px";
-        iframe.style.border = "1px solid #ccc";
 
-        // ➤ Título del proyecto
-        const titleElement = document.createElement('h2');
-        titleElement.textContent = project.title || 'Proyecto Sin Título';
+            resultsContainer.appendChild(div);
 
-        // ➤ Botón "Ver Proyecto"
-        const viewButton = document.createElement('button');
-        viewButton.textContent = 'Ver Proyecto';
-        viewButton.addEventListener('click', () => window.location.href = `/project?id=${project._id}`);
+            // Insertar la vista previa en el iframe
+            const iframe = div.querySelector('.project-frame');
+            const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+            iframeDoc.open();
+            iframeDoc.write(`
+                <html>
+                    <head>
+                        <meta charset="UTF-8">
+                        <style>${item.css}</style>
+                    </head>
+                    <body>
+                        ${item.html}
+                        <script>${item.js}<\/script>
+                    </body>
+                </html>
+            `);
+            iframeDoc.close();
+        }
 
-        // ➤ Botón de Like
-        const likeButton = document.createElement('button');
-        likeButton.classList.add('heart-button');
-        likeButton.textContent = project.liked ? `❤️ ${project.likes}` : `🤍 ${project.likes}`;
-        likeButton.addEventListener('click', async () => {
-            try {
-                const response = await fetch(`/api/projects/${project._id}/like`, { method: 'POST', credentials: 'include' });
-                if (!response.ok) throw new Error('Error al actualizar like');
-
-                const data = await response.json();
-                project.likes = data.likes;
-                project.liked = data.liked;
-                likeButton.textContent = data.liked ? `❤️ ${data.likes}` : `🤍 ${data.likes}`;
-            } catch (error) {
-                console.error('Error:', error);
-            }
-        });
-
-        // ➤ Creador del proyecto
-        const creatorContainer = document.createElement('div');
-        creatorContainer.classList.add('creator-container');
-
-        const creatorName = document.createElement('p');
-        creatorName.classList.add('project-creator');
-        creatorName.innerHTML = `Creado por: <button class='creator-button' onclick="window.location.href='perfil_usuario?id=${project.userId?._id}'">${project.userId?.usuario || 'Anónimo'}</button>`;
-
-        creatorContainer.appendChild(creatorName);
-
-        // ➤ Agregar elementos al contenedor principal
-        card.appendChild(titleElement);
-        card.appendChild(iframe);
-        card.appendChild(viewButton);
-        card.appendChild(likeButton);
-        card.appendChild(creatorContainer);
-
-        resultsContainer.appendChild(card);
+        resultsContainer.appendChild(div);
     });
-
 
     // Evento para ver perfil de usuario
     document.querySelectorAll('.ver-perfil').forEach(button => {

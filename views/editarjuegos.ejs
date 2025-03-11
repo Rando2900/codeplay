@@ -15,12 +15,12 @@
 
   <div style="text-align: center; margin-top: 20px;">   
     <div style="text-align: center; margin-top: 20px;">
-      <input type="text" id="game-title" placeholder="Nombre del Juego" style="padding: 10px; margin-right: 10px;">
+      <input type="text" id="game-title" placeholder="Game name" style="padding: 10px; margin-right: 10px;">
       <br>
-      <input type="text" id="game-description" placeholder="Descripción del Juego" style="padding: 10px; margin-top: 10px;">
+      <input type="text" id="game-description" placeholder="Game Description" style="padding: 10px; margin-top: 10px;">
       <br>
       <br><br>
-      <button id="publish-button" class="styled-button">Publicar Juego</button>
+      <button id="publish-button" class="styled-button">Publish Game</button>
     </div>
   </div>
 
@@ -99,7 +99,7 @@
 
     document.getElementById('publish-button').addEventListener('click', async () => {
     const nombre = document.getElementById('game-title').value.trim() || 'Juego Sin Nombre';
-    const descripcion = document.getElementById('game-description').value.trim() || 'Sin descripción';
+    const descripcion = document.getElementById('game-description').value.trim() || 'No description';
     const html = htmlEditor.getValue().trim();
     const css = cssEditor.getValue().trim();
     const javascript = jsEditor.getValue().trim();
@@ -109,18 +109,18 @@
         const sessionResponse = await fetch('/users/session');
         const sessionData = await sessionResponse.json();
 
-        console.log("📌 Datos de sesión obtenidos:", sessionData); // <-- Verificar qué llega aquí
+        console.log("📌 Session data obtained:", sessionData); // <-- Verificar qué llega aquí
 
         if (!sessionData.loggedIn) {
-            alert('Debes iniciar sesión para publicar un juego.');
+            alert('You must be logged in to post a game.');
             return;
         }
 
         const usuario = sessionData.userId; // ID del usuario
-        console.log("📌 ID de usuario antes de enviar:", usuario); // <-- Verificar que el ID no sea undefined
+        console.log("📌 User ID before sending:", usuario); // <-- Verificar que el ID no sea undefined
 
         const data = { nombre, descripcion, html, css, javascript, usuario };
-        console.log("📌 Enviando datos al servidor:", data); // <-- Verificar qué datos se están enviando
+        console.log("📌 Sending data to the server:", data); // <-- Verificar qué datos se están enviando
 
         const response = await fetch('/api/juegos', {
             method: 'POST',
@@ -129,15 +129,15 @@
         });
 
         if (response.ok) {
-            alert('Juego publicado con éxito');
+            alert('Game successfully published');
         } else {
             const errorMessage = await response.text();
-            console.error(`❌ Error del servidor: ${errorMessage}`);
-            alert(`Error al publicar el juego: ${errorMessage}`);
+            console.error(`❌ Server error: ${errorMessage}`);
+            alert(`Error publishing game: ${errorMessage}`);
         }
     } catch (err) {
-        console.error('❌ Error al publicar el juego:', err);
-        alert('Error al publicar el juego. Intenta nuevamente.');
+        console.error('❌ Error publishing game:', err);
+        alert('Error publishing game. Please try again.');
     }
 });
 
