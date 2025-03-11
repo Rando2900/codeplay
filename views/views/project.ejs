@@ -1,0 +1,173 @@
+<script src="/javascripts/redirigelogin.js"></script>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project Editor - Code-Play</title>
+    <link rel="stylesheet" href="stylesheets/project.css">
+    <!-- CodeMirror CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.10/codemirror.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.10/theme/material-darker.min.css">
+    <!-- Emmet CSS/JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/emmet-codemirror/1.5.0/emmet.min.js"></script>
+    <link rel="icon" href="/favicon.ico" type="image/x-icon">
+    <link rel="shortcut icon" href="/logo.ico" type="image/x-icon">
+</head>
+<body>
+
+<!-- Main Content -->
+<%- include('partials/header') %>
+<button id="fork-button">Fork</button>
+
+<main>
+    <!-- Editors Container -->
+    <div class="container" id="editors-container">
+        <div class="editor">
+            <h3>HTML</h3>
+            <textarea id="html-editor"></textarea>
+        </div>
+        <div class="editor">
+            <h3>CSS</h3>
+            <textarea id="css-editor"></textarea>
+        </div>
+        <div class="editor">
+            <h3>JavaScript</h3>
+            <textarea id="js-editor"></textarea>
+        </div>
+    </div>
+</main>        
+
+<!-- Preview Container -->
+<div id="preview-container">
+    <h2>Preview</h2>
+    <iframe id="preview" style="width: 100%; height: 500px; border: 1px solid #ccc;" title="Project Preview"></iframe>
+</div>
+
+<!-- CodeMirror JS -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.12/codemirror.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.12/mode/xml/xml.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.12/mode/css/css.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.12/mode/javascript/javascript.min.js"></script>
+<script src="./node_modules/codemirror/lib/codemirror.js"></script>
+<script src="browser.js"></script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', async () => {
+        const urlParams = new URLSearchParams(window.location.search);
+        const projectId = urlParams.get('id');
+
+        // Element References
+        const htmlTextarea = document.getElementById('html-editor');
+        const cssTextarea = document.getElementById('css-editor');
+        const jsTextarea = document.getElementById('js-editor');
+        const iframe = document.getElementById('preview');
+
+        // Initialize CodeMirror Editors with Emmet
+        const htmlEditor = CodeMirror.fromTextArea(htmlTextarea, {
+            mode: 'text/html',
+            theme: 'default',
+            lineNumbers: true,
+            extraKeys: {
+                'Tab': 'emmetExpandAbbreviation',
+                'Ctrl-Space': 'autocomplete'
+            }
+        });
+
+        const cssEditor = CodeMirror.fromTextArea(cssTextarea, {
+            mode: 'css',
+            theme: 'default',
+            lineNumbers: true,
+            extraKeys: {
+                'Tab': 'emmetExpandAbbreviation',
+                'Ctrl-Space': 'autocomplete'
+            }
+        });
+
+        const jsEditor = CodeMirror.fromTextArea(jsTextarea, {
+            mode: 'javascript',
+            theme: 'default',
+            lineNumbers: true
+        });
+
+        try {
+            // Load Project Data
+            const response = await fetch(`/api/projects/${projectId}`);
+            if (!response.ok) {
+                throw new Error(`Error loading project: ${response.status}`);
+            }
+
+            const project = await response.json();
+            htmlEditor.setValue(project.html || ''); // Load HTML
+            cssEditor.setValue(project.css || '');   // Load CSS
+            jsEditor.setValue(project.js || '');     // Load JS
+
+            // Function to Update Preview
+            const updatePreview = () => {
+                const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+                iframeDoc.open();
+                iframeDoc.write(`
+                    <!DOCTYPE html>
+                    <html lang="en">
+                    <head>
+                        <style>${cssEditor.getValue()}</style>
+                    </head>
+                    <body>
+                        ${htmlEditor.getValue()}
+                        <script>${jsEditor.getValue()}<\/script>
+                    </body>
+                    </html>
+                `);
+                iframeDoc.close();
+            };
+
+            // Initial Preview Update
+            updatePreview();
+
+            // Auto Update Preview on Change
+            htmlEditor.on('change', updatePreview);
+            cssEditor.on('change', updatePreview);
+            jsEditor.on('change', updatePreview);
+        } catch (error) {
+            console.error('Error loading project:', error);
+            iframe.contentDocument.body.innerHTML = '<p>Error loading project.</p>';
+        }
+    });
+
+    // Fork Functionality
+    document.addEventListener('DOMContentLoaded', () => {
+        const forkButton = document.getElementById('fork-button');
+        
+        if (forkButton) {
+            forkButton.addEventListener('click', async () => {
+                try {
+                    const projectId = new URLSearchParams(window.location.search).get('id');
+                    if (!projectId) {
+                        alert('Project ID not found');
+                        return;
+                    }
+
+                    const response = await fetch(`/api/projects/${projectId}/fork`, { 
+                        method: 'POST', 
+                        credentials: 'include' 
+                    });
+
+                    if (!response.ok) throw new Error('Error forking the project');
+
+                    alert('Project forked successfully!');
+                } catch (error) {
+                    console.error('Error:', error);
+                }
+            });
+        }
+    });
+    document.querySelectorAll('.CodeMirror-scroll').forEach(element => {
+    element.style.paddingBottom = '1px';
+});
+</script>
+
+<br>
+<%- include('partials/footer') %>
+</script>
+</body>
+</html>

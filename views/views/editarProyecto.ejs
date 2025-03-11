@@ -1,0 +1,169 @@
+<script src="/javascripts/redirigelogin.js"></script>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Edit Project - Code-Play</title>
+  <link rel="stylesheet" href="stylesheets/editar.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.12/codemirror.min.css">
+  <link rel="icon" href="/favicon.ico" type="image/x-icon">
+  <link rel="shortcut icon" href="/logo.ico" type="image/x-icon">
+</head>
+<body>
+
+<%- include('partials/header') %>
+
+<div style="text-align: center; margin-top: 20px;">
+    <button id="update-project" class="styled-button">Update Project</button>
+    <div style="text-align: center; margin-top: 20px;">
+        <input type="text" id="project-title" placeholder="Project Name" style="padding: 10px; margin-right: 10px;">
+        <select id="project-visibility" style="padding: 10px;">
+            <option value="public">Public</option>
+            <option value="private">Private</option>
+        </select>
+    </div>
+</div>
+
+<div class="container">
+    <div class="editor" data-title="HTML">
+        <textarea id="html-editor"></textarea>
+    </div>
+    <div class="editor" data-title="CSS">
+        <textarea id="css-editor"></textarea>
+    </div>
+    <div class="editor" data-title="JavaScript">
+        <textarea id="js-editor"></textarea>
+    </div>
+    <div class="preview" data-title="Preview">
+        <iframe id="preview"></iframe>
+    </div>
+</div>
+
+<style>
+  .styled-button {
+    background-color: #001a57;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+  }
+
+  .styled-button:hover {
+    background-color: #0056b3;
+    transform: scale(1.05);
+  }
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.12/codemirror.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.12/mode/xml/xml.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.12/mode/css/css.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.12/mode/javascript/javascript.min.js"></script>
+
+<!-- Código para inicializar CodeMirror y actualizar la vista previa -->
+<script src="./node_modules/codemirror/lib/codemirror.js"></script>
+<script src="browser.js"></script>
+<script>
+  // Inicializar CodeMirror para HTML
+const htmlEditor = CodeMirror.fromTextArea(document.getElementById('html-editor'), {
+      mode: 'text/html',
+      theme: 'default',
+      lineNumbers: true,
+      extraKeys: {
+        'Tab': 'emmetExpandAbbreviation',
+        'Esc': 'emmetResetAbbreviation',
+        'Enter': 'emmetInsertLineBreak'
+    }
+    });
+
+    // Inicializar CodeMirror para CSS
+    const cssEditor = CodeMirror.fromTextArea(document.getElementById('css-editor'), {
+      mode: 'css',
+      theme: 'default',
+      lineNumbers: true,
+      extraKeys: {
+        'Tab': 'emmetExpandAbbreviation',
+        'Esc': 'emmetResetAbbreviation',
+        'Enter': 'emmetInsertLineBreak'
+    }
+    });
+
+    // Inicializar CodeMirror para JavaScript
+    const jsEditor = CodeMirror.fromTextArea(document.getElementById('js-editor'), {
+      mode: 'javascript',
+      theme: 'default',
+      lineNumbers: true
+    });
+
+    function updatePreview() {
+        const html = htmlEditor.getValue();
+        const css = `<style>${cssEditor.getValue()}</style>`;
+        const js = `<script>${jsEditor.getValue()}<\/script>`;
+        const iframe = document.getElementById('preview');
+        const doc = iframe.contentDocument || iframe.contentWindow.document;
+        doc.open();
+        doc.write(html + css + js);
+        doc.close();
+    }
+    htmlEditor.on('change', updatePreview);
+    cssEditor.on('change', updatePreview);
+    jsEditor.on('change', updatePreview);
+
+    document.addEventListener('DOMContentLoaded', async () => {
+        const urlParams = new URLSearchParams(window.location.search);
+        const projectId = urlParams.get('id');
+        if (!projectId) {
+            alert("Error: Project not found");
+            window.location.href = '/perfil';
+            return;
+        }
+
+        try {
+            const response = await fetch(`/api/projects/${projectId}`);
+            const project = await response.json();
+            document.getElementById('project-title').value = project.title;
+            document.getElementById('project-visibility').value = project.visibility || "public"; 
+            htmlEditor.setValue(project.html);
+            cssEditor.setValue(project.css);
+            jsEditor.setValue(project.js);
+        } catch (error) {
+            console.error("❌ Error loading project", error);
+        }
+
+        document.getElementById('update-project').addEventListener('click', async () => {
+            const projectId = new URLSearchParams(window.location.search).get('id');
+            const updatedProject = {
+                title: document.getElementById('project-title').value,
+                visibility: document.getElementById('project-visibility').value,
+                html: htmlEditor.getValue(),
+                css: cssEditor.getValue(),
+                js: jsEditor.getValue()
+            };
+
+            try {
+                const response = await fetch(`/api/projects/${projectId}`, {
+                    method: "PUT",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(updatedProject)
+                });
+
+                if (!response.ok) throw new Error("Error updating the project");
+
+                alert("✅ Project successfully updated");
+                
+                window.location.href = "/comunidad";
+            } catch (error) {
+                console.error("❌ Error updating the project", error);
+            }
+        });
+    });
+    document.querySelectorAll('.CodeMirror-scroll').forEach(element => {
+    element.style.paddingBottom = '1px';
+});
+</script>
+
+<%- include('partials/footer') %>
+</body>
+</html>

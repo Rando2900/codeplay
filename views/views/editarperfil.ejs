@@ -1,0 +1,81 @@
+<script src="/javascripts/redirigelogin.js"></script>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="stylesheets/editarperfil.css">
+    <title>Edit Profile - Code-Play</title>
+    <link rel="icon" href="/favicon.ico" type="image/x-icon">
+    <link rel="shortcut icon" href="/logo.ico" type="image/x-icon">
+</head>
+<body>
+  <!-- Main content of the page -->
+  <%- include('partials/header') %>
+
+  <main class="profile-edit-container">
+    <h1>Edit Profile</h1>
+    <form id="edit-profile-form">
+        <div class="form-section">
+            <label for="usuario">Username</label>
+            <input type="text" id="usuario" name="usuario" placeholder="Enter your new username" required>
+        </div>
+        <div class="form-section">
+            <label for="contraseña">Password</label>
+            <input type="password" id="contraseña" name="contraseña" placeholder="Enter your new password" required>
+        </div>
+        <div class="form-buttons">
+            <button type="submit">Save Changes</button>
+            <button type="button" onclick="window.location.href='perfil'">Cancel</button>
+        </div>
+    </form>        
+</main>
+
+<%- include('partials/footer') %>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        fetch('/users/session', { method: 'GET', credentials: 'same-origin' })
+            .then(response => response.json())
+            .then(data => {
+                if (!data.loggedIn) {
+                    window.location.href = '/login'; // 🔥 Redirect to the correct login route
+                }
+            })
+            .catch(err => console.error('❌ Error checking session:', err));
+    });
+
+    document.getElementById('edit-profile-form').addEventListener('submit', async (event) => {
+    event.preventDefault();
+
+    const formData = new FormData(event.target);
+    const data = {
+        usuario: formData.get('usuario'),
+        contraseña: formData.get('contraseña')
+    };
+
+    try {
+        const response = await fetch('/api/users/updateProfile', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' }, 
+            body: JSON.stringify(data)
+        });
+
+        const result = await response.json();
+
+        if (response.ok) {
+            alert('✅ Perfil actualizado correctamente.');
+            window.location.href = result.redirect;  
+        } else {
+            alert('❌ Error al actualizar perfil: ' + (result.message || 'Intenta nuevamente.'));
+        }
+    } catch (error) {
+        alert('❌ Error en la solicitud: ' + error.message);
+    }
+});
+
+
+</script>
+
+</body>
+</html>

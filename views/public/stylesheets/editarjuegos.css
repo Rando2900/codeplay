@@ -1,0 +1,226 @@
+/* Estilo general */
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background-color: #1e1e1e; /* Fondo oscuro */
+  color: #ffffff; /* Texto blanco */
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 30px; /* Espacio mayor para una cabecera más grande */
+  background-color: #f9f9f9;
+  border-bottom: 1px solid #ddd;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Sombra sutil */
+  height: 100px; /* Altura aumentada */
+}
+
+.header nav {
+  display: flex;
+  gap: 20px; /* Espacio entre los enlaces */
+}
+
+.header nav a {
+  text-decoration: none;
+  color: #000;
+  font-size: 18px; /* Tamaño más grande */
+  transition: color 0.3s ease; /* Transición suave */
+}
+
+.header nav a:hover {
+  color: #000080; /* Cambia el color del texto al pasar el cursor */
+}
+
+.header nav a::after {
+  content: "";
+  position: absolute;
+  width: 0;
+  height: 2px;
+  background-color: #000080;
+  left: 0;
+  bottom: -3px;
+  transition: width 0.3s ease; /* Subrayado animado */
+}
+  ç
+.header nav a:hover::after {
+  width: 100%; /* Expande la línea al pasar el cursor */
+}
+
+/* Logo centrado */
+.header .logo {
+  text-align: center;
+}
+
+.header .logo img {
+  height: 70px; /* Tamaño del logo */
+  object-fit: contain; /* Ajuste del tamaño para mantener proporciones */
+}
+
+/* Botones a la derecha */
+.header .buttons {
+  display: flex;
+  gap: 15px; /* Espacio entre botones */
+}
+
+.header .buttons button {
+  background-color: #001a57;
+  color: white;
+  border: none;
+  padding: 10px 20px; /* Botones más grandes */
+  border-radius: 5px;
+  font-size: 16px; /* Tamaño de texto aumentado */
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease; /* Transición suave */
+}
+
+.header .buttons button:hover {
+  background-color: #0056b3;
+  transform: scale(1.05); /* Efecto de agrandamiento */
+}
+
+/* Contenedor principal */
+.container {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr; /* Tres columnas iguales */
+  grid-template-rows: auto 1fr; /* Filas: editores y vista previa */
+  grid-gap: 10px;
+  padding: 10px;
+  height: 100%;
+}
+
+/* Estilo de los editores */
+.editor {
+  position: relative;
+  background-color: #262626; /* Fondo oscuro */
+  border: 1px solid #333333; /* Bordes definidos */
+  border-radius: 5px;
+  overflow: hidden;
+}
+
+.editor::before {
+  content: attr(data-title); /* Muestra el título (HTML, CSS, JS) */
+  display: block;
+  background-color: #1e1e1e;
+  color: #ffffff;
+  font-weight: bold;
+  padding: 10px;
+  border-bottom: 1px solid #333333;
+  text-transform: uppercase;
+}
+
+/* CodeMirror */
+.CodeMirror {
+  height: calc(100% - 40px); /* Altura ajustada menos el espacio del título */
+  font-size: 14px;
+  color: #ffffff;
+  background-color: #262626;
+}
+
+
+
+/* Vista previa */
+.preview {
+  grid-column: 1 / span 3; /* Sigue ocupando toda la fila */
+  background-color: #ffffff;
+  border: 1px solid #000000;
+  border-radius: 5px;
+  overflow: hidden;
+  height: 66vh; /* Ajusta el tamaño según necesites */
+}
+
+iframe {
+  width: 100%;
+  height: 100%;
+  border: none;
+}
+
+
+
+
+
+.footer {
+  background-color: #001a57; /* Color principal del footer */
+  color: #ffffff; /* Texto blanco */
+  padding: 20px 30px;
+  border-top: 2px solid #0056b3; /* Línea superior */
+}
+
+.footer-content {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.footer-section {
+  flex: 1 1 calc(33% - 20px); /* Tres columnas ajustables */
+  min-width: 200px;
+}
+
+.footer-section h4 {
+  margin-bottom: 10px;
+  font-size: 18px;
+  color: #ffcc00; /* Color destacado */
+}
+
+.footer-section p,
+.footer-section ul,
+.footer-section a {
+  font-size: 14px;
+  line-height: 1.6;
+  color: #ffffff;
+}
+
+.footer-section ul {
+  list-style: none;
+  padding: 0;
+}
+
+.footer-section ul li {
+  margin-bottom: 5px;
+}
+
+.footer-section ul li a {
+  text-decoration: none;
+  color: #ffcc00; /* Color de enlace */
+  transition: color 0.3s ease;
+}
+
+.footer-section ul li a:hover {
+  color: #ffffff;
+}
+
+.social-icons a {
+  display: inline-block;
+  margin-right: 10px;
+  transition: transform 0.3s ease;
+}
+
+.social-icons a:hover {
+  transform: scale(1.2);
+}
+
+.social-icons img {
+  width: 24px;
+  height: 24px;
+}
+
+.footer-bottom {
+  text-align: center;
+  margin-top: 20px;
+  font-size: 12px;
+  border-top: 1px solid #ffffff;
+  padding-top: 10px;
+}
+
+.profile-menu span {
+  color: #000; /* Texto negro */
+  font-weight: bold; /* Opcional: letra en negrita */
+}
+
+

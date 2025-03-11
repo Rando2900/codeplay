@@ -1,0 +1,134 @@
+<script src="/javascripts/redirigelogin.js"></script>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Annotation - Code-Play</title>
+    <link rel="stylesheet" href="stylesheets/anotaciones.css">
+    <script src="https://cdn.jsdelivr.net/npm/codemirror/lib/codemirror.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/codemirror/lib/codemirror.css">
+    <script src="https://cdn.jsdelivr.net/npm/codemirror/mode/javascript/javascript.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/codemirror/mode/python/python.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/codemirror/mode/php/php.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/codemirror/mode/clike/clike.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/codemirror/mode/xml/xml.js"></script>
+    <link rel="icon" href="/favicon.ico" type="image/x-icon">
+    <link rel="shortcut icon" href="/logo.ico" type="image/x-icon">
+</head>
+<body>
+    <%- include('partials/header') %>
+
+    <main>
+        <section class="anotaciones">
+            <h1>Edit Annotation</h1>
+            <form id="editarAnotacionForm">
+                <label for="title">Annotation Title:</label>
+                <input type="text" id="title" name="title" required>
+            
+                <label for="language">Programming Language:</label>
+                <select id="language" name="language" required>
+                    <option value="javascript">JavaScript</option>
+                    <option value="python">Python</option>
+                    <option value="php">PHP</option>
+                    <option value="java">Java</option>
+                    <option value="html">HTML/XML</option>
+                </select>
+            
+                <label for="code">Write Your Code:</label>
+                <textarea id="code" name="code"></textarea>
+                <br><br> 
+                <button class="buttons2" type="submit">Update</button>
+                <br><br>
+            </form>
+        </section>
+    </main>
+
+    <%- include('partials/footer') %>
+
+    <script>
+        // Inicializar CodeMirror
+        const codeEditor = CodeMirror.fromTextArea(document.getElementById('code'), {
+            lineNumbers: true,
+            mode: 'javascript',
+            theme: 'default',
+            lineWrapping: true,
+            viewportMargin: Infinity 
+        });
+
+        // Cambiar el modo de CodeMirror según el lenguaje seleccionado
+        document.getElementById('language').addEventListener('change', (event) => {
+            const language = event.target.value;
+            let mode;
+            switch (language) {
+                case 'javascript': mode = 'javascript'; break;
+                case 'python': mode = 'python'; break;
+                case 'php': mode = 'php'; break;
+                case 'java': mode = 'text/x-java'; break;
+                case 'html': mode = 'xml'; break;
+                default: mode = 'javascript';
+            }
+            codeEditor.setOption('mode', mode);
+        });
+
+        document.addEventListener('DOMContentLoaded', async () => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const anotacionId = urlParams.get('id');
+
+    if (!anotacionId) {
+        alert("Error: No se proporcionó el ID de la anotación.");
+        window.location.href = '/perfil';
+        return;
+    }
+
+    try {
+        const response = await fetch(`/api/anotaciones/${anotacionId}`);
+        const data = await response.json();
+
+        if (response.ok) {
+            document.getElementById('title').value = data.title;
+            document.getElementById('language').value = data.language;
+            codeEditor.setValue(data.code);
+        } else {
+            alert(data.error || "Error al cargar la anotación.");
+            window.location.href = '/perfil';
+        }
+    } catch (error) {
+        console.error("❌ Error al obtener la anotación:", error);
+        alert("Error al obtener la anotación.");
+        window.location.href = '/perfil';
+    }
+});
+
+
+
+
+
+
+        // Manejar el envío del formulario
+        document.getElementById('editarAnotacionForm').addEventListener('submit', async (event) => {
+            event.preventDefault();
+
+            const urlParams = new URLSearchParams(window.location.search);
+            const anotacionId = urlParams.get('id');
+
+            const title = document.getElementById('title').value.trim();
+            const language = document.getElementById('language').value;
+            const code = codeEditor.getValue();
+
+            const response = await fetch(`/api/anotaciones/${anotacionId}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ title, language, code }),
+            });
+
+            if (response.ok) {
+                alert('Annotation updated successfully.');
+                window.location.href = '/perfil';
+            } else {
+                alert('Error updating the annotation.');
+            }
+        });
+    </script>
+</body>
+</html>

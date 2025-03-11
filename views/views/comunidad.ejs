@@ -1,0 +1,172 @@
+<script src="/javascripts/redirigelogin.js"></script>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="stylesheets/comunidad.css">
+    <title>Community - Code-Play</title>
+    <link rel="icon" href="/favicon.ico" type="image/x-icon">
+    <link rel="shortcut icon" href="/logo.ico" type="image/x-icon">
+    <style>
+        .search-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            margin: 20px 0;
+        }
+        .search-label {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <%- include('partials/header') %>
+ 
+    <main>
+        <section class="projects-section">
+            <h1>Community Projects</h1>
+            <div class="search-container">
+                <p class="search-label">Search for a project</p>
+                <div class="group">
+                    <svg class="icon" aria-hidden="true" viewBox="0 0 24 24">
+                        <g>
+                            <path d="M21.53 20.47l-3.66-3.66C19.195 15.24 20 13.214 20 11c0-4.97-4.03-9-9-9s-9 4.03-9 9 4.03 9 9 9c2.215 0 4.24-.804 5.808-2.13l3.66 3.66c.147.146.34.22.53.22s.385-.073.53-.22c.295-.293.295-.767.002-1.06zM3.5 11c0-4.135 3.365-7.5 7.5-7.5s7.5 3.365 7.5 7.5-3.365 7.5-7.5 7.5-7.5-3.365-7.5-7.5z"></path>
+                        </g>
+                    </svg>
+                    <input placeholder="Search" type="search" id="search-bar" class="input" onkeyup="buscarProyectos()">
+                </div>
+            </div>
+            <div class="project-grid" id="projects-container">
+                <p>Loading projects...</p>
+            </div>
+        </section>
+    </main>
+
+    <script>
+       let allProjects = [];
+
+       document.addEventListener('DOMContentLoaded', async () => {
+           try {
+               const response = await fetch('/api/projects');
+               if (!response.ok) {
+                   throw new Error(`Request error: ${response.status}`);
+               }
+               allProjects = await response.json();
+               allProjects = allProjects.filter(project => project.visibility === 'public'); // Filter private projects
+               sortAndRenderProjects();
+           } catch (error) {
+               console.error('Error loading projects:', error);
+               document.getElementById('projects-container').innerHTML = '<p>Error loading projects.</p>';
+           }
+       });
+
+       function sortAndRenderProjects() {
+           allProjects.sort((a, b) => b.likes - a.likes);
+           renderProjects(allProjects);
+       }
+
+       function renderProjects(projects) {
+           const container = document.getElementById('projects-container');
+           container.innerHTML = '';
+           projects.forEach(project => {
+               const card = document.createElement('div');
+               card.classList.add('project-card');
+
+               const iframe = document.createElement('iframe');
+               iframe.srcdoc = `
+                   <!DOCTYPE html>
+                   <html lang="en">
+                   <head>
+                       <style>${project.css}</style>
+                   </head>
+                   <body>
+                       ${project.html}
+                       <script> ${project.js.replace(/<\/script>/g, "<\\/script>")} <\/script>
+                   </body>
+                   </html>
+               `;
+               iframe.width = "100%";
+               iframe.height = "200px";
+               iframe.style.border = "1px solid #ccc";
+
+               const titleElement = document.createElement('h2');
+               titleElement.textContent = project.title || 'Untitled Project';
+               titleElement.classList.add('project-title');
+
+               const viewButton = document.createElement('button');
+               viewButton.textContent = 'View Project';
+               viewButton.addEventListener('click', () => viewProject(project._id));
+                   
+               const forkButton = document.createElement('button');
+               forkButton.textContent = 'Fork';
+               forkButton.addEventListener('click', async () => {
+                    try {
+                        const response = await fetch(`/api/projects/${project._id}/fork`, {
+                            method: 'POST',
+                            credentials: 'include'
+                        });
+
+                        if (!response.ok) throw new Error('Error forking project');
+
+                        alert('Project successfully forked!');
+                        window.location.reload();
+                    } catch (error) {
+                        console.error('Error:', error);
+                    }
+                });
+
+               const likeButton = document.createElement('button');
+               likeButton.classList.add('heart-button');
+               likeButton.textContent = project.liked ? `❤️ ${project.likes}` : `🤍 ${project.likes}`;
+               likeButton.addEventListener('click', async () => {
+                   try {
+                       const response = await fetch(`/api/projects/${project._id}/like`, { method: 'POST', credentials: 'include' });
+                       if (!response.ok) throw new Error('Error updating like');
+                       const data = await response.json();
+                       project.likes = data.likes;
+                       project.liked = data.liked;
+                       likeButton.textContent = data.liked ? `❤️ ${data.likes}` : `🤍 ${data.likes}`;
+                       sortAndRenderProjects();
+                   } catch (error) {
+                       console.error('Error:', error);
+                   }
+               });
+
+               card.appendChild(titleElement);
+               card.appendChild(viewButton);
+               card.appendChild(iframe);
+               card.appendChild(likeButton);
+
+               const creatorContainer = document.createElement('div');
+               creatorContainer.classList.add('creator-container');
+               
+               const creatorName = document.createElement('p');
+               creatorName.classList.add('project-creator');
+               creatorName.innerHTML = `Created by: <button class='creator-button' onclick="window.location.href='perfil_usuario?id=${project.userId?._id}'">${project.userId?.usuario || 'Anonymous'}</button>`;
+
+               creatorContainer.appendChild(creatorName);
+               card.appendChild(creatorContainer);
+               card.appendChild(forkButton);
+               container.appendChild(card);
+           });
+       }
+
+       function buscarProyectos() {
+           const query = document.getElementById('search-bar').value.toLowerCase();
+           const filteredProjects = allProjects.filter(project => project.title.toLowerCase().includes(query));
+           renderProjects(filteredProjects);
+       }
+
+       function viewProject(projectId) {
+           window.location.href = `/project?id=${projectId}`;
+       }
+    </script>
+
+    <%- include('partials/footer') %>
+</body>
+</html>

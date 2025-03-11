@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Code-Play</title>
+    <link rel="stylesheet" href="stylesheets/login.css">
+    <link rel="icon" href="/favicon.ico" type="image/x-icon">
+    <link rel="shortcut icon" href="/logo.ico" type="image/x-icon">
+</head>
+<body>
+    <%- include('partials/header') %>
+
+  <form id="login-form" action="/users/login" method="POST">
+    <h2>Login</h2>
+    <div>
+        <label for="usuario">User:</label>
+        <input type="text" id="usuario" name="usuario" required>
+    </div>
+    <div>
+        <label for="contraseña">Password:</label>
+        <input type="password" id="contraseña" name="contraseña" required>
+    </div>
+    <div class="button"><input type="submit" value="Login"></div>
+    <div class="button"><a href="registro">Register</a></div>
+</form>
+
+<script>
+    const loginForm = document.getElementById('login-form');
+
+    loginForm.addEventListener('submit', async (event) => {
+        event.preventDefault(); // Previene el envío por defecto del formulario
+
+        const formData = new FormData(loginForm);
+        const data = {
+            usuario: formData.get('usuario'),
+            contraseña: formData.get('contraseña'),
+        };
+
+        try {
+            const response = await fetch(loginForm.action, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data),
+            });
+
+            if (response.ok) {
+                const result = await response.json();
+                if (result.redirect) {
+                    window.location.href = result.redirect; // Redirige al index.html
+                }
+            } else {
+                const errorMessage = await response.text();
+                alert(`Error: ${errorMessage}`);
+            }
+        } catch (err) {
+            console.error('Error al iniciar sesión:', err);
+            alert('Error al iniciar sesión. Por favor, inténtalo de nuevo.');
+        }
+    });
+</script>
+
+<%- include('partials/footer') %>
+</body>
+</html>

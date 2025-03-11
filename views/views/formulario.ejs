@@ -1,0 +1,28 @@
+<script src="/javascripts/redirigelogin.js"></script>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Formulario - Code-Play</title>
+  <link rel="stylesheet" href="stylesheets/formulario.css">
+  <link rel="icon" href="/favicon.ico" type="image/x-icon">
+  <link rel="shortcut icon" href="/logo.ico" type="image/x-icon">
+</head>
+
+<body>
+  <%- include('partials/header') %>
+
+  <main class="main-content">
+    <h1>Select the type of content you want to create</h1>
+    <div class="button-container">
+      <a href="anotaciones"><button class="styled-button">Annotation</button></a>
+      <a href="proyecto"><button class="styled-button">Project</button></a>
+      <a href="editarjuegos"><button class="styled-button">Game</button></a>
+    </div>
+  </main>
+
+  <%- include('partials/footer') %>
+</body>
+
+</html>

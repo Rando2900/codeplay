@@ -1,0 +1,37 @@
+<link rel="stylesheet" href="/stylesheets/partials.css">
+<header class="header">
+  <div class="hamburger-menu" onclick="toggleMenu()">&#9776;</div> <!-- Menú de hamburguesa -->
+
+  <nav class="nav">
+    <a href="/">Home</a>
+    <a href="/comunidad">Community</a>
+    <a href="/juegos">Games</a>
+    <a href="/formulario">Create</a>
+  </nav>
+
+  <div class="logo">
+    <a href="/"><img src="/images/CodePlay_ejemplo_sin_fondo (1).png" alt="Project Logo" /></a>
+  </div>
+
+  <div id="userMenu" class="buttons">
+    <% if (typeof user !== 'undefined' && user && user.username) { %> 
+      <div class="profile-menu">
+        <a href="/perfil" style="text-decoration: none; color: inherit; cursor: pointer;">
+          <span>Hello, <%= user.username %></span>
+        </a>
+        <button onclick="logout()">Logout</button>
+      </div>
+    <% } else { %>
+      <a href="/login"><button>Login</button></a>
+      <a href="/registro"><button>Register</button></a>
+    <% } %>
+  </div>
+</header>
+
+<script>
+  function toggleMenu() {
+    const nav = document.querySelector('.header .nav');
+    nav.classList.toggle('open');
+  }
+</script>
+<script src="/javascripts/session.js"></script>

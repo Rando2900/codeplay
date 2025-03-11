@@ -1,0 +1,18 @@
+<script src="/javascripts/redirigelogin.js"></script>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="stylesheets/login.css">
+  <title>JGame - Code-Play</title>
+  <link rel="icon" href="/favicon.ico" type="image/x-icon">
+  <link rel="shortcut icon" href="/logo.ico" type="image/x-icon">
+</head>
+<body>
+  <%- include('partials/header') %>
+  <iframe id="gameFrame" style="width: 100%; height: 100vh; border: none;"></iframe>
+  <script src="/javascripts/juego.js"></script>
+  <%- include('partials/footer') %>
+</body>
+</html>

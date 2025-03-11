@@ -1,0 +1,398 @@
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  display: flex;
+  flex-direction: column;
+  height: 100vh; /* Hace que el cuerpo de la página ocupe toda la altura */
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 30px; /* Espacio mayor para una cabecera más grande */
+  background-color: #f9f9f9;
+  border-bottom: 1px solid #ddd;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Sombra sutil */
+  height: 100px; /* Altura aumentada */
+}
+
+.header nav {
+  display: flex;
+  gap: 20px; /* Espacio entre los enlaces */
+}
+
+.header nav a {
+  text-decoration: none;
+  color: #000;
+  font-size: 18px; /* Tamaño más grande */
+  transition: color 0.3s ease; /* Transición suave */
+}
+
+.header nav a:hover {
+  color: #000080; /* Cambia el color del texto al pasar el cursor */
+}
+
+.header nav a::after {
+  content: "";
+  position: absolute;
+  width: 0;
+  height: 2px;
+  background-color: #000080;
+  left: 0;
+  bottom: -3px;
+  transition: width 0.3s ease; /* Subrayado animado */
+}
+  ç
+.header nav a:hover::after {
+  width: 100%; /* Expande la línea al pasar el cursor */
+}
+
+/* Logo centrado */
+.header .logo {
+  text-align: center;
+}
+
+.header .logo img {
+  height: 70px; /* Tamaño del logo */
+  object-fit: contain; /* Ajuste del tamaño para mantener proporciones */
+}
+
+/* Botones a la derecha */
+.header .buttons {
+  display: flex;
+  gap: 15px; /* Espacio entre botones */
+}
+
+.header .buttons button {
+  background-color: #001a57;
+  color: white;
+  border: none;
+  padding: 10px 20px; /* Botones más grandes */
+  border-radius: 5px;
+  font-size: 16px; /* Tamaño de texto aumentado */
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease; /* Transición suave */
+}
+
+.header .buttons button:hover {
+  background-color: #0056b3;
+  transform: scale(1.05); /* Efecto de agrandamiento */
+}
+.main-container {
+  display: flex;
+  flex-grow: 1; /* Permite que crezca y ocupe todo el espacio disponible */
+}
+
+/* Sidebar */
+.sidebar {
+  width: 250px;
+  background: #001a57;
+  color: white;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  height: 100%; /* Ajusta la altura para llegar al footer */
+}
+
+.sidebar a {
+  color: white;
+  text-decoration: none;
+  padding: 10px;
+  border-radius: 5px;
+  transition: 0.3s;
+}
+
+.sidebar a:hover {
+  background: #0056b3;
+}
+
+/* Contenido principal */
+.main-content {
+  flex-grow: 1;
+  padding: 20px;
+  overflow-y: auto;
+}
+
+/* Buscador */
+.search-bar {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.search-bar input {
+  width: 50%;
+  padding: 10px;
+  font-size: 16px;
+  border: 2px solid #ddd;
+  border-radius: 5px;
+}
+
+/* Responsividad */
+@media (max-width: 768px) {
+  .editor-container {
+    flex-direction: column; /* Acomoda los editores verticalmente */
+  }
+
+  .editor {
+    flex: 1 1 100%; /* Cada editor ocupa el 100% en pantallas pequeñas */
+  }
+
+  header, footer {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  nav a {
+    margin: 5px 0;
+  }
+}
+.footer {
+  background-color: #001a57; /* Color principal del footer */
+  color: #ffffff; /* Texto blanco */
+  padding: 20px 30px;
+  border-top: 2px solid #0056b3; /* Línea superior */
+}
+
+.footer-content {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.footer-section {
+  flex: 1 1 calc(33% - 20px); /* Tres columnas ajustables */
+  min-width: 200px;
+}
+
+.footer-section h4 {
+  margin-bottom: 10px;
+  font-size: 18px;
+  color: #ffcc00; /* Color destacado */
+}
+
+.footer-section p,
+.footer-section ul,
+.footer-section a {
+  font-size: 14px;
+  line-height: 1.6;
+  color: #ffffff;
+}
+
+.footer-section ul {
+  list-style: none;
+  padding: 0;
+}
+
+.footer-section ul li {
+  margin-bottom: 5px;
+}
+
+.footer-section ul li a {
+  text-decoration: none;
+  color: #ffcc00; /* Color de enlace */
+  transition: color 0.3s ease;
+}
+
+.footer-section ul li a:hover {
+  color: #ffffff;
+}
+
+.social-icons a {
+  display: inline-block;
+  margin-right: 10px;
+  transition: transform 0.3s ease;
+}
+
+.social-icons a:hover {
+  transform: scale(1.2);
+}
+
+.social-icons img {
+  width: 24px;
+  height: 24px;
+}
+
+.footer-bottom {
+  text-align: center;
+  margin-top: 20px;
+  font-size: 12px;
+  border-top: 1px solid #ffffff;
+  padding-top: 10px;
+}
+div.result{
+  display:grid;
+  grid-template-columns: auto 1fr;
+  grid-template-rows: auto 1fr;
+  grid-template-areas: "sidebar busqueda" "sidebar contenido";
+}
+
+div.result div.search-bar{
+  grid-area: busqueda;
+}
+
+div.result div.sidebar{
+  grid-area: sidebar;
+}
+
+div.result div.results{
+  grid-area: contenido;
+}
+.project-card {
+  background-color: white;
+  border-radius: 10px;
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
+  padding: 15px;
+  width: 300px;
+  text-align: center;
+  margin: 15px;
+}
+
+.project-title {
+  font-size: 18px;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+.project-preview {
+  width: 100%;
+  height: 200px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  overflow: hidden;
+}
+
+.project-frame {
+  width: 100%;
+  height: 100%;
+  border: none;
+}
+
+.likes {
+  font-size: 16px;
+  margin: 10px 0;
+}
+
+.editar-proyecto {
+  background-color: #007BFF;
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  cursor: pointer;
+  border-radius: 5px;
+  font-weight: bold;
+}
+
+.editar-proyecto:hover {
+  background-color: #0056b3;
+}
+.results-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); /* 4 columnas ajustables */
+  gap: 20px;
+  justify-content: center;
+  padding: 20px;
+}
+
+
+.project-card:hover {
+  transform: translateY(-5px);
+}
+div.result div.results {
+  grid-area: contenido;
+  display: flex
+;
+  flex-wrap: wrap;
+}
+
+/* Diseño actual de los proyectos */
+.project-card {
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
+    padding: 15px;
+    width: 300px;
+    text-align: center;
+    margin: 15px;
+}
+
+/* Tarjeta minimalista para usuarios */
+
+
+/* Contenedor de resultados con grid */
+.results {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); /* Organiza en filas de 4 elementos */
+  gap: 30px; /* Mayor separación entre tarjetas */
+  justify-content: center;
+  padding: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* Estilo minimalista para usuarios */
+.user-card-minimal {
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  padding: 15px;
+  width: 220px;
+  text-align: center;
+  box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s ease-in-out;
+}
+
+.user-card-minimal:hover {
+  transform: translateY(-3px);
+}
+
+/* Imagen de usuario */
+.user-avatar {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #ddd;
+  margin-bottom: 10px;
+}
+
+/* Nombre de usuario */
+.user-name {
+  font-size: 1rem;
+  color: #333;
+  font-weight: bold;
+  margin-bottom: 8px;
+}
+
+/* Botón de ver perfil */
+.btn {
+  background: #007BFF;
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  font-weight: bold;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: 0.3s;
+  font-size: 0.9rem;
+}
+
+.btn:hover {
+  background: #0056b3;
+}
+
+.project-preview {
+  width: 100%;
+  height: 200px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  overflow: hidden;
+}
+
+.project-frame {
+  width: 100%;
+  height: 100%;
+  border: none;
+}

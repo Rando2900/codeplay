@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Code-Play</title>
+  <link rel="stylesheet" href="stylesheets/style.css">
+
+  <style>
+    /* Intro video container */
+    #video-intro {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: black;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+    }
+
+    /* Hide main content initially */
+    #main-content {
+      display: none;
+    }
+
+    /* Hero section styling */
+    .hero {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 60vh;
+        background: linear-gradient(to right, #007bff, #6a11cb);
+        text-align: center;
+        color: white;
+        padding: 20px;
+    }
+
+    .hero h1 {
+        font-size: 50px;
+        margin-bottom: 10px;
+    }
+
+    .hero p {
+        font-size: 20px;
+        margin-bottom: 20px;
+    }
+
+    .hero-buttons {
+        display: flex;
+        gap: 15px;
+        margin-top: 20px;
+    }
+
+    .hero-buttons a {
+        text-decoration: none;
+    }
+
+    .hero-buttons button {
+        background: white;
+        color: #007bff;
+        padding: 12px 20px;
+        font-size: 16px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-weight: bold;
+        transition: 0.3s;
+    }
+
+    .hero-buttons button:hover {
+        background: #f1f1f1;
+    }
+
+  </style>
+</head>
+<body>
+  <div class="content">
+  
+  <!-- Intro video container -->
+  <div id="video-intro">
+    <video id="intro-video" autoplay muted>
+      <source src="images/El texto del párrafo.mp4" type="video/mp4">
+      Your browser does not support videos.
+    </video>
+  </div>
+
+  <!-- Header -->
+  <%- include('partials/header') %> 
+
+  <!-- Green notification bar -->
+    <div id="notification-bar"></div>
+
+  
+    <section class="hero">
+      <h1>CodePlay</h1>
+      <p>Explore, create, and share your projects.</p>
+
+      <!-- Buttons -->
+      <div class="hero-buttons">
+          <a href="login"><button>Log In</button></a>
+          <a href="registro"><button>Sign Up</button></a>
+      </div>
+
+      <!-- Search bar -->
+    <div class="search-container">
+      <p class="search-label">Search for a project</p>
+      <a href="buscador">
+        <button class="card-button">Search
+        </button>
+      </a>
+    </div>
+  </section>
+
+  <section class="features" id="features">
+    <h2>Featured Features</h2>
+    <div class="grid">
+        <div class="card">
+            <h3>Create Your Own Projects</h3>
+            <p>With our ONLINE editor, you can create projects and publish them so that all users can view them.</p>
+            <a href="proyecto"><button class="card-button">Create Projects</button></a>
+        </div>
+        <div class="card">
+            <h3>Play</h3>
+            <p>Test, enjoy, and create games.</p>
+            <a href="juegos"><button class="card-button">Play</button></a>
+        </div>
+        <div class="card">
+            <h3>Save Code Snippets</h3>
+            <p>With our annotations system, you can save code snippets so you'll never forget them.</p>
+            <a href="anotaciones"><button class="card-button">Annotations</button></a>
+        </div>
+    </div>
+    <br> 
+  <div class="unique-container">
+    <a class="codepen-button" href="proyecto"><span>Start Coding</span></a>
+  </div>
+  <br><br>
+  </section>
+
+  <script>
+    // Detect the end of the video or wait 3 seconds
+    const videoIntro = document.getElementById('video-intro');
+    const mainContent = document.getElementById('main-content');
+
+    setTimeout(() => {
+      videoIntro.style.display = 'none'; // Hide video
+      mainContent.style.display = 'block'; // Show main content
+    }, 4000);
+  </script>
+
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        // Check if session cookie exists
+        fetch('/users/session', { method: 'GET', credentials: 'same-origin' })
+            .then(response => response.json())
+            .then(data => {
+                const videoIntro = document.getElementById('video-intro');
+                const mainContent = document.getElementById('main-content');
+
+                if (data.loggedIn) {
+                    // Hide video if user is logged in
+                    videoIntro.style.display = 'none';
+                    mainContent.style.display = 'block';
+                } else {
+                    // If not logged in, wait 4 seconds before displaying content
+                    setTimeout(() => {
+                        videoIntro.style.display = 'none';
+                        mainContent.style.display = 'block';
+                    }, 4000);
+                }
+            })
+            .catch(err => console.error('Error checking session:', err));
+    });
+
+    function logout() {
+        fetch('/users/logout', { method: 'POST', credentials: 'same-origin' })
+            .then(() => {
+                window.location.reload();
+            })
+            .catch(err => console.error('Error logging out:', err));
+    }
+</script>
+
+
+<!-- Green Notification Bar Script -->
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+      fetch('/users/session', { method: 'GET', credentials: 'same-origin' })
+          .then(response => response.json())
+          .then(data => {
+              const userMenu = document.querySelector('.buttons');
+              const heroButtons = document.querySelector('.hero-buttons');
+              if (data.loggedIn) {
+                  userMenu.innerHTML = `
+                      <div class="profile-menu">
+                        <a href="perfil" style="text-decoration: none; color: inherit; cursor: pointer;">
+                          <span>Hello, ${data.username}</span>
+                          <button onclick="logout()">Logout</button>
+                      </div>
+                  `;
+                  if (heroButtons) {
+                    heroButtons.style.display = 'none'; // 🟢 Hide buttons if user is logged in
+                }
+                  // Show the notification bar
+                  showNotification('Login successful');
+              }
+          })
+          .catch(err => console.error('Error checking session:', err));
+  });
+
+  function showNotification(message) {
+      const notificationBar = document.getElementById('notification-bar');
+      notificationBar.textContent = message;
+      notificationBar.style.display = 'block';
+
+      // Auto-hide after 5 seconds
+      setTimeout(() => {
+          notificationBar.style.display = 'none';
+      }, 5000);
+  }
+
+  function logout() {
+      fetch('/users/logout', { method: 'POST', credentials: 'same-origin' })
+          .then(() => {
+              window.location.reload();
+          })
+          .catch(err => console.error('Error logging out:', err));
+  }
+  
+  function scrollToFeatures() {
+      document.getElementById('features').scrollIntoView({ behavior: 'smooth' });
+  }
+</script>
+
+<%- include('partials/footer') %>
+</body>
+</html>

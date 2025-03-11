@@ -1,0 +1,146 @@
+<script src="/javascripts/redirigelogin.js"></script>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Annotations - Code-Play</title>
+    <link rel="stylesheet" href="stylesheets/anotaciones.css">
+    <script src="https://cdn.jsdelivr.net/npm/codemirror/lib/codemirror.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/codemirror/lib/codemirror.css">
+    <script src="https://cdn.jsdelivr.net/npm/codemirror/mode/javascript/javascript.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/codemirror/mode/python/python.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/codemirror/mode/php/php.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/codemirror/mode/clike/clike.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/codemirror/mode/xml/xml.js"></script>
+    <link rel="icon" href="/favicon.ico" type="image/x-icon">
+    <link rel="shortcut icon" href="/logo.ico" type="image/x-icon">
+</head>
+<body>
+    <%- include('partials/header') %>
+
+    <main>
+        <section class="anotaciones">
+            <h1>Create an Annotation</h1>
+            <form id="anotacionForm">
+                <label for="title">Annotation Title:</label>
+                <input type="text" id="title" name="title" required>
+            
+                <label for="language">Programming Language:</label>
+                <select id="language" name="language" required>
+                    <option value="javascript">JavaScript</option>
+                    <option value="python">Python</option>
+                    <option value="php">PHP</option>
+                    <option value="java">Java</option>
+                    <option value="html">HTML/XML</option>
+                </select>
+            
+                <label for="code">Write Your Code:</label>
+                <textarea id="code" name="code"></textarea>
+                <br><br> 
+                <button class="buttons2" type="submit">Publish</button>
+                <br><br>
+            </form>
+            
+        </section>
+    </main>
+
+    <%- include('partials/footer') %>
+
+    <script>
+        // Initialize CodeMirror
+        const codeEditor = CodeMirror.fromTextArea(document.getElementById('code'), {
+            lineNumbers: true,
+            mode: 'javascript',
+            theme: 'default',
+            lineWrapping: true,      // Prevents text from overflowing the editor area
+            viewportMargin: Infinity // Ensures the area expands based on content
+        });
+
+        // Change CodeMirror mode based on selected language
+        document.getElementById('language').addEventListener('change', (event) => {
+            const language = event.target.value;
+            let mode;
+            switch (language) {
+                case 'javascript':
+                    mode = 'javascript';
+                    break;
+                case 'python':
+                    mode = 'python';
+                    break;
+                case 'php':
+                    mode = 'php';
+                    break;
+                case 'java':
+                    mode = 'text/x-java';
+                    break;
+                case 'html':
+                    mode = 'xml';
+                    break;
+                default:
+                    mode = 'javascript';
+            }
+            codeEditor.setOption('mode', mode);
+        });
+
+        // Form Handling
+        document.getElementById('anotacionForm').addEventListener('submit', async (event) => {
+            event.preventDefault();
+
+            const title = document.getElementById('title').value.trim();
+            const language = document.getElementById('language').value;
+            const code = codeEditor.getValue();
+
+            if (!title || !code) {
+                alert("The title and code are required.");
+                return;
+            }
+
+            const response = await fetch('/api/anotaciones', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ title, language, code }),
+            });
+
+            if (response.ok) {
+                alert('Annotation saved successfully.');
+                document.getElementById('anotacionForm').reset();
+                codeEditor.setValue('');
+            } else {
+                alert('Error saving the annotation.');
+            }
+        });
+    </script>
+
+<script>
+async function publishAnnotation() {
+    const response = await fetch('/api/anotaciones/session');
+    const data = await response.json();
+
+    if (!data.loggedIn) {
+        alert('You must log in to publish an annotation.');
+        window.location.href = 'login.html';
+        return;
+    }
+
+    const language = document.getElementById('language').value;
+    const code = codeEditor.getValue();
+
+    const postResponse = await fetch('/api/anotaciones', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ language, code }),
+    });
+
+    if (postResponse.ok) {
+        alert('Annotation saved successfully.');
+        window.location.reload();
+    } else {
+        alert('Error saving the annotation.');
+    }
+}
+
+document.getElementById('publicarBtn').addEventListener('click', publishAnnotation);
+</script>
+</body>
+</html>
