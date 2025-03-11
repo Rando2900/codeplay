@@ -124,6 +124,7 @@
                         })
                         .catch(err => console.error('❌ Error cargando proyectos:', err));
 
+                        
                     // Cargar anotaciones
                     fetch(`/api/anotaciones/user/${userId}`)
                         .then(res => res.json())
@@ -143,18 +144,22 @@
                                     filtered.forEach(anotacion => {
                                         const card = document.createElement('div');
                                         card.classList.add('anotacion-card');
-
                                         card.innerHTML = `
     <h3>${anotacion.title || 'Sin título'}</h3>
     <p style="font-size: 14px; color: gray;">${anotacion.language}</p>
-    <pre>${anotacion.code}</pre>
+    <pre id="codigo-${anotacion._id}" class="codigo">${anotacion.code}</pre>
+    <button onclick="copiarCodigo('codigo-${anotacion._id}')" 
+        class="copy-button">
+        📋 Copy code
+    </button>
     <button onclick="editAnotacion('${anotacion._id}')" class="anotacion-button edit-anotacion-button">
-        Edit
+        Editar
     </button>
     <button onclick="deleteAnotacion('${anotacion._id}')" class="anotacion-button delete-anotacion-button">
-        Delete
+        Eliminar
     </button>
 `;
+
 container.appendChild(card);
 
                                     });
@@ -355,6 +360,23 @@ function deleteAnotacion(anotacionId) {
     }
 }
 
+function copiarCodigo(elementId) {
+    const codigoElemento = document.getElementById(elementId);
+    if (!codigoElemento) {
+        alert('❌ No se encontró el código para copiar.');
+        return;
+    }
+
+    const codigoTexto = codigoElemento.innerText.trim();
+    navigator.clipboard.writeText(codigoTexto)
+        .then(() => {
+            alert('✅ Copied to clipboard!');
+        })
+        .catch(err => {
+            console.error('❌ Error', err);
+            alert('❌ Error');
+        });
+}
 
 
 </script>
