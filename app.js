@@ -127,7 +127,7 @@ app.get('/juego', async (req, res) => {
   }
 
   try {
-      const response = await fetch(`http://localhost:3000/api/juegos/${juegoId}`);
+      const response = await fetch(`https://code-play.es/api/juegos/${juegoId}`);
       if (!response.ok) {
           throw new Error('No se pudo obtener el juego');
       }
